@@ -38,8 +38,8 @@
   ],
   "rewrites": [
     {
-      "source": "/api/totalhits-streaminfo.js",
-      "destination": "https://eu8.fastcast4u.com/system/streaminfo.js"
+      "source": "/api/totalhits-streaminfo.json",
+      "destination": "https://eu8.fastcast4u.com/external/rpc.php?m=streaminfo.get&username=breaktroy&rid=breaktroy&charset=&mountpoint="
     },
     {
       "source": "/api/totalhits-status.xsl",

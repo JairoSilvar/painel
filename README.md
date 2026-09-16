@@ -1,4 +1,4 @@
-# Painel Mídia v6.4 — Híbrido / iOS 9
+# Painel Mídia v6.5 — Híbrido / iOS 9
 
 Build revisado para um único portal híbrido: Android, iPhone/iPad antigos e modernos, desktop e navegadores atuais.
 
@@ -66,7 +66,7 @@ A compatibilidade do código não garante que um servidor externo de rádio este
 
 
 ## v6.3
-- Reintegra “Agora tocando” para Total Hits via FastCast4U, com tentativa por `system/streaminfo.js` e fallback `status-json.xsl`, atualizada a cada 15s.
+- Reintegra “Agora tocando” para Total Hits via FastCast4U, com consulta direta ao RPC `streaminfo.get` via rewrite HTTPS, usando `breaktroy`, com fallback `status-json.xsl`, atualizada a cada 15s; falha de metadata não interrompe o áudio.
 - Mini-player móvel elevado para evitar sobreposição com a navegação inferior de celulares modernos, preservando safe-area.
 - Clima automático via geolocalização + Open-Meteo, com fallback visual e atualização periódica.
 - Manifest PWA reforçado com ícones PNG 192/512 e metadados de instalação.
