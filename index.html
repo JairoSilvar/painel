@@ -615,7 +615,7 @@ html.lite-mode .header-inner, html.lite-mode .section, html.lite-mode .search-wr
 <div class="brand-mark" role="button" tabindex="0" title="Voltar ao início" onclick="goHome()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goHome();}" style="cursor :pointer">🎧</div>
 <div class="brand-copy" role="button" tabindex="0" title="Voltar ao início" onclick="goHome()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goHome();}" style="cursor :pointer">
 <h1>Portal de Mídia</h1>
-<span class="version-tag">v6.3 • Painel Mídia • Rádios, YouTube e Músicas</span>
+<span class="version-tag">v6.4 • Painel Mídia • Rádios, YouTube e Músicas</span>
 </div>
 <div class="header-actions">
 <button class="header-action" id="theme-menu-btn" type="button" onclick="toggleAppearancePanel()" aria-expanded="false" aria-controls="appearance-panel" title="Aparência">◐</button>
@@ -995,6 +995,7 @@ html.lite-mode .header-inner, html.lite-mode .section, html.lite-mode .search-wr
 <div class="stat-pill"><b id="stat-tracks">0</b><span>faixas salvas</span></div>
 </div>
 <ul class="changelog" style="margin-top:14px;padding-left:18px;">
+<li><strong>v6.4</strong> — Foco em Safari/iOS 9: HLS nativo sem HLS.js no WebKit legado; URLs HTTPS alternativas para Atlântida/102.3; CBN/BandNews priorizando HLS; Continental preservada sem recodificação.</li>
 <li><strong>v6.1</strong> — Núcleo ES5 real para navegadores antigos, reforço de compatibilidade iOS 9, mini-player móvel reorganizado e controlador de mídia mais seguro.</li>
 <li><strong>v5.6</strong> — Contraste do tema claro aprimorado em painéis e banners, links de rádios atualizados e remoção do Total Hits 80s/90s.</li>
 <li><strong>v5.5</strong> — Streams corrigidos e melhorias gerais de usabilidade.</li>
@@ -1128,13 +1129,13 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     }
 }());
 var RADIO_CHANNELS = {
-    atlantida_poa: { label: 'Atlântida FM 94.3', needsHls: true, urls: ['https://liverdatlpoa.rbsdirect.com.br/primary/atl_poa.sdp/playlist.m3u8'] },
-    '1023_poa': { label: 'Rádio 102.3 FM', needsHls: true, urls: ['https://liverd102fm.rbsdirect.com.br/primary/ita_poa.sdp/playlist.m3u8'] },
+    atlantida_poa: { label: 'Atlântida FM 94.3', needsHls: true, urls: ['https://1852747t.ha.azioncdn.net/primary/atl_poa.sdp/playlist.m3u8', 'https://liverdatlpoa.rbsdirect.com.br/primary/atl_poa.sdp/playlist.m3u8'] },
+    '1023_poa': { label: 'Rádio 102.3 FM', needsHls: true, urls: ['https://1192747t.ha.azioncdn.net/primary/ita_poa.sdp/playlist.m3u8', 'https://liverd102fm.rbsdirect.com.br/primary/ita_poa.sdp/playlist.m3u8'] },
     antena1_poa: { label: 'Antena 1', needsHls: false, urls: ['https://antenaone.crossradio.com.br/stream/1'] },
     continental_poa: { label: 'Continental FM 98.3', needsHls: false, urls: ['https://rrdns-continental.webnow.com.br/imprensafm64k.mp3'] },
     salamanca_quarai: { label: 'Salamanca FM 101.3', needsHls: false, urls: ['https://live.paineldj.com.br/proxy/salamancahd?mp=/stream'] },
-    cbn: { label: 'CBN Rio', needsHls: false, urls: ['https://playerservices.streamtheworld.com/api/livestream-redirect/CBN_RJ_ADP.mp3', 'https://playerservices.streamtheworld.com/api/livestream-redirect/CBN_RJ.mp3', 'https://playerservices.streamtheworld.com/api/livestream-redirect/CBN_RJ_ADP.m3u8'] },
-    bandnews: { label: 'BandNews FM SP', needsHls: false, urls: ['https://playerservices.streamtheworld.com/api/livestream-redirect/BANDNEWSFM_SPAAC.mp3', 'https://playerservices.streamtheworld.com/api/livestream-redirect/BANDNEWSFM_SPAAC.aac', 'https://playerservices.streamtheworld.com/api/livestream-redirect/BANDNEWSFM_SPAAC.m3u8'] },
+    cbn: { label: 'CBN Rio', needsHls: false, urls: ['https://playerservices.streamtheworld.com/api/livestream-redirect/CBN_RJ_ADP.m3u8', 'https://playerservices.streamtheworld.com/api/livestream-redirect/CBN_RJ_ADP.mp3', 'https://playerservices.streamtheworld.com/api/livestream-redirect/CBN_RJ.mp3'] },
+    bandnews: { label: 'BandNews FM SP', needsHls: false, urls: ['https://playerservices.streamtheworld.com/api/livestream-redirect/BANDNEWSFM_SPAAC.m3u8', 'https://playerservices.streamtheworld.com/api/livestream-redirect/BANDNEWSFM_SPAAC.aac', 'https://playerservices.streamtheworld.com/api/livestream-redirect/BANDNEWSFM_SPAAC.mp3'] },
     total_hits: { label: 'Total Hits', needsHls: false, urls: ['https://eu8.fastcast4u.com/proxy/breaktroy?mp=/stream'] },
     progressive: { label: 'Progressive House', needsHls: false, urls: ['https://stream.laut.fm/house'] },
     trance: { label: 'Trance', needsHls: false, urls: ['https://stream.laut.fm/main'] },
@@ -2135,6 +2136,18 @@ window.addEventListener('DOMContentLoaded', function () {
         searchInput.addEventListener('input', function () { return filtrarRadios(searchInput.value); });
 });
 var hlsJsLoadPromise = null;
+function isLegacyIOSWebKit() {
+    var ua = navigator.userAgent || '';
+    return /iPad|iPhone|iPod/i.test(ua) && /OS 9_[0-9_]+/i.test(ua) && /AppleWebKit/i.test(ua);
+}
+function preferNativeHlsOnLegacy(urls) {
+    if (!isLegacyIOSWebKit() || !urls || urls.length < 2) return urls;
+    var hls = [], other = [];
+    for (var i = 0; i < urls.length; i++) {
+        if (urlNeedsHls(urls[i])) hls.push(urls[i]); else other.push(urls[i]);
+    }
+    return hls.concat(other);
+}
 function loadHlsJs() {
     if (typeof Hls !== 'undefined')
         return Promise.resolve(Hls);
@@ -2429,6 +2442,7 @@ function playChannel(channelId, btnEl, statusIdOverride) {
     radioController.channelId = channelId;
     radioController.state = 'RADIO_LOADING';
     var urlIndex = 0;
+    var channelUrls = preferNativeHlsOnLegacy(channel.urls.slice ? channel.urls.slice(0) : channel.urls);
     setRadioMediaSession(channel);
     clearRadioUi();
     if (btnEl)
@@ -2456,7 +2470,7 @@ function playChannel(channelId, btnEl, statusIdOverride) {
         urlIndex += 1;
         if (urlIndex < channel.urls.length) {
             radioController.state = 'RADIO_LOADING';
-            setStatus(statusId, 'Tentando ' + (urlIndex + 1) + '/' + channel.urls.length + '…');
+            setStatus(statusId, 'Tentando ' + (urlIndex + 1) + '/' + channelUrls.length + '…');
             setTimeout(function () {
                 if (token === radioController.token)
                     tryNextUrl();
@@ -2519,12 +2533,12 @@ function playChannel(channelId, btnEl, statusIdOverride) {
     function tryNextUrl() {
         if (token !== radioController.token)
             return;
-        if (urlIndex >= channel.urls.length) {
+        if (urlIndex >= channelUrls.length) {
             currentRadioUrl = '';
             finishRadioError(token, channelId, btnEl, statusId, 'Indisponível');
             return;
         }
-        var url = channel.urls[urlIndex];
+        var url = channelUrls[urlIndex];
         currentRadioUrl = url;
         var needsHls = channel.needsHls || urlNeedsHls(url);
         setStatus(statusId, 'Tentando ' + (urlIndex + 1) + '/' + channel.urls.length + '…');
@@ -2557,6 +2571,10 @@ function playChannel(channelId, btnEl, statusIdOverride) {
                 catch (_) {
                     failAttempt('Erro no stream');
                 }
+                return;
+            }
+            if (isLegacyIOSWebKit()) {
+                failAttempt('HLS nativo não iniciou');
                 return;
             }
             armTimeout(12000, 'Tempo esgotado');

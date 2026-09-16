@@ -1,4 +1,4 @@
-# Painel Mídia v6.3 — Híbrido / iOS 9
+# Painel Mídia v6.4 — Híbrido / iOS 9
 
 Build revisado para um único portal híbrido: Android, iPhone/iPad antigos e modernos, desktop e navegadores atuais.
 
@@ -18,6 +18,10 @@ Build revisado para um único portal híbrido: Android, iPhone/iPad antigos e mo
 - Rádios continuam usando um único elemento de áudio e token de controle para evitar áudio fantasma.
 - YouTube/biblioteca/radio continuam mutuamente exclusivos.
 - HLS nativo continua sendo preferido quando o navegador oferece suporte.
+- No iOS 9, HLS.js não é carregado: o Safari tenta apenas HLS nativo, evitando dependência moderna no WebKit legado.
+- Atlântida FM e Rádio 102.3 ganharam URLs HTTPS alternativas atuais da infraestrutura Azion antes dos endpoints RBS anteriores.
+- CBN e BandNews priorizam HLS HTTPS no Safari antes dos fallbacks de áudio.
+- Continental permanece preservada; a URL HTTPS atual não foi substituída por conversão/recodificação. Se o Safari legado continuar recusando a transmissão, ela será candidata a relay HTTPS específico, sem remover a rádio.
 - Layout crítico usa fallback flexível em vez de depender de CSS Grid.
 - `min()`, `inset` e outros recursos modernos deixaram de ser necessários para o layout básico.
 - Service Worker atualizado para a versão 6.1 e com cache de shell em network-first.
