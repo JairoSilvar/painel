@@ -1,6 +1,6 @@
-/* Portal de Mídia — service worker leve (só UI) */
-const CACHE = 'portal-midia-v60-ui';
-const ASSETS = ['./', './index.html', './manifest.webmanifest'];
+/* Painel Mídia v6.1 — service worker leve; áudio/vídeo nunca é cacheado. */
+var CACHE = 'painel-midia-v61-ui';
+var ASSETS = ['./', './index.html', './manifest.webmanifest'];
 
 self.addEventListener('install', function(event) {
   event.waitUntil(
@@ -13,34 +13,31 @@ self.addEventListener('install', function(event) {
 self.addEventListener('activate', function(event) {
   event.waitUntil(
     caches.keys().then(function(keys) {
-      return Promise.all(keys.map(function(k) {
-        if (k !== CACHE) return caches.delete(k);
-      }));
+      var jobs = [];
+      for (var i = 0; i < keys.length; i++) {
+        if (keys[i] !== CACHE) jobs.push(caches.delete(keys[i]));
+      }
+      return Promise.all(jobs);
     }).then(function() { return self.clients.claim(); })
   );
 });
 
 self.addEventListener('fetch', function(event) {
-  const req = event.request;
-  if (req.method !== 'GET') return;
-  const url = new URL(req.url);
-  // Nunca cachear streams de áudio/vídeo nem APIs de terceiros
+  var req = event.request;
+  if (!req || req.method !== 'GET') return;
+  var url;
+  try { url = new URL(req.url); } catch (_) { return; }
   if (/m3u8|mp3|aac|audio|stream|youtube|googlevideo|cast/i.test(url.href)) return;
   if (url.origin !== self.location.origin) return;
 
-  const isAppShell = req.mode === 'navigate' ||
-    url.pathname.endsWith('.html') ||
-    url.pathname.endsWith('.webmanifest') ||
-    url.pathname.endsWith('/');
+  var isAppShell = req.mode === 'navigate' ||
+    /\.html$|\.webmanifest$|\/$/.test(url.pathname);
 
   if (isAppShell) {
-    // NETWORK-FIRST para o "app shell": sempre tenta buscar a versão mais
-    // nova primeiro. Só cai para o cache se a rede falhar (offline).
-    // Isso evita ficar preso numa versão antiga/quebrada depois de um deploy.
     event.respondWith(
       fetch(req).then(function(res) {
         if (res && res.ok) {
-          const copy = res.clone();
+          var copy = res.clone();
           caches.open(CACHE).then(function(c) { c.put(req, copy); });
         }
         return res;
@@ -53,18 +50,15 @@ self.addEventListener('fetch', function(event) {
     return;
   }
 
-  // Demais recursos estáticos: cache-first com atualização em segundo plano.
   event.respondWith(
     caches.match(req).then(function(cached) {
-      const network = fetch(req).then(function(res) {
+      var network = fetch(req).then(function(res) {
         if (res && res.ok) {
-          const copy = res.clone();
+          var copy = res.clone();
           caches.open(CACHE).then(function(c) { c.put(req, copy); });
         }
         return res;
-      }).catch(function() {
-        return cached;
-      });
+      }).catch(function() { return cached; });
       return cached || network;
     })
   );
