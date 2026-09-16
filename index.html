@@ -1,0 +1,3114 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <meta content="strict-origin-when-cross-origin" name="referrer"/>
+    <meta content="#0a0e1a" name="theme-color"/>
+    <link rel="manifest" href="manifest.webmanifest"/>
+    <meta name="mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+    <meta name="apple-mobile-web-app-title" content="Portal Mídia"/>
+    <meta name="application-name" content="Portal de Mídia"/>
+    <meta name="description" content="Rádios, YouTube e suas músicas em um player web leve e moderno."/>
+    <title>Portal de Mídia</title>
+    <link href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8E%A7%3C/text%3E%3C/svg%3E" rel="icon" type="image/svg+xml"/>
+    <style>
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        html, body { margin: 0; padding: 0; height: 100%; }
+        :root {
+            --bg: #0a0e1a;
+            --surface: #121826;
+            --surface-2: #1a2234;
+            --surface-3: #243044;
+            --text: #f1f5f9;
+            --muted: #94a3b8;
+            --faint: #64748b;
+            --line: rgba(255,255,255,.08);
+            --accent: #8b5cf6;
+            --accent-2: #ec4899;
+            --accent-soft: rgba(139,92,246,.18);
+            --good: #4ade80;
+            --danger: #f87171;
+            --radius: 16px;
+            --radius-sm: 12px;
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+        }
+        body {
+            font-family: -apple-system, "Roboto", Arial, sans-serif;
+            background: var(--bg);
+            background-image: 
+                radial-gradient(ellipse at top left, rgba(99,102,241,.10) 0%, transparent 50%),
+                radial-gradient(ellipse at bottom right, rgba(236,72,153,.08) 0%, transparent 50%);
+            background-attachment: fixed;
+            color: var(--text);
+            overflow-x: hidden;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: calc(120px + var(--safe-bottom));
+        }
+        header {
+            padding: 12px 16px 10px;
+            text-align: center;
+            position: sticky; top: 0; z-index: 10;
+            background: rgba(10,14,26,.92);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--line);
+        }
+        .header-inner { width: min(1100px, 100%); margin: 0 auto; }
+        .brand-row { display: flex; align-items: center; gap: 10px; }
+        .brand-mark {
+            width: 40px; height: 40px; border-radius: 13px; flex: 0 0 auto;
+            display: flex; align-items: center; justify-content: center;
+            background: linear-gradient(135deg, rgba(139,92,246,.3), rgba(236,72,153,.22));
+            border: 1px solid rgba(167,139,250,.3); font-size: 1.15rem;
+        }
+        .brand-copy { min-width: 0; flex: 1; text-align: left; }
+        .brand-copy h1 {
+            margin: 0; font-size: 1.15rem; font-weight: 700;
+            background: linear-gradient(135deg, #a5b4fc 0%, #f0abfc 55%, #67e8f9 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .version-tag { font-size: .55em; color: var(--faint); font-weight: 500; letter-spacing: .06em; display: block; margin-top: 2px; }
+        .header-actions { display: flex; gap: 6px; margin-left: auto; }
+        .header-action {
+            width: 40px; height: 40px; border: 1px solid var(--line); border-radius: 12px;
+            background: var(--surface-2); color: #cbd5e1; cursor: pointer; font: 700 1rem inherit;
+        }
+        .header-action:active { transform: scale(.96); }
+        .clock-display {
+            margin-top: 8px; font-size: 1.55rem; font-weight: 700; letter-spacing: -.02em;
+            color: var(--text); font-variant-numeric: tabular-nums; line-height: 1;
+        }
+        .clock-display small {
+            display: block; font-size: .42em; color: var(--faint); font-weight: 500;
+            margin-top: 4px; letter-spacing: .05em; text-transform: uppercase;
+        }
+        .appearance-panel {
+            margin: 10px auto 0; padding: 10px; max-width: 560px;
+            border: 1px solid var(--line); border-radius: 14px; background: rgba(15,23,42,.96); text-align: left;
+        }
+        .appearance-panel[hidden] { display: none; }
+        .appearance-title { color: var(--text); font-size: .78rem; font-weight: 800; margin: 1px 2px 8px; text-transform: uppercase; letter-spacing: .07em; }
+        .appearance-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+        .appearance-row button {
+            flex: 1 1 100px; min-height: 38px; border: 1px solid var(--line); border-radius: 10px;
+            background: var(--surface-2); color: #cbd5e1; font: 600 .78rem inherit; cursor: pointer;
+        }
+        .appearance-row button.active { border-color: rgba(139,92,246,.6); background: var(--accent-soft); color: #fff; }
+        .search-wrap { width: min(1100px, calc(100% - 24px)); margin: 12px auto 0; position: relative; }
+        .search-input {
+            width: 100%; padding: 14px 44px 14px 16px; background: rgba(30,41,59,.55);
+            border: 1px solid var(--line); border-radius: 14px; color: var(--text);
+            font-size: .95em; outline: none; font-family: inherit;
+        }
+        .search-input:focus { border-color: rgba(139,92,246,.5); box-shadow: 0 0 0 3px rgba(139,92,246,.1); }
+        .search-input::placeholder { color: var(--faint); }
+        .search-clear {
+            position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+            background: rgba(100,116,139,.3); border: none; color: #94a3b8;
+            width: 32px; height: 32px; border-radius: 50%; font-size: 1em; cursor: pointer;
+            display: none; align-items: center; justify-content: center;
+        }
+        .search-clear.visible { display: flex; }
+        .search-result-count { margin: 7px 4px 0; color: var(--faint); font-size: .78em; min-height: 1.1em; }
+        .search-no-results {
+            padding: 18px 12px; text-align: center; color: var(--muted); font-size: .9em;
+            border: 1px dashed rgba(148,163,184,.18); border-radius: 12px; margin-top: 10px;
+        }
+        .search-results-section[hidden] { display: none !important; }
+
+        .quick-nav {
+            width: min(1100px, calc(100% - 24px)); margin: 10px auto 0;
+            display: flex; gap: 7px; overflow-x: auto; padding: 2px 1px 6px; scrollbar-width: none;
+        }
+        .quick-nav::-webkit-scrollbar { display: none; }
+        .quick-nav a {
+            flex: 0 0 auto; text-decoration: none; color: #cbd5e1;
+            border: 1px solid var(--line); background: rgba(30,41,59,.55);
+            border-radius: 999px; padding: 8px 12px; font-size: .75rem; font-weight: 700; white-space: nowrap;
+        }
+        .quick-nav a.active {
+            border-color: rgba(139,92,246,.55); background: var(--accent-soft); color: #fff;
+        }
+        .quick-nav a:active { transform: scale(.98); }
+
+        .section {
+            width: min(1100px, calc(100% - 24px)); margin: 14px auto;
+            padding: 18px 16px; background: var(--surface);
+            border: 1px solid var(--line); border-radius: 18px;
+            box-shadow: 0 8px 24px -12px rgba(0,0,0,.45);
+            scroll-margin-top: 120px;
+        }
+        .section-title {
+            font-size: .92em; font-weight: 700; margin: 0 0 14px;
+            display: flex; align-items: center; justify-content: space-between; color: var(--text);
+        }
+        .section-title .left-group { display: flex; align-items: center; gap: 10px; }
+        .section-title .icon {
+            display: flex; align-items: center; justify-content: center;
+            width: 34px; height: 34px; border-radius: 11px; font-size: 1em;
+            background: var(--accent-soft); border: 1px solid rgba(139,92,246,.28);
+        }
+
+        .hub-grid { display: flex; flex-direction: column; gap: 12px; }
+        .hub-label { font-size: .72rem; font-weight: 700; color: var(--faint); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 6px; }
+        .hub-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+        .hub-chip {
+            border: 1px solid var(--line); background: var(--surface-2); color: var(--text);
+            border-radius: 999px; padding: 10px 14px; font: 600 .82rem inherit; cursor: pointer;
+        }
+        .hub-chip-primary {
+            border-color: rgba(139,92,246,.45); background: var(--accent-soft);
+        }
+        .hub-chip:active { transform: scale(.97); }
+        .hub-empty { color: var(--faint); font-size: .85em; font-style: italic; }
+
+        .radio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 10px;
+        }
+        .media-item {
+            display: flex; align-items: stretch; gap: 0;
+            min-width: 0; background: var(--surface-2);
+            border: 1px solid var(--line); border-radius: var(--radius);
+            overflow: hidden; transition: border-color .15s, box-shadow .15s;
+        }
+        .media-item:has(.radio-btn.playing) {
+            border-color: rgba(139,92,246,.55);
+            box-shadow: 0 0 0 1px rgba(139,92,246,.2), 0 8px 24px -10px rgba(139,92,246,.35);
+        }
+        .radio-btn {
+            flex: 1; display: flex; align-items: center; gap: 12px;
+            padding: 12px 14px; background: transparent; border: none;
+            color: var(--text); font-size: 1em; font-weight: 600; text-align: left;
+            cursor: pointer; font-family: inherit; min-height: 64px; min-width: 0;
+        }
+        .radio-btn:active { transform: scale(.99); }
+        .radio-btn.radio-disabled { opacity: .55; cursor: not-allowed; filter: saturate(.7); }
+        .radio-btn .icon {
+            display: flex; align-items: center; justify-content: center;
+            width: 48px; height: 48px; border-radius: 14px; font-size: 1.25em; flex-shrink: 0;
+            background: linear-gradient(145deg, rgba(139,92,246,.28), rgba(236,72,153,.16));
+            border: 1px solid rgba(139,92,246,.25);
+        }
+        .radio-btn .thumb {
+            width: 56px; height: 40px; border-radius: 8px; object-fit: cover; flex-shrink: 0;
+            border: 1px solid rgba(255,255,255,.1);
+        }
+        .radio-btn .label { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+        .radio-btn .name {
+            font-size: .95em; font-weight: 650; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .radio-btn small { font-size: .7em; color: var(--muted); font-weight: 500; margin-top: 2px; }
+        .radio-btn .freq {
+            font-size: .78em; font-weight: 700; color: #c4b5fd;
+            background: var(--accent-soft); border: 1px solid rgba(139,92,246,.25);
+            padding: 5px 9px; border-radius: 10px; flex-shrink: 0;
+        }
+        .radio-btn .status { font-size: .68em; color: var(--good); margin-top: 3px; min-height: 1em; }
+        .fav-btn, .delete-btn {
+            width: 48px; min-height: 64px; border: none; border-left: 1px solid var(--line);
+            background: transparent; color: var(--faint); font-size: 1.25em; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        }
+        .fav-btn:active, .delete-btn:active { transform: scale(.92); }
+        .fav-btn.active { color: #fbbf24; background: rgba(251,191,36,.1); }
+        .delete-btn { color: #fca5a5; background: rgba(127,29,29,.15); }
+
+        .custom-url-wrap { display: flex; gap: 8px; margin-top: 4px; margin-bottom: 12px; flex-wrap: wrap; }
+        .custom-url-input {
+            flex: 1; min-width: 120px; padding: 12px 14px; background: rgba(15,23,42,.7);
+            border: 1px solid var(--line); border-radius: var(--radius-sm); color: var(--text);
+            font-size: .9em; outline: none; font-family: inherit;
+        }
+        .custom-url-input::placeholder { color: var(--faint); }
+        .custom-url-btn {
+            padding: 12px 18px; background: linear-gradient(135deg, #8b5cf6, #ec4899);
+            border: none; border-radius: var(--radius-sm); color: #fff; font-weight: 700;
+            font-size: .9em; cursor: pointer; white-space: nowrap; font-family: inherit;
+        }
+        .custom-url-btn:active { transform: scale(.96); }
+
+        .cast-action {
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            width: 100%; margin: 0 0 12px; padding: 12px 14px;
+            border: 1px solid var(--line); border-radius: var(--radius-sm);
+            background: var(--surface-2); color: var(--text); font: 700 .88em inherit; cursor: pointer;
+        }
+        .cast-action.connected { border-color: rgba(34,197,94,.45); background: rgba(20,83,45,.24); color: #bbf7d0; }
+        .cast-note { margin: -4px 0 12px; color: var(--faint); font-size: .72em; line-height: 1.35; text-align: center; }
+
+        .yt-presets {
+            display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 10px; margin-bottom: 14px;
+        }
+        .yt-presets .timer-btn {
+            min-height: 72px; padding: 12px 13px; display: flex; align-items: center;
+            justify-content: flex-start; text-align: left; line-height: 1.25;
+        }
+        .yt-activate-wrap {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            gap: 12px; padding: 28px 16px; margin-bottom: 12px;
+            border-radius: 14px; background: rgba(15,23,42,.55);
+            border: 1px dashed rgba(148,163,184,.25); text-align: center;
+        }
+        .yt-activate-wrap[hidden] { display: none !important; }
+        .yt-activate-wrap p { margin: 0; color: var(--muted); font-size: .88em; max-width: 420px; line-height: 1.45; }
+        .yt-activate-btn {
+            padding: 12px 22px; background: linear-gradient(135deg, #8b5cf6, #ec4899);
+            border: none; border-radius: 12px; color: #fff; font-weight: 700;
+            font-size: .95em; cursor: pointer; font-family: inherit;
+        }
+        .yt-add-panel {
+            margin-bottom: 12px; border: 1px solid var(--line); border-radius: 12px;
+            background: rgba(15,23,42,.35); padding: 0 12px 4px;
+        }
+        .yt-add-panel summary {
+            cursor: pointer; padding: 12px 4px; color: #cbd5e1; font-weight: 700; font-size: .88em;
+        }
+        .video-container {
+            position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;
+            border-radius: 14px; background: #000; margin-bottom: 12px;
+        }
+        .video-container iframe, .video-container #yt-player { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+        .yt-status {
+            margin: -2px 0 14px; padding: 9px 12px; border-radius: 10px;
+            background: rgba(30,41,59,.55); color: var(--muted); font-size: .82em;
+            text-align: center; min-height: 36px;
+        }
+        .yt-status.ok { color: #86efac; }
+        .yt-status.error { color: #fca5a5; background: rgba(127,29,29,.22); }
+        .yt-status.loading { color: #fcd34d; }
+        .yt-status.ready { color: #c4b5fd; }
+        .yt-overlay {
+            position: absolute; inset: 0; z-index: 3; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 10px; padding: 24px;
+            text-align: center; background: rgba(5,8,15,.9); color: #e2e8f0;
+        }
+        .yt-overlay[hidden] { display: none; }
+        .yt-overlay-icon {
+            width: 54px; height: 54px; display: flex; align-items: center; justify-content: center;
+            border-radius: 50%; background: rgba(239,68,68,.18); color: #fca5a5; font-size: 1.4em;
+        }
+        .yt-diagnostics {
+            margin-top: 10px; border: 1px solid var(--line); border-radius: 12px;
+            background: rgba(15,23,42,.35); color: var(--muted); font-size: .78em;
+        }
+        .yt-diagnostics summary { cursor: pointer; padding: 10px 12px; color: #cbd5e1; font-weight: 600; }
+        .diag-grid { display: grid; grid-template-columns: 120px 1fr; gap: 7px 10px; padding: 0 12px 12px; }
+        .diag-grid strong { color: #e2e8f0; overflow-wrap: anywhere; font-weight: 600; }
+
+        .timer-wrap { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+        .timer-btn {
+            flex: 1 1 30%; min-width: 100px; padding: 12px 8px;
+            background: var(--surface-2); border: 1px solid var(--line); border-radius: var(--radius-sm);
+            color: #e2e8f0; font-size: .85em; font-weight: 600; cursor: pointer;
+            text-align: center; font-family: inherit;
+        }
+        .timer-btn:active { transform: scale(.96); }
+        .timer-btn.active {
+            background: linear-gradient(135deg, rgba(139,92,246,.3), rgba(236,72,153,.2));
+            border-color: rgba(139,92,246,.5); color: #fff;
+        }
+        .timer-status { margin-top: 10px; font-size: .8em; color: var(--muted); text-align: center; min-height: 1em; }
+        .timer-status.active { color: #fbbf24; font-weight: 600; }
+
+        .backup-wrap { display: flex; flex-wrap: wrap; gap: 8px; }
+        .backup-wrap .timer-btn { flex: 1 1 40%; min-width: 120px; }
+        .backup-note { margin-top: 10px; font-size: .75em; color: var(--faint); text-align: center; line-height: 1.4; }
+
+        .empty-state { text-align: center; color: var(--faint); font-size: .85em; padding: 16px 0; font-style: italic; }
+
+        .mini-player {
+            position: fixed; bottom: calc(10px + var(--safe-bottom)); left: 12px; right: 12px;
+            max-width: 1100px; margin: 0 auto;
+            background: rgba(15,23,42,.96);
+            backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255,255,255,.12); border-radius: 20px;
+            padding: 12px 14px; z-index: 20;
+            box-shadow: 0 16px 40px -8px rgba(0,0,0,.65);
+            display: none;
+        }
+        .mini-player.visible { display: block; }
+        .mini-info { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .playing-dot {
+            width: 8px; height: 8px; background: var(--good); border-radius: 50%;
+            box-shadow: 0 0 8px var(--good); animation: pulse 1.5s infinite; flex-shrink: 0;
+        }
+        .playing-dot.paused { background: var(--faint); box-shadow: none; animation: none; }
+        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .5; } }
+        .mini-title { flex: 1; font-size: .88em; color: var(--text); font-weight: 650; min-width: 0;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .mini-controls { display: flex; align-items: center; gap: 10px; }
+        .mini-controls button {
+            background: var(--surface-3); border: 1px solid var(--line); color: var(--text);
+            width: 44px; height: 44px; border-radius: 50%; font-size: 1em; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .mini-controls button:active { transform: scale(.92); }
+        .mini-controls button.stop-btn { background: rgba(127,29,29,.55); }
+        .volume-wrap { flex: 1; display: flex; align-items: center; gap: 6px; }
+        input[type="range"].volume-slider {
+            flex: 1; -webkit-appearance: none; height: 4px;
+            background: rgba(100,116,139,.4); border-radius: 2px; outline: none;
+        }
+        input[type="range"].volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none; width: 18px; height: 18px;
+            background: linear-gradient(135deg, #8b5cf6, #ec4899);
+            border-radius: 50%; border: 2px solid #fff;
+        }
+
+        .compact-mode .section { padding-top: 14px; padding-bottom: 14px; }
+        .compact-mode .radio-btn { min-height: 54px; padding-top: 9px; padding-bottom: 9px; }
+        .compact-mode .radio-btn .icon { width: 40px; height: 40px; }
+        .compact-mode .yt-presets .timer-btn { min-height: 58px; }
+
+        html.light-mode {
+            --bg: #f4f7fb !important;
+            --surface: #ffffff !important;
+            --surface-2: #f1f5f9 !important;
+            --surface-3: #e2e8f0 !important;
+            --text: #0f172a !important;
+            --muted: #334155 !important;
+            --faint: #475569 !important;
+            --line: rgba(15,23,42,.12) !important;
+            --accent: #6d28d9 !important;
+            --accent-2: #db2777 !important;
+            --accent-soft: rgba(109,40,217,.12) !important;
+            --good: #15803d !important;
+        }
+        html.light-mode body {
+            background-color: #f4f7fb !important;
+            background-image: 
+                radial-gradient(ellipse at top left, rgba(99,102,241,.08), transparent 52%),
+                radial-gradient(ellipse at bottom right, rgba(236,72,153,.06), transparent 52%) !important;
+            color: #0f172a !important;
+        }
+        html.light-mode header {
+            background: rgba(255,255,255,.94) !important;
+            border-bottom-color: rgba(15,23,42,.1) !important;
+        }
+        html.light-mode .clock-display,
+        html.light-mode .clock-display small,
+        html.light-mode .brand-copy h1,
+        html.light-mode .version-tag { color: #0f172a !important; -webkit-text-fill-color: #0f172a !important; }
+
+        /* Correções rigorosas de fonte e contraste para o Tema Claro */
+        html.light-mode .appearance-panel {
+            background: rgba(255, 255, 255, 0.98) !important;
+            border-color: rgba(15, 23, 42, 0.15) !important;
+            box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.15);
+        }
+        html.light-mode .appearance-title {
+            color: #334155 !important;
+        }
+        html.light-mode .appearance-row button {
+            background: #f8fafc !important;
+            color: #0f172a !important;
+            border-color: rgba(15, 23, 42, 0.15) !important;
+        }
+        html.light-mode .appearance-row button.active {
+            background: rgba(109, 40, 217, 0.12) !important;
+            border-color: rgba(109, 40, 217, 0.5) !important;
+            color: #6d28d9 !important;
+        }
+        html.light-mode .mini-player {
+            background: rgba(255, 255, 255, 0.96) !important;
+            border-color: rgba(15, 23, 42, 0.12) !important;
+            box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.15) !important;
+        }
+        html.light-mode .mini-title {
+            color: #0f172a !important;
+        }
+        html.light-mode .mini-controls button {
+            background: #f1f5f9 !important;
+            border-color: rgba(15, 23, 42, 0.15) !important;
+            color: #0f172a !important;
+        }
+        html.light-mode .mini-controls button.stop-btn {
+            background: rgba(239, 68, 68, 0.15) !important;
+            color: #dc2626 !important;
+        }
+        html.light-mode .install-banner {
+            background: rgba(109, 40, 217, 0.08) !important;
+            border-color: rgba(109, 40, 217, 0.25) !important;
+        }
+        html.light-mode .install-banner p {
+            color: #1e293b !important;
+        }
+        html.light-mode .install-banner .ghost {
+            color: #334155 !important;
+            border-color: rgba(15, 23, 42, 0.2) !important;
+        }
+        html.light-mode .timer-btn {
+            background: #f8fafc !important;
+            color: #0f172a !important;
+            border-color: rgba(15, 23, 42, 0.12) !important;
+        }
+        html.light-mode .timer-btn.active {
+            background: linear-gradient(135deg, rgba(109,40,217,.15), rgba(219,39,119,.12)) !important;
+            color: #6d28d9 !important;
+            border-color: rgba(109, 40, 217, 0.4) !important;
+        }
+        html.light-mode .custom-url-input,
+        html.light-mode .search-input {
+            background: #ffffff !important;
+            color: #0f172a !important;
+            border-color: rgba(15, 23, 42, 0.15) !important;
+        }
+        html.light-mode .custom-url-input::placeholder,
+        html.light-mode .search-input::placeholder {
+            color: #64748b !important;
+        }
+
+        html.theme-oled { --bg: #000000; --surface: #0a0a0a; --surface-2: #141414; --surface-3: #1f1f1f; --text: #f5f5f5; --muted: #a3a3a3; --faint: #737373; --line: rgba(255,255,255,.10); --accent: #f5f5f5; --accent-2: #a3a3a3; --accent-soft: rgba(255,255,255,.10); --good: #4ade80; }
+        html.theme-rose { --bg: #14040c; --surface: #1c0a14; --surface-2: #2a1220; --surface-3: #3b1a2c; --text: #ffe4ef; --muted: #f9a8d4; --faint: #9d174d; --line: rgba(251,113,133,.18); --accent: #fb7185; --accent-2: #e879f9; --accent-soft: rgba(251,113,133,.20); --good: #4ade80; }
+        html.theme-emerald { --bg: #04140c; --surface: #0a1f14; --surface-2: #123024; --surface-3: #1a3f30; --text: #ecfdf5; --muted: #6ee7b7; --faint: #047857; --line: rgba(52,211,153,.16); --accent: #34d399; --accent-2: #2dd4bf; --accent-soft: rgba(52,211,153,.18); --good: #4ade80; }
+        html.theme-ocean { --bg: #040b16; --surface: #0a1628; --surface-2: #12233d; --surface-3: #1a3354; --text: #e0f2fe; --muted: #7dd3fc; --faint: #0369a1; --line: rgba(56,189,248,.16); --accent: #38bdf8; --accent-2: #818cf8; --accent-soft: rgba(56,189,248,.18); --good: #4ade80; }
+        html.theme-amber { --bg: #140e04; --surface: #1f160a; --surface-2: #2e2210; --surface-3: #3d2e14; --text: #fff7ed; --muted: #fdba74; --faint: #c2410c; --line: rgba(251,146,60,.16); --accent: #fb923c; --accent-2: #fbbf24; --accent-soft: rgba(251,146,60,.18); --good: #4ade80; }
+        html.theme-slate { --bg: #0c1017; --surface: #141a24; --surface-2: #1c2433; --surface-3: #273246; --text: #e8eef7; --muted: #94a3b8; --faint: #64748b; --line: rgba(148,163,184,.16); --accent: #94a3b8; --accent-2: #cbd5e1; --accent-soft: rgba(148,163,184,.14); --good: #4ade80; }
+
+        .appearance-row.theme-row button { flex: 1 1 30%; min-width: 88px; font-size: .72rem; }
+        .swatch {
+            display: inline-block; width: 10px; height: 10px; border-radius: 50%;
+            margin-right: 5px; vertical-align: middle; border: 1px solid rgba(255,255,255,.25);
+        }
+
+        .lib-toolbar { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:10px; align-items:center; }
+        .lib-toolbar .timer-btn { flex:1 1 28%; min-width:100px; }
+        .lib-status { font-size:.78em; color:var(--muted); text-align:center; min-height:1.2em; margin:6px 0 10px; }
+        .lib-status.ok { color:#86efac; }
+        .lib-status.err { color:#fca5a5; }
+
+        .help-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:10px; }
+        .help-card {
+            background: var(--surface-2); border: 1px solid var(--line); border-radius: 14px;
+            padding: 12px 14px; font-size: .82em; color: var(--muted); line-height: 1.45;
+        }
+        .help-card strong { display:block; color: var(--text); margin-bottom: 6px; font-size: .92em; }
+        .mini-mute {
+            background: transparent !important; border: none !important; width: 36px !important; height: 36px !important;
+            font-size: 1rem !important; color: var(--text);
+        }
+        .viz-wrap { height: 28px; display:flex; align-items:flex-end; gap: 3px; margin-top: 8px; opacity: .9; }
+        .viz-wrap span {
+            flex: 1; min-width: 3px; border-radius: 2px 2px 0 0;
+            background: linear-gradient(180deg, #a78bfa, #ec4899); height: 20%;
+            transition: height .08s linear;
+        }
+        html.lite-mode .viz-wrap { display: none; }
+        .changelog { font-size: .8em; color: var(--muted); line-height: 1.5; }
+        .changelog li { margin: 4px 0; }
+        .stat-row { display:flex; flex-wrap:wrap; gap:8px; }
+        .stat-pill {
+            flex:1 1 120px; background: var(--surface-2); border:1px solid var(--line);
+            border-radius: 12px; padding: 10px 12px; text-align:center;
+        }
+        .stat-pill b { display:block; font-size: 1.1rem; color: var(--text); }
+        .stat-pill span { font-size: .72em; color: var(--faint); }
+
+        .net-banner {
+            width: min(1100px, calc(100% - 24px)); margin: 8px auto 0;
+            display: none; padding: 8px 12px; border-radius: 12px; text-align: center;
+            font-size: .8em; font-weight: 600;
+            border: 1px solid rgba(239,68,68,.35); background: rgba(127,29,29,.25); color: #fecaca;
+        }
+        .net-banner.show { display: block; }
+        .net-banner.online {
+            border-color: rgba(34,197,94,.35); background: rgba(20,83,45,.22); color: #bbf7d0;
+        }
+
+        .install-banner {
+            width: min(1100px, calc(100% - 24px)); margin: 10px auto 0;
+            display: none; align-items: center; gap: 10px; flex-wrap: wrap;
+            padding: 10px 12px; border-radius: 14px;
+            border: 1px solid rgba(139,92,246,.35); background: rgba(139,92,246,.12);
+        }
+        .install-banner.show { display: flex; }
+        .install-banner p { margin: 0; flex: 1; min-width: 180px; font-size: .82em; color: #e2e8f0; line-height: 1.35; }
+        .install-banner button {
+            border: 1px solid rgba(139,92,246,.45); background: linear-gradient(135deg,#8b5cf6,#ec4899);
+            color: #fff; border-radius: 10px; padding: 8px 12px; font: 700 .8rem inherit; cursor: pointer;
+        }
+        .install-banner .ghost { background: transparent; color: #cbd5e1; border-color: var(--line); }
+        .history-list { display: flex; flex-wrap: wrap; gap: 8px; }
+        .sw-note { font-size: .7em; color: var(--faint); text-align: center; margin-top: 8px; }
+        .header-action.share-btn { font-size: .85rem; }
+        .kbd-hint { font-size:.7em; color:var(--faint); text-align:center; margin-top:8px; opacity:.85; }
+        @media (max-width:768px) { .kbd-hint { display:none; } }
+
+        .lib-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+        .lib-actions .timer-btn { flex: 1 1 30%; min-width: 110px; }
+        .lib-form { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+        .lib-form-row { display: flex; flex-wrap: wrap; gap: 8px; }
+        .track-item.playing-track {
+            border-color: rgba(139,92,246,.55);
+            box-shadow: 0 0 0 1px rgba(139,92,246,.2);
+        }
+        .track-item .radio-btn .icon { font-size: 1.1em; }
+        .mini-controls button.lib-nav {
+            width: 40px; height: 40px; font-size: .95em;
+            background: rgba(51,65,85,.7);
+        }
+        .mini-controls button.lib-nav[disabled] { opacity: .35; cursor: default; }
+        .lib-mode-note { font-size: .75em; color: var(--faint); text-align: center; margin-top: 8px; line-height: 1.4; }
+
+        footer {
+            text-align: center; padding: 20px; margin-bottom: 12px;
+            font-size: .78em; color: #475569; letter-spacing: .05em; text-transform: uppercase;
+        }
+    </style>
+    <meta content="dark" name="color-scheme"/>
+<script>
+(function(){
+if(!Array.prototype.forEach){Array.prototype.forEach=function(fn,ctx){for(var i=0;i<this.length;i++){if(i in this)fn.call(ctx,this[i],i,this);}};}
+if(!Array.prototype.indexOf){Array.prototype.indexOf=function(x){for(var i=0;i<this.length;i++){if(this[i]===x)return i;}return -1;};}
+if(!String.prototype.trim){String.prototype.trim=function(){return this.replace(/^\s+|\s+$/g,'');};}
+})();
+</script>
+</head>
+<body>
+    <header>
+        <div class="header-inner">
+            <div class="brand-row">
+                <div class="brand-mark" role="button" tabindex="0" title="Voltar ao início" onclick="goHome()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goHome();}" style="cursor:pointer">🎧</div>
+                <div class="brand-copy" role="button" tabindex="0" title="Voltar ao início" onclick="goHome()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goHome();}" style="cursor:pointer">
+                    <h1>Portal de Mídia</h1>
+                    <span class="version-tag">v5.6 • Rádios, YouTube e Músicas</span>
+                </div>
+                <div class="header-actions">
+                    <button class="header-action" id="theme-menu-btn" type="button" onclick="toggleAppearancePanel()" aria-expanded="false" aria-controls="appearance-panel" title="Aparência">◐</button>
+                    <button class="header-action" id="compact-btn" type="button" onclick="toggleCompactMode()" aria-pressed="false" title="Modo compacto">▦</button>
+                    <button class="header-action share-btn" type="button" onclick="compartilharAgora()" title="Compartilhar">↗</button>
+                </div>
+            </div>
+            <div class="clock-display" id="clock">
+                <span id="clock-time">--:--</span>
+                <small id="clock-date">Carregando…</small>
+            </div>
+            <div class="appearance-panel" id="appearance-panel" hidden>
+                <div class="appearance-title">Modo claro / escuro</div>
+                <div class="appearance-row" role="group" aria-label="Modo">
+                    <button type="button" data-theme="auto" onclick="setThemeMode('auto')">Automático</button>
+                    <button type="button" data-theme="dark" onclick="setThemeMode('dark')">Escuro</button>
+                    <button type="button" data-theme="light" onclick="setThemeMode('light')">Claro</button>
+                </div>
+                <div class="appearance-title" style="margin-top:10px">Cor do tema</div>
+                <div class="appearance-row theme-row" role="group" aria-label="Cor do tema">
+                    <button type="button" data-color-theme="violet" onclick="setColorTheme('violet')"><span class="swatch" style="background:#8b5cf6"></span>Violeta</button>
+                    <button type="button" data-color-theme="oled" onclick="setColorTheme('oled')"><span class="swatch" style="background:#111"></span>OLED</button>
+                    <button type="button" data-color-theme="rose" onclick="setColorTheme('rose')"><span class="swatch" style="background:#fb7185"></span>Rosa</button>
+                    <button type="button" data-color-theme="emerald" onclick="setColorTheme('emerald')"><span class="swatch" style="background:#34d399"></span>Verde</button>
+                    <button type="button" data-color-theme="ocean" onclick="setColorTheme('ocean')"><span class="swatch" style="background:#38bdf8"></span>Azul</button>
+                    <button type="button" data-color-theme="amber" onclick="setColorTheme('amber')"><span class="swatch" style="background:#fb923c"></span>Âmbar</button>
+                    <button type="button" data-color-theme="slate" onclick="setColorTheme('slate')"><span class="swatch" style="background:#94a3b8"></span>Cinza</button>
+                </div>
+                <div class="appearance-title" style="margin-top:10px">Nível visual</div>
+                <div class="appearance-row" role="group" aria-label="Nível visual">
+                    <button type="button" data-visual="simple" onclick="setVisualLevel('simple')">Simples</button>
+                    <button type="button" data-visual="full" onclick="setVisualLevel('full')">Completo</button>
+                    <button type="button" data-visual="premium" onclick="setVisualLevel('premium')">Premium</button>
+                </div>
+                <div class="appearance-title" style="margin-top:10px">Desempenho</div>
+                <div class="appearance-row" role="group" aria-label="Desempenho">
+                    <button type="button" data-performance="auto" onclick="setPerformanceMode('auto')">⚙ Auto</button>
+                    <button type="button" data-performance="full" onclick="setPerformanceMode('full')">✨ Completo</button>
+                    <button type="button" data-performance="lite" onclick="setPerformanceMode('lite')">⚡ Econômico</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="net-banner" id="net-banner" role="status" aria-live="polite"></div>
+    <div class="install-banner" id="install-banner" hidden>
+        <p>Instale o Portal na tela inicial para abrir como app.</p>
+        <button type="button" id="install-btn" onclick="promptPwaInstall()">Instalar</button>
+        <button type="button" class="ghost" onclick="dismissInstallBanner()">Agora não</button>
+    </div>
+
+    <div class="search-wrap">
+        <input aria-label="Buscar rádio" autocomplete="off" class="search-input" id="search-input" placeholder="🔍 Buscar rádio, estilo, cidade..." spellcheck="false" type="search"/>
+        <button aria-label="Limpar busca" class="search-clear" id="search-clear" onclick="limparBusca()" type="button">✕</button>
+        <div aria-live="polite" class="search-result-count" id="search-result-count"></div>
+    </div>
+
+    <nav class="quick-nav" aria-label="Navegação rápida">
+        <a href="#section-hub">🏠 Início</a>
+        <a href="#section-portoalegre">📻 Rádios</a>
+        <a href="#section-eletronica">🚀 Eletrônica</a>
+        <a href="#section-foco">🧘 Relaxar</a>
+        <a href="#section-dance">🪩 Dance</a>
+        <a href="#section-library">🎵 Minhas</a>
+        <a href="#section-youtube">📺 Vídeos</a>
+        <a href="#section-timer">⏰ Timer</a>
+        <a href="#section-help">❓ Ajuda</a>
+        <a href="#section-about">📋 Sobre</a>
+    </nav>
+
+    <div class="section search-results-section" data-section="search-results" hidden="" id="search-results-section">
+        <h2 class="section-title"><div class="left-group"><span class="icon">🔎</span> Resultados da busca</div></h2>
+        <div class="radio-grid" id="search-results-grid"></div>
+        <div class="search-no-results" hidden="" id="search-no-results">Nenhuma rádio encontrada.</div>
+    </div>
+
+    <div class="section" data-section="hub" id="section-hub">
+        <h2 class="section-title"><div class="left-group"><span class="icon">✨</span> Para você</div></h2>
+        <div class="hub-grid">
+            <div>
+                <div class="hub-label">Continuar ouvindo</div>
+                <div class="hub-chips" id="hub-continue"></div>
+            </div>
+            <div>
+                <div class="hub-label">Favoritos rápidos</div>
+                <div class="hub-chips" id="hub-favs"></div>
+            </div>
+            <div>
+                <div class="hub-label">Histórico recente</div>
+                <div class="history-list hub-chips" id="hub-history"></div>
+            </div>
+        </div>
+        <p class="sw-note" id="sw-note"></p>
+    </div>
+
+    <!-- SEÇÃO FAVORITOS -->
+    <div class="section" data-section="favoritos" id="section-favoritos" style="display:none;">
+        <h2 class="section-title"><div class="left-group"><span class="icon">⭐</span> Favoritos</div></h2>
+        <div class="radio-grid" id="favoritos-grid"><div class="empty-state">Toque na ☆ de uma rádio para adicionar aqui</div></div>
+    </div>
+
+    <!-- SEÇÃO: YOUTUBE -->
+    <div class="section" data-section="youtube" id="section-youtube">
+        <h2 class="section-title">
+            <div class="left-group"><span class="icon">📺</span> YouTube Dinâmico</div>
+        </h2>
+        <button aria-label="Enviar mídia para Chromecast" class="cast-action" id="cast-btn" onclick="castCurrentMedia()" type="button">📺 Enviar para Chromecast</button>
+        <div class="cast-note" id="cast-note">Rádio: use este botão. YouTube: o ícone de Cast aparece nos controles do próprio player (Chrome + Chromecast na mesma rede). No iPhone o Cast do YouTube costuma ficar no app YouTube.</div>
+        <div aria-label="Atalhos do YouTube" class="yt-presets">
+            <button class="timer-btn" onclick="loadYouTubePlaylist('PLXL_qJWqUmyI','cbVjs8U2rdw', this, true)" title="Playlist Miri Soul" type="button">💜 Miri Soul</button>
+            <button class="timer-btn" onclick="loadYouTubeId('PqVzpAz4U1c', this, true)" title="Break Troy" type="button">🎧 Break Troy</button>
+            <button class="timer-btn" onclick="loadYouTubeId('odouCACH9-w', this, true)" title="Mais de 1 hora de Eurodance / nostalgia" type="button">🪩 Eurodance — 1 hora</button>
+            <button class="timer-btn" onclick="loadYouTubeId('S3QDHD635KE', this, true)" title="Retro / synthwave / nostalgia" type="button">🎵 Anos 80 — 1h+</button>
+            <button class="timer-btn" onclick="loadYouTubeId('XExeWpVldDo', this, true)" title="Dance e remixes nonstop" type="button">🔥 80/90/2000 — 1 hora</button>
+            <button class="timer-btn" onclick="loadYouTubeId('WF1ypdkbmv8', this, true)" title="Best 80s Love Songs" type="button">✨ Best 80s Love Songs</button>
+            <button class="timer-btn" onclick="loadYouTubeId('FN7hdDqJftQ', this, true)" title="Meditação, yoga, Reiki e sono" type="button">🧘 Reiki &amp; Relaxamento — 2 horas</button>
+            <button class="timer-btn" onclick="loadYouTubeId('Gx-QTJ9cAko', this, true)" title="Synthwave / foco / relaxamento" type="button">🌌 Ambiente 80s — 1 hora</button>
+        </div>
+        <details class="yt-add-panel">
+            <summary>＋ Adicionar vídeo do YouTube</summary>
+            <div class="custom-url-wrap" style="flex-direction: column; gap: 8px; margin-bottom: 15px; margin-top: 10px;">
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <input aria-label="Nome do conteúdo YouTube" class="custom-url-input" id="yt-nome" placeholder="Nome do conteúdo" style="flex: 0.6; min-width: 150px;" type="text"/>
+                    <select aria-label="Categoria do conteúdo YouTube" class="custom-url-input" id="yt-categoria" style="flex: 0.45; min-width: 150px;">
+                        <option value="dance80-2000">🪩 Dance 80/90/2000</option>
+                        <option value="ambiente">🌌 Ambiente</option>
+                        <option value="meditacao">🧘 Meditação</option>
+                        <option value="reiki">✨ Reiki / Relaxamento</option>
+                        <option value="lofi">☕ Lofi / Foco</option>
+                        <option value="outros">⭐ Outros</option>
+                    </select>
+                    <input aria-label="Link ou ID do YouTube" autocomplete="off" class="custom-url-input" id="yt-input" placeholder="Cole o link do YouTube ou ID de 11 caracteres..." type="text"/>
+                </div>
+                <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                    <button class="custom-url-btn" onclick="adicionarYouTubeSalvo()" style="flex:1; min-width:180px;" type="button">💾 Salvar &amp; Testar</button>
+                </div>
+            </div>
+        </details>
+        <div id="yt-salvos-title" style="display:none; margin:4px 0 8px; color:#cbd5e1; font-size:.82em; font-weight:700;">⭐ Meus YouTube salvos</div>
+        <div class="radio-grid" id="yt-salvos-grid" style="margin-bottom: 15px; display: none;"></div>
+        <div class="yt-activate-wrap" id="yt-activate-wrap">
+            <p>O player do YouTube só carrega quando você quiser — mais leve em aparelhos antigos e redes lentas.</p>
+            <button class="yt-activate-btn" type="button" onclick="ativarYouTubePlayer()">▶ Ativar player do YouTube</button>
+        </div>
+        <div class="video-container" id="yt-video-container" hidden="">
+            <div aria-label="Player do YouTube" id="yt-player"></div>
+            <div class="yt-overlay" hidden="" id="yt-overlay">
+                <div class="yt-overlay-icon">▶</div>
+                <strong id="yt-overlay-title">Conteúdo indisponível no embed</strong>
+                <span id="yt-overlay-text">O YouTube não permite reproduzir este conteúdo dentro do Portal.</span>
+                <small id="yt-overlay-tip" style="max-width:520px;color:#64748b;line-height:1.4;">O item continua salvo; se este conteúdo for bloqueado, escolha outra opção do Portal.</small>
+            </div>
+        </div>
+        <div aria-live="polite" class="yt-status ready" id="yt-status">Player em espera — ative quando quiser usar o YouTube.</div>
+        <details class="yt-diagnostics" hidden="">
+            <summary>🔎 Diagnóstico técnico</summary>
+            <div class="diag-grid">
+                <span>ID atual</span><strong id="yt-diag-id">—</strong>
+                <span>API</span><strong id="yt-diag-api">aguardando</strong>
+                <span>Estado</span><strong id="yt-diag-state">—</strong>
+                <span>Último erro</span><strong id="yt-diag-error">—</strong>
+                <span>Origem</span><strong id="yt-diag-origin">—</strong>
+            </div>
+        </details>
+    </div>
+
+    <!-- SEÇÃO: CANAIS PERSONALIZADOS (ÁUDIO) -->
+    <div class="section" data-section="custom" id="section-custom">
+        <h2 class="section-title"><div class="left-group"><span class="icon">🌐</span> Adicionar Stream Manual (Rádio/Áudio)</div></h2>
+        <div class="custom-url-wrap" style="flex-direction: column; gap: 8px;">
+            <div style="display: flex; gap: 8px;">
+                <input class="custom-url-input" id="custom-nome" placeholder="Nome da Rádio" style="flex: 0.6;" type="text"/>
+                <input class="custom-url-input" id="custom-url" placeholder="https://... (Link MP3/M3U8)" type="url"/>
+            </div>
+            <button class="custom-url-btn" onclick="adicionarRadioSalva()" style="width: 100%;">💾 Salvar Rádio</button>
+        </div>
+        <div class="radio-grid" id="custom-salvos-grid" style="margin-top: 15px; display: none;"></div>
+    </div>
+
+    <!-- SEÇÃO: RÁDIOS LOCAIS & NOTÍCIAS -->
+    <div class="section" data-section="portoalegre" id="section-portoalegre">
+        <h2 class="section-title"><div class="left-group"><span class="icon">📻</span> Rádios Locais &amp; Notícias</div></h2>
+        <div class="radio-grid">
+            <div class="media-item" data-nome="atlântida fm 94.3 pop rock porto alegre">
+                <button class="radio-btn" onclick="playChannel('atlantida_poa', this)"><span class="icon">⚡</span><span class="label"><span class="name">Atlântida FM</span><small>Pop rock • Porto Alegre</small><span class="status" id="status-atlantida_poa"></span></span><span class="freq">94.3</span></button>
+                <button aria-label="Favoritar" class="fav-btn" onclick="toggleFav(this, 'atlantida_poa')">☆</button>
+            </div>
+            <div class="media-item" data-nome="102.3 fm porto alegre melodia pop rock">
+                <button class="radio-btn" onclick="playChannel('1023_poa', this)"><span class="icon">🎵</span><span class="label"><span class="name">Rádio 102.3 FM</span><small>Pop e Contemporânea • Porto Alegre</small><span class="status" id="status-1023_poa"></span></span><span class="freq">102.3</span></button>
+                <button aria-label="Favoritar" class="fav-btn" onclick="toggleFav(this, '1023_poa')">☆</button>
+            </div>
+            <div class="media-item" data-nome="antena 1 89.3 música contemporânea nacional">
+                <button class="radio-btn" onclick="playChannel('antena1_poa', this)"><span class="icon">🎶</span><span class="label"><span class="name">Antena 1</span><small>Música contemporânea</small><span class="status" id="status-antena1_poa"></span></span><span class="freq">89.3</span></button>
+                <button aria-label="Favoritar" class="fav-btn" onclick="toggleFav(this, 'antena1_poa')">☆</button>
+            </div>
+            <div class="media-item" data-nome="continental fm 98.3 clássicos 70 80 90 porto alegre">
+                <button class="radio-btn" onclick="playChannel('continental_poa', this)"><span class="icon">🎷</span><span class="label"><span class="name">Continental FM</span><small>Clássicos 70/80/90</small><span class="status" id="status-continental_poa"></span></span><span class="freq">98.3</span></button>
+                <button aria-label="Favoritar" class="fav-btn" onclick="toggleFav(this, 'continental_poa')">☆</button>
+            </div>
+            <div class="media-item" data-nome="salamanca fm 101.3 quaraí rs">
+                <button class="radio-btn" onclick="playChannel('salamanca_quarai', this)"><span class="icon">📻</span><span class="label"><span class="name">Salamanca FM</span><small>Quaraí/RS</small><span class="status" id="status-salamanca_quarai"></span></span><span class="freq">101.3</span></button>
+                <button aria-label="Favoritar" class="fav-btn" onclick="toggleFav(this, 'salamanca_quarai')">☆</button>
+            </div>
+            <div class="media-item" data-nome="cbn rio notícias 24h">
+                <button class="radio-btn" onclick="playChannel('cbn', this)"><span class="icon">📰</span><span class="label"><span class="name">CBN Rio</span><small>Notícias 24h</small><span class="status" id="status-cbn"></span></span></button>
+                <button aria-label="Favoritar" class="fav-btn" onclick="toggleFav(this, 'cbn')">☆</button>
+            </div>
+            <div class="media-item" data-nome="bandnews fm sp jornalismo">
+                <button class="radio-btn" onclick="playChannel('bandnews', this)"><span class="icon">📡</span><span class="label"><span class="name">BandNews FM SP</span><small>Jornalismo</small><span class="status" id="status-bandnews"></span></span></button>
+                <button aria-label="Favoritar" class="fav-btn" onclick="toggleFav(this, 'bandnews')">☆</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SEÇÃO: MÚSICA ELETRÔNICA E HITS -->
+    <div class="section" data-section="eletronica" id="section-eletronica">
+        <h2 class="section-title"><div class="left-group"><span class="icon">🚀</span> Música Eletrônica &amp; Hits</div></h2>
+        <div class="radio-grid">
+            <div class="media-item" data-nome="total hits breaks progressive club">
+                <button class="radio-btn" onclick="playChannel('total_hits', this)"><span class="icon">🔥</span><span class="label"><span class="name">Total Hits</span><small>Club &amp; Dance Mix</small><span class="status" id="status-total_hits"></span></span></button>
+                <button aria-label="Favoritar" class="fav-btn" onclick="toggleFav(this, 'total_hits')">☆</button>
+            </div>
+            <div class="media-item" data-nome="progressive house beats">
+                <button class="radio-btn" onclick="playChannel('progressive', this)"><span class="icon">🔊</span><span class="label"><span class="name">Progressive House</span><small>Beats &amp; Melodias</small><span class="status" id="status-progressive"></span></span></button>
+                <button aria-label="Favoritar" class="fav-btn" onclick="toggleFav(this, 'progressive')">☆</button>
+            </div>
+            <div class="media-item" data-nome="trance vocal clássico">
+                <button class="radio-btn" onclick="playChannel('trance', this)"><span class="icon">🌀</span><span class="label"><span class="name">Trance</span><small>Vocal e Uplifting</small><span class="status" id="status-trance"></span></span></button>
+                <button aria-label="Favoritar" class="fav-btn" onclick="toggleFav(this, 'trance')">☆</button>
+            </div>
+            <div class="media-item" data-nome="techno underground club">
+                <button class="radio-btn" onclick="playChannel('techno', this)"><span class="icon">⚙️</span><span class="label"><span class="name">Techno</span><small>Underground Club</small><span class="status" id="status-techno"></span></span></button>
+                <button aria-label="Favoritar" class="fav-btn" onclick="toggleFav(this, 'techno')">☆</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SEÇÃO: BEM ESTAR E FOCO -->
+    <div class="section" data-section="foco" id="section-foco">
+        <h2 class="section-title"><div class="left-group"><span class="icon">🧘</span> Meditação, Reiki &amp; Foco</div></h2>
+        <div class="radio-grid">
+            <div class="media-item" data-nome="reiki alta frequencia curativa instrumental">
+                <button class="radio-btn" onclick="playChannel('reiki', this)"><span class="icon">✨</span><span class="label"><span class="name">Reiki &amp; Meditação</span><small>Altas frequências de cura</small><span class="status" id="status-reiki"></span></span></button>
+                <button aria-label="Favoritar" class="fav-btn" onclick="toggleFav(this, 'reiki')">☆</button>
+            </div>
+            <div class="media-item" data-nome="soundscapes ambient drone">
+                <button class="radio-btn" onclick="playChannel('soundscapes', this)"><span class="icon">🌌</span><span class="label"><span class="name">Soundscapes Ambient</span><small>Atmosferas e imersão</small><span class="status" id="status-soundscapes"></span></span></button>
+                <button aria-label="Favoritar" class="fav-btn" onclick="toggleFav(this, 'soundscapes')">☆</button>
+            </div>
+            <div class="media-item" data-nome="clássica foco música erudita">
+                <button class="radio-btn" onclick="playChannel('classical', this)"><span class="icon">🎻</span><span class="label"><span class="name">Clássica / Foco</span><small>Música erudita</small><span class="status" id="status-classical"></span></span></button>
+                <button aria-label="Favoritar" class="fav-btn" onclick="toggleFav(this, 'classical')">☆</button>
+            </div>
+            <div class="media-item" data-nome="lofi beats relaxar focar">
+                <button class="radio-btn" onclick="playChannel('lofi', this)"><span class="icon">☕</span><span class="label"><span class="name">Lofi Beats</span><small>Para relaxar/focar</small><span class="status" id="status-lofi"></span></span></button>
+                <button aria-label="Favoritar" class="fav-btn" onclick="toggleFav(this, 'lofi')">☆</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SEÇÃO: DANCE E INTERNACIONAIS -->
+    <div class="section" data-section="dance" id="section-dance">
+        <h2 class="section-title"><div class="left-group"><span class="icon">🕺</span> Dance 80 / 90 / 2000</div></h2>
+        <div class="radio-grid">
+            <div class="media-item" data-nome="hits anos 80 clássicos década dance">
+                <button class="radio-btn" onclick="playChannel('anos80', this)"><span class="icon">🕺</span><span class="label"><span class="name">Hits Anos 80</span><small>Clássicos da década</small><span class="status" id="status-anos80"></span></span></button>
+                <button aria-label="Favoritar" class="fav-btn" onclick="toggleFav(this, 'anos80')">☆</button>
+            </div>
+            <div class="media-item" data-nome="dance 90s eurodance club">
+                <button class="radio-btn" onclick="playChannel('dance90', this)"><span class="icon">🪩</span><span class="label"><span class="name">Dance 90's</span><small>Eurodance e club</small><span class="status" id="status-dance90"></span></span></button>
+                <button aria-label="Favoritar" class="fav-btn" onclick="toggleFav(this, 'dance90')">☆</button>
+            </div>
+            <div class="media-item" data-nome="dance club hits 2000s">
+                <button class="radio-btn" onclick="playChannel('dance2000', this)"><span class="icon">🎧</span><span class="label"><span class="name">Dance / Club Hits</span><small>2000s e club</small><span class="status" id="status-dance2000"></span></span></button>
+                <button aria-label="Favoritar" class="fav-btn" onclick="toggleFav(this, 'dance2000')">☆</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="section" data-section="intl" id="section-intl">
+        <h2 class="section-title"><div class="left-group"><span class="icon">🌍</span> Estilos &amp; Internacionais</div></h2>
+        <div class="radio-grid">
+            <div class="media-item" data-nome="classic rock clássico">
+                <button class="radio-btn" onclick="playChannel('rock', this)"><span class="icon">🎸</span><span class="label"><span class="name">Classic Rock</span><small>Rock clássico</small><span class="status" id="status-rock"></span></span></button>
+                <button aria-label="Favoritar" class="fav-btn" onclick="toggleFav(this, 'rock')">☆</button>
+            </div>
+            <div class="media-item" data-nome="pop hits internacional">
+                <button class="radio-btn" onclick="playChannel('pop', this)"><span class="icon">🎤</span><span class="label"><span class="name">Pop Hits</span><small>Pop internacional</small><span class="status" id="status-pop"></span></span></button>
+                <button aria-label="Favoritar" class="fav-btn" onclick="toggleFav(this, 'pop')">☆</button>
+            </div>
+            <div class="media-item" data-nome="chill groove brasileiro mpb">
+                <button class="radio-btn" onclick="playChannel('mpb', this)"><span class="icon">🌴</span><span class="label"><span class="name">Chill / Groove</span><small>Estilo brasileiro</small><span class="status" id="status-mpb"></span></span></button>
+                <button aria-label="Favoritar" class="fav-btn" onclick="toggleFav(this, 'mpb')">☆</button>
+            </div>
+            <div class="media-item" data-nome="radio paradise eclética">
+                <button class="radio-btn" onclick="playChannel('paradise', this)"><span class="icon">🌈</span><span class="label"><span class="name">Radio Paradise</span><small>Eclética</small><span class="status" id="status-paradise"></span></span></button>
+                <button aria-label="Favoritar" class="fav-btn" onclick="toggleFav(this, 'paradise')">☆</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="section" data-section="timer" id="section-timer">
+        <h2 class="section-title"><div class="left-group"><span class="icon">⏰</span> Sleep Timer</div></h2>
+        <div class="timer-wrap">
+            <button class="timer-btn" onclick="setSleepTimer(15, this)">15 min</button>
+            <button class="timer-btn" onclick="setSleepTimer(30, this)">30 min</button>
+            <button class="timer-btn" onclick="setSleepTimer(60, this)">1 hora</button>
+            <button class="timer-btn" onclick="setSleepTimer(90, this)">1h30</button>
+            <button class="timer-btn" onclick="setSleepTimer(120, this)">2 horas</button>
+            <button class="timer-btn" onclick="cancelSleepTimer(this)">Cancelar</button>
+        </div>
+        <div class="timer-status" id="timer-status"></div>
+    </div>
+
+    <div class="section" data-section="library" id="section-library">
+        <h2 class="section-title"><div class="left-group"><span class="icon">🎵</span> Minhas músicas</div></h2>
+        <p class="lib-mode-note">Adicione faixas com link <strong>HTTPS</strong> direto (MP3/AAC). Também pode carregar um arquivo <code>playlist.json</code> hospedado junto do site.</p>
+        <div class="lib-actions">
+            <button class="timer-btn" type="button" onclick="playLibraryAll(false)">▶ Tocar tudo</button>
+            <button class="timer-btn" type="button" onclick="playLibraryAll(true)">🔀 Aleatório</button>
+            <button class="timer-btn" type="button" onclick="setLibraryMode('repeat-all')">🔁 Repetir</button>
+            <button class="timer-btn" type="button" onclick="carregarPlaylistJson()" title="Busca /playlist.json no mesmo domínio">📥 playlist.json</button>
+        </div>
+        <div class="lib-status" id="lib-status" aria-live="polite"></div>
+        <p class="kbd-hint">Atalhos: Espaço = play/pause · N = próxima · P = anterior · S = parar</p>
+        <div class="lib-form">
+            <div class="lib-form-row">
+                <input class="custom-url-input" id="lib-title" placeholder="Nome da faixa" type="text"/>
+                <input class="custom-url-input" id="lib-artist" placeholder="Artista (opcional)" type="text"/>
+            </div>
+            <input class="custom-url-input" id="lib-url" placeholder="https://.../faixa.mp3" type="url"/>
+            <button class="custom-url-btn" type="button" onclick="adicionarFaixaBiblioteca()" style="width:100%;">💾 Salvar faixa</button>
+        </div>
+        <div class="radio-grid" id="library-grid">
+            <div class="empty-state" id="library-empty">Nenhuma faixa ainda. Adicione um link HTTPS de MP3/AAC.</div>
+        </div>
+    </div>
+
+    <div class="section" data-section="backup" id="section-backup">
+        <h2 class="section-title"><div class="left-group"><span class="icon">💾</span> Backup &amp; Dados</div></h2>
+        <div class="backup-wrap">
+            <button class="timer-btn" type="button" onclick="exportarDadosPortal()">⬇ Exportar backup</button>
+            <button class="timer-btn" type="button" onclick="document.getElementById('import-file-input').click()">⬆ Importar backup</button>
+            <input id="import-file-input" type="file" accept="application/json,.json" style="display:none" onchange="importarDadosPortal(event)"/>
+        </div>
+        <div class="backup-note">Salva favoritos, rádios manuais, YouTube salvos, volume e preferências de aparência.</div>
+    </div>
+
+    <div class="section" data-section="help" id="section-help">
+        <h2 class="section-title"><div class="left-group"><span class="icon">❓</span> Ajuda (no Portal)</div></h2>
+        <div class="help-grid">
+            <div class="help-card"><strong>Rádios</strong>Toque numa estação. O mini-player controla play/pause e volume. Favoritos com a estrela.</div>
+            <div class="help-card"><strong>YouTube</strong>Tudo roda embutido aqui. Ative o player e use presets ou salve links. Se o embed for bloqueado, escolha outro vídeo — sem sair do Portal.</div>
+            <div class="help-card"><strong>Minhas músicas</strong>URLs HTTPS de MP3/AAC ou <code>playlist.json</code> na raiz do site. Google Drive não serve como stream.</div>
+            <div class="help-card"><strong>Atalhos &amp; aparência</strong>Espaço play/pause · N/P na biblioteca · S parar. No ◐: cores (Violeta, OLED, Rosa, Verde…), visual Simples/Completo/Premium e desempenho.</div>
+            <div class="help-card"><strong>Backup</strong>Exporte JSON antes de limpar o navegador. Reimporte no mesmo ou em outro aparelho.</div>
+            <div class="help-card"><strong>App / PWA</strong>Em celulares compatíveis, use “Instalar” ou Adicionar à Tela de Início. Offline só a interface; áudio precisa de rede.</div>
+        </div>
+    </div>
+
+    <div class="section" data-section="about" id="section-about">
+        <h2 class="section-title"><div class="left-group"><span class="icon">📋</span> Sobre &amp; versões</div></h2>
+        <div class="stat-row" id="stats-row">
+            <div class="stat-pill"><b id="stat-plays">0</b><span>plays nesta sessão</span></div>
+            <div class="stat-pill"><b id="stat-mins">0</b><span>minutos estimados</span></div>
+            <div class="stat-pill"><b id="stat-tracks">0</b><span>faixas salvas</span></div>
+        </div>
+        <ul class="changelog" style="margin-top:14px;padding-left:18px;">
+            <li><strong>v5.6</strong> — Contraste do tema claro aprimorado em painéis e banners, links de rádios atualizados (Total Hits e 102.3 FM) e remoção do Total Hits 80s/90s.</li>
+            <li><strong>v5.5</strong> — Streams corrigidos e melhorias gerais de usabilidade.</li>
+            <li><strong>v5.2</strong> — CSS dos temas de cor, logo volta ao início, YouTube em youtube.com (Cast nativo no player).</li>
+        </ul>
+        <p class="lib-mode-note" style="margin-top:12px;">Criado por Break Troy · tudo funciona dentro desta página · sem redirecionar para fora.</p>
+    </div>
+
+    <footer>Portal de Mídia • Criado por Break Troy</footer>
+
+    <div class="mini-player" id="mini-player">
+        <div class="mini-info">
+            <div class="playing-dot" id="playing-dot"></div>
+            <div class="mini-title" id="mini-title">Nada tocando</div>
+        </div>
+        <div class="mini-controls">
+            <button class="lib-nav" id="btn-prev" type="button" onclick="libraryPrev()" aria-label="Anterior" disabled>‹</button>
+            <button id="btn-play-pause" aria-label="Pausar ou continuar" onclick="togglePlayPause()">▶</button>
+            <button id="btn-next" class="lib-nav" type="button" onclick="libraryNext()" aria-label="Próxima" disabled>›</button>
+            <button class="stop-btn" onclick="stopAllMedia()" aria-label="Parar">■</button>
+            <button type="button" class="mini-mute" id="btn-mute" onclick="toggleMute()" aria-label="Mudo">🔊</button>
+            <div class="volume-wrap">
+                <input class="volume-slider" id="volume-slider" max="100" min="0" oninput="setVolume(this.value)" type="range" value="50"/>
+            </div>
+            <div class="viz-wrap" id="viz-wrap" aria-hidden="true"></div>
+        </div>
+    </div>
+
+    <script>
+        // ---------- POLYFILLS (navegadores antigos / WebView) ----------
+        (function polyfills() {
+            if (!String.prototype.padStart) {
+                String.prototype.padStart = function(targetLength, padString) {
+                    targetLength = targetLength >> 0;
+                    padString = String(typeof padString !== 'undefined' ? padString : ' ');
+                    if (this.length >= targetLength) return String(this);
+                    targetLength = targetLength - this.length;
+                    if (targetLength > padString.length) {
+                        padString += Array(Math.ceil(targetLength / padString.length) + 1).join(padString);
+                    }
+                    return padString.slice(0, targetLength) + String(this);
+                };
+            }
+            if (!Array.prototype.includes) {
+                Array.prototype.includes = function(searchElement, fromIndex) {
+                    if (this == null) throw new TypeError('Array.prototype.includes called on null or undefined');
+                    var o = Object(this);
+                    var len = parseInt(o.length, 10) || 0;
+                    if (len === 0) return false;
+                    var n = parseInt(fromIndex, 10) || 0;
+                    var k = n >= 0 ? n : Math.max(len + n, 0);
+                    while (k < len) {
+                        if (o[k] === searchElement || (searchElement !== searchElement && o[k] !== o[k])) return true;
+                        k++;
+                    }
+                    return false;
+                };
+            }
+            if (typeof Object.assign !== 'function') {
+                Object.assign = function(target) {
+                    if (target == null) throw new TypeError('Cannot convert undefined or null to object');
+                    var to = Object(target);
+                    for (var i = 1; i < arguments.length; i++) {
+                        var nextSource = arguments[i];
+                        if (nextSource != null) {
+                            for (var nextKey in nextSource) {
+                                if (Object.prototype.hasOwnProperty.call(nextSource, nextKey)) {
+                                    to[nextKey] = nextSource[nextKey];
+                                }
+                            }
+                        }
+                    }
+                    return to;
+                };
+            }
+        }());
+
+        var RADIO_CHANNELS = {
+            atlantida_poa: { label: 'Atlântida FM 94.3', needsHls: true, urls: ['https://liverdatlpoa.rbsdirect.com.br/primary/atl_poa.sdp/playlist.m3u8'] },
+            '1023_poa': { label: 'Rádio 102.3 FM', needsHls: true, urls: ['https://liverd102fm.rbsdirect.com.br/primary/ita_poa.sdp/playlist.m3u8'] },
+            antena1_poa: { label: 'Antena 1', needsHls: false, urls: ['https://antenaone.crossradio.com.br/stream/1'] },
+            continental_poa: { label: 'Continental FM 98.3', needsHls: false, urls: ['https://rrdns-continental.webnow.com.br/imprensafm64k.mp3'] },
+            salamanca_quarai: { label: 'Salamanca FM 101.3', needsHls: false, urls: ['https://live.paineldj.com.br/proxy/salamancahd?mp=/stream'] },
+            cbn: { label: 'CBN Rio', needsHls: false, urls: ['https://playerservices.streamtheworld.com/api/livestream-redirect/CBN_RJ_ADP.mp3', 'https://playerservices.streamtheworld.com/api/livestream-redirect/CBN_RJ.mp3', 'https://playerservices.streamtheworld.com/api/livestream-redirect/CBN_RJ_ADP.m3u8'] },
+            bandnews: { label: 'BandNews FM SP', needsHls: false, urls: ['https://playerservices.streamtheworld.com/api/livestream-redirect/BANDNEWSFM_SPAAC.mp3', 'https://playerservices.streamtheworld.com/api/livestream-redirect/BANDNEWSFM_SPAAC.aac', 'https://playerservices.streamtheworld.com/api/livestream-redirect/BANDNEWSFM_SPAAC.m3u8'] },
+            total_hits: { label: 'Total Hits', needsHls: false, urls: ['https://eu8.fastcast4u.com/proxy/breaktroy?mp=/stream'] },
+            progressive: { label: 'Progressive House', needsHls: false, urls: ['https://stream.laut.fm/house'] },
+            trance: { label: 'Trance', needsHls: false, urls: ['https://stream.laut.fm/main'] },
+            techno: { label: 'Techno', needsHls: false, urls: ['https://stream.laut.fm/techno'] },
+            reiki: { label: 'Reiki & Meditação', needsHls: false, urls: ['https://streaming.positivity.radio/pr/reiki/icecast.audio'] },
+            anos80: { label: 'Hits Anos 80', needsHls: false, urls: ['https://stream.laut.fm/80er'] },
+            dance90: { label: "Dance 90's", needsHls: false, urls: ['https://stream.laut.fm/eurodance'] },
+            dance2000: { label: 'Dance / Club Hits', needsHls: false, urls: ['https://stream.laut.fm/clubhits'] },
+            rock: { label: 'Classic Rock', needsHls: false, urls: ['https://stream.laut.fm/classicrock'] },
+            pop: { label: 'Pop Hits', needsHls: false, urls: ['https://stream.laut.fm/pop'] },
+            lofi: { label: 'Lofi Beats', needsHls: false, urls: ['https://stream.laut.fm/lofi'] },
+            classical: { label: 'Clássica / Foco', needsHls: false, urls: ['https://stream.laut.fm/klassik'] },
+            mpb: { label: 'Chill / Groove', needsHls: false, urls: ['https://ice5.somafm.com/groovesalad-128-mp3'] },
+            soundscapes: { label: 'Soundscapes Ambient', needsHls: false, urls: ['https://ice5.somafm.com/dronezone-128-mp3'] },
+            paradise: { label: 'Radio Paradise', needsHls: false, urls: ['https://stream.radioparadise.com/aac-128'] }
+        };
+
+        var radioAudio = null;
+        var hlsInstance = null;
+        var radioAudioPool = [];
+
+        var radioPlaying = false;
+        var radioVolume = 0.5;
+        var currentChannelId = '';
+        var currentChannelLabel = '';
+        var currentRadioUrl = '';
+        var castSdkPromise = null;
+        var castReady = false;
+        var castConnected = false;
+        var sleepTimerId = null;
+        var sleepTimerEnd = 0;
+        var sleepTimerInterval = null;
+
+        function getStoredValue(key, fallback) {
+            try { return localStorage.getItem(key) || fallback; } catch (_) { return fallback; }
+        }
+        function setStoredValue(key, value) { try { localStorage.setItem(key, value); } catch (_) {} }
+
+        var COLOR_THEMES = ['violet', 'oled', 'rose', 'emerald', 'ocean', 'amber', 'slate'];
+        var libraryMode = false;
+        var libraryQueue = [];
+        var libraryIndex = 0;
+        var libraryPlayMode = 'linear';
+        var libraryAudio = null;
+
+        function clearColorThemeClasses() {
+            var root = document.documentElement;
+            for (var i = 0; i < COLOR_THEMES.length; i++) {
+                var t = COLOR_THEMES[i];
+                if (t !== 'violet') root.classList.remove('theme-' + t);
+            }
+        }
+        function applyColorTheme(name) {
+            name = name || getStoredValue('portal-color-theme', 'violet') || 'violet';
+            if (COLOR_THEMES.indexOf(name) < 0) name = 'violet';
+            clearColorThemeClasses();
+            var isLight = document.documentElement.classList.contains('light-mode');
+            if (!isLight && name !== 'violet') {
+                document.documentElement.classList.add('theme-' + name);
+            }
+            document.querySelectorAll('[data-color-theme]').forEach(function(btn) {
+                btn.classList.toggle('active', btn.getAttribute('data-color-theme') === name);
+            });
+        }
+        function goHome() {
+            try {
+                var hub = document.getElementById('section-hub') || document.getElementById('hub-continue') || document.querySelector('[data-section="hub"]');
+                if (hub && hub.scrollIntoView) hub.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                else window.scrollTo({ top: 0, behavior: 'smooth' });
+                if (history && history.replaceState) history.replaceState(null, '', window.location.pathname + window.location.search);
+                try { setActiveQuickNav(); } catch (_) {}
+            } catch (_) {
+                try { window.scrollTo(0, 0); } catch (__) {}
+            }
+        }
+        function setColorTheme(name) {
+            name = name || 'violet';
+            setStoredValue('portal-color-theme', name);
+            applyColorTheme(name);
+            try {
+                var panel = document.getElementById('appearance-panel');
+                if (panel) panel.setAttribute('data-active-theme', name);
+            } catch (_) {}
+        }
+        function applyVisualLevel(level) {
+            var root = document.documentElement;
+            root.classList.remove('visual-simple', 'visual-full', 'visual-premium');
+            if (level === 'simple') root.classList.add('visual-simple');
+            else if (level === 'premium') root.classList.add('visual-premium');
+            else root.classList.add('visual-full');
+            document.querySelectorAll('[data-visual]').forEach(function(btn) {
+                btn.classList.toggle('active', btn.getAttribute('data-visual') === level);
+            });
+        }
+        function setVisualLevel(level) {
+            if (['simple', 'full', 'premium'].indexOf(level) < 0) level = 'full';
+            setStoredValue('portal-visual-level', level);
+            applyVisualLevel(level);
+        }
+        function stopLibrary(keepUi) {
+            if (libraryAudio) {
+                try {
+                    libraryAudio.onended = null;
+                    libraryAudio.onerror = null;
+                    libraryAudio.pause();
+                    libraryAudio.removeAttribute('src');
+                    libraryAudio.load();
+                } catch (_) {}
+                libraryAudio = null;
+            }
+            libraryMode = false;
+            if (!keepUi) {
+                libraryQueue = [];
+                libraryIndex = 0;
+            }
+            try { updateLibraryNavButtons(); } catch (_) {}
+            try { renderLibrary(); } catch (_) {}
+        }
+
+        function detectLiteHardware() {
+            try {
+                var memory = Number(navigator.deviceMemory || 0);
+                var cores = Number(navigator.hardwareConcurrency || 0);
+                var ua = String(navigator.userAgent || '');
+                var android = ua.match(/Android\s([0-9.]+)/i);
+                var androidVersion = android ? parseFloat(android[1]) : 99;
+                var oldAndroid = Number.isFinite(androidVersion) && androidVersion <= 7;
+                return (!!memory && memory <= 2) || (!!cores && cores <= 2) || oldAndroid;
+            } catch (_) { return false; }
+        }
+        function applyThemeMode(mode) {
+            var root = document.documentElement;
+            root.classList.remove('light-mode');
+            if (mode === 'light') root.classList.add('light-mode');
+            if (mode === 'auto') {
+                try { if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) root.classList.add('light-mode'); } catch (_) {}
+            }
+            document.querySelectorAll('[data-theme]').forEach(function(btn) { btn.classList.toggle('active', btn.dataset.theme === mode); });
+            applyColorTheme(getStoredValue('portal-color-theme', 'violet'));
+        }
+        function setThemeMode(mode) {
+            if (!['auto','dark','light'].includes(mode)) mode = 'auto';
+            setStoredValue('portal-theme', mode); applyThemeMode(mode);
+        }
+        function setPerformanceMode(mode) {
+            if (!['auto','full','lite'].includes(mode)) mode = 'auto';
+            setStoredValue('portal-performance', mode);
+            var lite = mode === 'lite' || (mode === 'auto' && detectLiteHardware());
+            document.documentElement.classList.toggle('lite-mode', lite);
+            document.querySelectorAll('[data-performance]').forEach(function(btn) { btn.classList.toggle('active', btn.dataset.performance === mode); });
+        }
+        function toggleCompactMode() {
+            var active = document.documentElement.classList.toggle('compact-mode');
+            setStoredValue('portal-compact', active ? '1' : '0');
+            var btn = document.getElementById('compact-btn');
+            if (btn) btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+        }
+        function toggleAppearancePanel() {
+            var panel = document.getElementById('appearance-panel');
+            var btn = document.getElementById('theme-menu-btn');
+            if (!panel) return;
+            panel.hidden = !panel.hidden;
+            if (btn) btn.setAttribute('aria-expanded', panel.hidden ? 'false' : 'true');
+        }
+        function refreshAppearanceControls() {
+            var theme = getStoredValue('portal-theme', 'auto');
+            var perf = getStoredValue('portal-performance', 'auto');
+            document.querySelectorAll('[data-theme]').forEach(function(btn) { btn.classList.toggle('active', btn.dataset.theme === theme); });
+            document.querySelectorAll('[data-performance]').forEach(function(btn) { btn.classList.toggle('active', btn.dataset.performance === perf); });
+            var compactBtn = document.getElementById('compact-btn');
+            if (compactBtn) compactBtn.setAttribute('aria-pressed', document.documentElement.classList.contains('compact-mode') ? 'true' : 'false');
+        }
+        (function initAdaptiveAppearance() {
+            var theme = getStoredValue('portal-theme', 'auto');
+            var perf = getStoredValue('portal-performance', 'auto');
+            applyThemeMode(theme);
+            applyColorTheme(getStoredValue('portal-color-theme', 'violet'));
+            applyVisualLevel(getStoredValue('portal-visual-level', 'full'));
+            setPerformanceMode(perf);
+            if (getStoredValue('portal-compact', '0') === '1') {
+                document.documentElement.classList.add('compact-mode');
+                var btn = document.getElementById('compact-btn');
+                if (btn) btn.setAttribute('aria-pressed', 'true');
+            }
+            try {
+                if (window.matchMedia) window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', function() {
+                    if (getStoredValue('portal-theme', 'auto') === 'auto') applyThemeMode('auto');
+                });
+            } catch (_) {}
+        }());
+
+        function clearElement(el) {
+            if (!el) return;
+            if (typeof el.replaceChildren === 'function') el.replaceChildren();
+            else while (el.firstChild) el.removeChild(el.firstChild);
+        }
+        function normalizeText(value) {
+            var text = String(value == null ? '' : value);
+            try { if (text.normalize) text = text.normalize('NFD').replace(/[\u0300-\u036f]/g, ''); } catch (_) {}
+            return text.toLowerCase().trim();
+        }
+
+        function atualizarRelogio() {
+            var agora = new Date();
+            var hh = ('0' + agora.getHours()).slice(-2);
+            var mm = ('0' + agora.getMinutes()).slice(-2);
+            var dias = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
+            var meses = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+            var time = document.getElementById('clock-time');
+            if (time) time.textContent = hh + ':' + mm;
+            var date = document.getElementById('clock-date');
+            if (date) date.textContent = dias[agora.getDay()] + ', ' + agora.getDate() + ' de ' + meses[agora.getMonth()];
+        }
+        atualizarRelogio();
+        setInterval(atualizarRelogio, 30000);
+
+        var YT_ENTRY_ID = 'odouCACH9-w';
+        var ytPlayer = null;
+        var ytApiPromise = null;
+        var ytCurrentId = '';
+        var ytLoadToken = 0;
+        var ytPlayerActivated = false;
+
+        function youtubeErrorMessage(code) {
+            var map = {
+                2: 'ID ou parâmetro do YouTube inválido.',
+                5: 'O navegador não conseguiu reproduzir este conteúdo HTML5.',
+                100: 'Vídeo não encontrado, removido ou privado.',
+                101: 'O proprietário deste vídeo não permite reprodução incorporada.',
+                150: 'O proprietário deste vídeo não permite reprodução incorporada.',
+                153: 'O YouTube não recebeu o Referer necessário para identificar esta página.'
+            };
+            return map[code] || ('O YouTube retornou o erro ' + code + '.');
+        }
+
+        function setYouTubeStatus(text, type) { type = type || '';
+            var el = document.getElementById('yt-status');
+            if (!el) return;
+            el.textContent = text;
+            el.className = 'yt-status' + (type ? ' ' + type : '');
+        }
+
+        function setYTDiag(key, value) {
+            var map = { id: 'yt-diag-id', api: 'yt-diag-api', state: 'yt-diag-state', error: 'yt-diag-error', origin: 'yt-diag-origin' };
+            var el = document.getElementById(map[key]);
+            if (el) el.textContent = value == null || value === '' ? '—' : String(value);
+        }
+
+        function setYTOverlay(show, title, text) { title = title || ''; text = text || '';
+            var overlay = document.getElementById('yt-overlay');
+            if (!overlay) return;
+            overlay.hidden = !show;
+            var titleEl = document.getElementById('yt-overlay-title');
+            var textEl = document.getElementById('yt-overlay-text');
+            if (titleEl && title) titleEl.textContent = title;
+            if (textEl && text) textEl.textContent = text;
+        }
+
+        function extrairYouTubeId(valor) {
+            if (!valor) return null;
+            var raw = String(valor).trim();
+            if (/^[A-Za-z0-9_-]{11}$/.test(raw)) return raw;
+            try {
+                var url = new URL(raw);
+                var host = url.hostname.toLowerCase().replace(/^www\./, '');
+                if (host === 'youtu.be') {
+                    var id = url.pathname.split('/').filter(Boolean)[0];
+                    return /^[A-Za-z0-9_-]{11}$/.test(id || '') ? id : null;
+                }
+                if (['youtube.com', 'm.youtube.com', 'music.youtube.com'].indexOf(host) !== -1) {
+                    var v = url.searchParams.get('v');
+                    if (/^[A-Za-z0-9_-]{11}$/.test(v || '')) return v;
+                    var parts = url.pathname.split('/').filter(Boolean);
+                    var markers = ['embed', 'shorts', 'live', 'v'];
+                    var i = markers.indexOf(parts[0]);
+                    if (i >= 0 && /^[A-Za-z0-9_-]{11}$/.test(parts[i + 1] || '')) return parts[i + 1];
+                }
+            } catch (_) {}
+            return null;
+        }
+
+        function getStableId(prefix) { prefix = prefix || 'id';
+            try { if (window.crypto && typeof window.crypto.randomUUID === 'function') return window.crypto.randomUUID(); } catch (_) {}
+            return prefix + '_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 10);
+        }
+
+        function getDadosSalvos() {
+            var empty = { version: 3, radio: [], youtube: [] };
+            try {
+                var raw = JSON.parse(localStorage.getItem('portal-dados-salvos') || '{}');
+                var data = { version: Number(raw.version) || 1, radio: Array.isArray(raw.radio) ? raw.radio : [], youtube: Array.isArray(raw.youtube) ? raw.youtube : [] };
+                var changed = data.version !== 3;
+                data.radio = data.radio.filter(function(item){ return item && typeof item === 'object' && String(item.nome || '').trim() && String(item.url || '').trim(); }).map(function(item){
+                    var next = Object.assign({}, item, { id: item.id || getStableId('radio') });
+                    if (!item.id) changed = true;
+                    return next;
+                });
+                data.youtube = data.youtube.filter(function(v){ return v && /^[A-Za-z0-9_-]{11}$/.test(v.id); }).map(function(v){ return { id: v.id, titulo: String(v.titulo || ('Vídeo ' + v.id.slice(0, 6))), categoria: String(v.categoria || 'outros') }; });
+                if (data.version !== 3) { data.version = 3; changed = true; }
+                if (changed) setDadosSalvos(data);
+                return data;
+            } catch (_) { return empty; }
+        }
+
+        function setDadosSalvos(data) {
+            try { localStorage.setItem('portal-dados-salvos', JSON.stringify({ version: 3, radio: data.radio || [], youtube: data.youtube || [] })); } catch (_) {}
+        }
+
+        function loadYouTubeApi() {
+            if (window.YT && window.YT.Player) return Promise.resolve(window.YT);
+            if (ytApiPromise) return ytApiPromise;
+            ytApiPromise = new Promise(function(resolve, reject){
+                var previous = window.onYouTubeIframeAPIReady;
+                window.onYouTubeIframeAPIReady = function(){
+                    try { if (typeof previous === 'function') previous(); } catch (_) {}
+                    if (window.YT && window.YT.Player) { setYTDiag('api', 'pronta'); resolve(window.YT); }
+                    else reject(new Error('API do YouTube não disponível.'));
+                };
+                var script = document.createElement('script');
+                script.src = 'https://www.youtube.com/iframe_api';
+                script.async = true;
+                script.onload = function(){ setYTDiag('api', 'carregando…'); };
+                script.onerror = function(){ ytApiPromise = null; reject(new Error('Falha ao carregar a API do YouTube.')); };
+                document.head.appendChild(script);
+            });
+            return ytApiPromise;
+        }
+
+        function destroyYouTubePlayer() {
+            if (ytPlayer && typeof ytPlayer.destroy === 'function') { try { ytPlayer.destroy(); } catch (_) {} }
+            ytPlayer = null;
+        }
+
+        function createYouTubePlayer(id, autoPlay) { autoPlay = !!autoPlay;
+            var container = document.getElementById('yt-player');
+            if (!container) return;
+            var token = ++ytLoadToken;
+            ytCurrentId = id;
+            setYTDiag('id', id);
+            setYTDiag('origin', window.location.origin);
+            setYTDiag('error', '—');
+            setYTDiag('state', 'carregando');
+            setYTOverlay(false);
+            var overlayTip = document.getElementById('yt-overlay-tip'); if (overlayTip) overlayTip.textContent = 'O item permanece salvo mesmo se o YouTube bloquear o embed.';
+            setYouTubeStatus('Carregando player do YouTube…', 'loading');
+            updateNowPlaying('YouTube', 'Carregando vídeo…', false);
+            destroyYouTubePlayer();
+            clearElement(container);
+
+            loadYouTubeApi().then(function(YTLib){
+                if (token !== ytLoadToken) return;
+                ytPlayer = new YTLib.Player('yt-player', {
+                    videoId: id,
+                    host: 'https://www.youtube.com',
+                    playerVars: {
+                        autoplay: autoPlay ? 1 : 0,
+                        controls: 1,
+                        playsinline: 1,
+                        rel: 0,
+                        origin: window.location.origin,
+                        enablejsapi: 1,
+                        modestbranding: 1
+                    },
+                    events: {
+                        onReady: function(e){
+                            if (token !== ytLoadToken) return;
+                            setYTDiag('api', 'pronta');
+                            setYTDiag('state', 'pronto');
+                            setYouTubeStatus(autoPlay ? 'Pronto — tentando reproduzir…' : 'Pronto — use os controles do YouTube.', 'ready');
+                            if (autoPlay) { try { e.target.playVideo(); } catch (_) {} }
+                        },
+                        onStateChange: function(e){
+                            if (token !== ytLoadToken) return;
+                            var states = { '-1': 'não iniciado', '0': 'encerrado', '1': 'reproduzindo', '2': 'pausado', '3': 'bufferizando', '5': 'em fila' };
+                            setYTDiag('state', states[e.data] || String(e.data));
+                            if (e.data === YTLib.PlayerState.PLAYING) { stopRadio(); var ytTitle = 'Vídeo no YouTube'; try { var data = e.target.getVideoData && e.target.getVideoData(); if (data && data.title) ytTitle = data.title; } catch (_) {} updateNowPlaying(ytTitle, 'YouTube • reproduzindo', false); setYouTubeStatus('✅ Reproduzindo', 'ok'); }
+                            else if (e.data === YTLib.PlayerState.BUFFERING) setYouTubeStatus('⏳ Bufferizando…', 'loading');
+                            else if (e.data === YTLib.PlayerState.PAUSED) { updateNowPlaying('YouTube', 'Pausado', false); setYouTubeStatus('⏸ Pausado', 'ready'); }
+                            else if (e.data === YTLib.PlayerState.ENDED) { updateNowPlaying('', '', true); setYouTubeStatus('⏹ Vídeo encerrado', 'ready'); }
+                            else if (e.data === YTLib.PlayerState.CUED) setYouTubeStatus('Pronto para reproduzir', 'ready');
+                        },
+                        onError: function(e){
+                            if (token !== ytLoadToken) return;
+                            var message = youtubeErrorMessage(e.data);
+                            setYTDiag('error', e.data + ' — ' + message);
+                            setYTDiag('state', 'erro');
+                            updateNowPlaying('YouTube', 'Erro na reprodução', false);
+                            setYouTubeStatus('❌ ' + message, 'error');
+                            if (e.data === 100) {
+                                setYTOverlay(true, 'Vídeo indisponível', 'O vídeo foi removido, ficou privado ou não está disponível neste momento.');
+                            } else if (e.data === 101 || e.data === 150) {
+                                setYTOverlay(true, 'Conteúdo bloqueado no embed', 'O proprietário deste vídeo não permite reprodução incorporada.');
+                            }
+                        }
+                    }
+                });
+            }).catch(function(err){
+                if (token !== ytLoadToken) return;
+                setYTDiag('api', 'erro'); setYTDiag('state', 'erro'); setYTDiag('error', err.message);
+                setYouTubeStatus('❌ ' + err.message, 'error');
+            });
+        }
+
+        function loadYouTubeId(id, btnEl, autoPlay) {
+            if (typeof btnEl === 'undefined') btnEl = null;
+            if (typeof autoPlay === 'undefined') autoPlay = false;
+            var videoId = extrairYouTubeId(id);
+            if (!videoId) { setYouTubeStatus('❌ Link/ID do YouTube inválido.', 'error'); return; }
+            if (!ytPlayerActivated) {
+                ytPlayerActivated = true;
+                showYouTubeUi(true);
+            }
+            stopLibrary(false);
+            stopRadio();
+            document.querySelectorAll('.yt-presets button, #yt-salvos-grid button').forEach(function(b) { b.classList.remove('active', 'playing', 'active-yt'); });
+            if (btnEl) btnEl.classList.add('active', 'active-yt');
+            createYouTubePlayer(videoId, autoPlay);
+        }
+
+        function categoriaYouTubeLabel(categoria) {
+            var labels = {
+                'dance80-2000': '🪩 Dance 80/90/2000',
+                ambiente: '🌌 Ambiente',
+                meditacao: '🧘 Meditação',
+                reiki: '✨ Reiki / Relaxamento',
+                lofi: '☕ Lofi / Foco',
+                outros: '⭐ Outros'
+            };
+            return labels[categoria] || labels.outros;
+        }
+
+        function renderCanaisSalvos() {
+            var searchInput = document.getElementById('search-input');
+            if (searchInput && searchInput.value) {
+                searchInput.value = '';
+                filtrarRadios('');
+            }
+            var dados = getDadosSalvos();
+            Object.keys(RADIO_CHANNELS).filter(function(id){ return id.indexOf('custom_saved_') === 0; }).forEach(function(id){ delete RADIO_CHANNELS[id]; });
+            var radioGrid = document.getElementById('custom-salvos-grid');
+            clearElement(radioGrid);
+            if (dados.radio.length) {
+                radioGrid.style.display = 'flex';
+                dados.radio.forEach(function(item, index){
+                    var chId = item.id;
+                    RADIO_CHANNELS[chId] = { label: item.nome, needsHls: urlNeedsHls(item.url), urls: [item.url] };
+                    var div = document.createElement('div'); div.className = 'media-item'; div.dataset.nome = String(item.nome).toLowerCase();
+                    var btn = document.createElement('button'); btn.className = 'radio-btn'; btn.type = 'button'; btn.onclick = function(){ return playChannel(chId, btn); };
+                    var icon = document.createElement('span'); icon.className = 'icon'; icon.textContent = '📌';
+                    var label = document.createElement('span'); label.className = 'label';
+                    var name = document.createElement('span'); name.className = 'name'; name.textContent = item.nome;
+                    var small = document.createElement('small'); small.textContent = 'Canal salvo';
+                    var status = document.createElement('span'); status.className = 'status'; status.id = 'status-' + chId;
+                    label.append(name, small, status); btn.append(icon, label);
+                    var del = document.createElement('button'); del.className = 'delete-btn'; del.type = 'button'; del.textContent = '🗑'; del.setAttribute('aria-label', 'Excluir ' + item.nome); del.onclick = function(){ return removerCanalSalvo('radio', index); };
+                    div.append(btn, del); radioGrid.appendChild(div);
+                });
+            } else radioGrid.style.display = 'none';
+
+            var ytGrid = document.getElementById('yt-salvos-grid'); var ytTitle = document.getElementById('yt-salvos-title'); clearElement(ytGrid);
+            if (dados.youtube.length) {
+                ytGrid.style.display = 'flex'; if (ytTitle) ytTitle.style.display = 'block';
+                dados.youtube.forEach(function(video, index){
+                    var div = document.createElement('div'); div.className = 'media-item';
+                    var btn = document.createElement('button'); btn.className = 'radio-btn'; btn.type = 'button'; btn.onclick = function(){ return loadYouTubeId(video.id, btn, true); };
+                    var img = document.createElement('img'); img.src = 'https://img.youtube.com/vi/' + encodeURIComponent(video.id) + '/hqdefault.jpg'; img.className = 'thumb'; img.alt = 'Miniatura do vídeo'; img.loading = 'lazy'; img.referrerPolicy = 'no-referrer';
+                    var label = document.createElement('span'); label.className = 'label';
+                    var name = document.createElement('span'); name.className = 'name'; name.textContent = video.titulo;
+                    var small = document.createElement('small'); small.textContent = categoriaYouTubeLabel(video.categoria); label.append(name, small); btn.append(img, label);
+                    var del = document.createElement('button'); del.className = 'delete-btn'; del.type = 'button'; del.textContent = '🗑'; del.setAttribute('aria-label', 'Excluir ' + video.titulo); del.onclick = function(){ return removerCanalSalvo('youtube', index); };
+                    div.append(btn, del); ytGrid.appendChild(div);
+                });
+            } else { ytGrid.style.display = 'none'; if (ytTitle) ytTitle.style.display = 'none'; }
+        }
+
+        function adicionarYouTubeSalvo() {
+            var nomeInput = document.getElementById('yt-nome').value.trim();
+            var inputVal = document.getElementById('yt-input').value.trim();
+            var categoria = document.getElementById('yt-categoria').value || 'outros';
+            var videoId = extrairYouTubeId(inputVal);
+            if (!videoId) { alert('Cole um link de vídeo/Short/live específico do YouTube ou um ID válido de 11 caracteres.'); return; }
+            var dados = getDadosSalvos();
+            var titulo = nomeInput || ('Vídeo ' + videoId.slice(0, 6));
+            var existing = dados.youtube.findIndex(function(v){ return v.id === videoId; });
+            var item = { id: videoId, titulo, categoria };
+            if (existing >= 0) dados.youtube[existing] = item; else dados.youtube.push(item);
+            setDadosSalvos(dados);
+            document.getElementById('yt-nome').value = ''; document.getElementById('yt-input').value = '';
+            renderCanaisSalvos();
+            setYouTubeStatus('🔎 Salvo. Testando se este conteúdo aceita reprodução incorporada…', 'loading');
+            loadYouTubeId(videoId, null, true);
+        }
+
+        function adicionarRadioSalva() {
+            var nome = document.getElementById('custom-nome').value.trim();
+            var urlText = document.getElementById('custom-url').value.trim();
+            if (!nome || !urlText) { alert('Informe o nome e a URL do stream.'); return; }
+            var url;
+            try { url = new URL(urlText); } catch (_) { alert('URL inválida. Use um endereço HTTPS válido.'); return; }
+            if (!['https:', 'http:'].includes(url.protocol)) { alert('Use uma URL HTTP ou HTTPS de stream.'); return; }
+            var dados = getDadosSalvos();
+            var normalized = url.href;
+            var existing = dados.radio.findIndex(function(item){ return String(item.url).trim() === normalized; });
+            var item = { id: existing >= 0 ? dados.radio[existing].id : getStableId('radio'), nome, url: normalized };
+            if (existing >= 0) dados.radio[existing] = item; else dados.radio.push(item);
+            setDadosSalvos(dados);
+            document.getElementById('custom-nome').value = ''; document.getElementById('custom-url').value = '';
+            renderCanaisSalvos(); renderFavoritos(); sincronizarEstrelas();
+        }
+
+        function removerCanalSalvo(tipo, index) {
+            if (!confirm('Remover este item salvo?')) return;
+            var dados = getDadosSalvos();
+            if (tipo === 'radio') {
+                var removed = dados.radio.splice(index, 1)[0];
+                if (removed) { var favs = carregarFavoritos().filter(function(id){ return id !== removed.id; }); salvarFavoritos(favs); }
+            } else dados.youtube.splice(index, 1);
+            setDadosSalvos(dados); renderCanaisSalvos(); renderFavoritos(); sincronizarEstrelas();
+        }
+
+        function carregarFavoritos() {
+            try { var raw = JSON.parse(localStorage.getItem('portal-favoritos') || '[]'); return Array.isArray(raw) ? raw : []; } catch (_) { return []; }
+        }
+        function salvarFavoritos(favs) { try { localStorage.setItem('portal-favoritos', JSON.stringify((function(a){var r=[],seen={};for(var i=0;i<a.length;i++){var k=String(a[i]);if(!seen[k]){seen[k]=true;r.push(a[i]);}}return r;})(favs || []))); } catch (_) {} }
+        function migrateLegacyFavoriteIds() {
+            var favs = carregarFavoritos(); var dados = getDadosSalvos(); var changed = false;
+            var mapped = favs.map(function(id){
+                var match = String(id).match(/^custom_saved_(\d+)$/);
+                if (!match) return id;
+                changed = true;
+                var item = dados.radio[Number(match[1])];
+                return item && item.id ? item.id : null;
+            }).filter(Boolean);
+            if (changed) salvarFavoritos(mapped);
+            return mapped;
+        }
+        function toggleFav(btn, channelId) {
+            var favs = migrateLegacyFavoriteIds();
+            var idx = favs.indexOf(channelId);
+            if (idx >= 0) favs.splice(idx, 1); else favs.push(channelId);
+            salvarFavoritos(favs); sincronizarEstrelas(); renderFavoritos();
+        }
+        function renderFavoritos() {
+            var favs = migrateLegacyFavoriteIds(); var section = document.getElementById('section-favoritos'); var grid = document.getElementById('favoritos-grid');
+            clearElement(grid);
+            var valid = favs.filter(function(id){ return RADIO_CHANNELS[id]; });
+            if (!valid.length) { section.style.display = 'none'; return; }
+            section.style.display = 'block';
+            valid.forEach(function(id){
+                var ch = RADIO_CHANNELS[id];
+                var item = document.createElement('div'); item.className = 'media-item'; item.dataset.nome = ch.label.toLowerCase();
+                var btn = document.createElement('button'); btn.className = 'radio-btn'; btn.type = 'button';
+                var icon = document.createElement('span'); icon.className = 'icon'; icon.textContent = '⭐';
+                var label = document.createElement('span'); label.className = 'label';
+                var name = document.createElement('span'); name.className = 'name'; name.textContent = ch.label;
+                var small = document.createElement('small'); small.textContent = 'Favorito';
+                var status = document.createElement('span'); status.className = 'status'; status.id = 'status-fav-' + id;
+                label.append(name, small, status); btn.append(icon, label); btn.onclick = function(){ return playChannel(id, btn, 'status-fav-' + id); };
+                var favBtn = document.createElement('button'); favBtn.className = 'fav-btn active'; favBtn.type = 'button'; favBtn.textContent = '★'; favBtn.setAttribute('aria-label', 'Remover dos favoritos'); favBtn.onclick = function(){ return toggleFav(favBtn, id); };
+                item.append(btn, favBtn); grid.appendChild(item);
+            });
+        }
+        function sincronizarEstrelas() {
+            var favs = migrateLegacyFavoriteIds();
+            document.querySelectorAll('.fav-btn').forEach(function(btn){
+                var onclick = btn.getAttribute('onclick') || ''; var match = onclick.match(/'([^']+)'/);
+                if (match && match[1]) { var active = favs.includes(match[1]); btn.textContent = active ? '★' : '☆'; btn.classList.toggle('active', active); btn.setAttribute('aria-label', active ? 'Remover dos favoritos' : 'Favoritar'); }
+            });
+        }
+
+        var searchPlaceholders = new Map();
+
+        function restaurarResultadosBusca() {
+            searchPlaceholders.forEach(function(placeholder, item){
+                if (placeholder.parentNode) placeholder.replaceWith(item);
+            });
+            searchPlaceholders.clear();
+            var resultsSection = document.getElementById('search-results-section');
+            var resultsGrid = document.getElementById('search-results-grid');
+            var noResults = document.getElementById('search-no-results');
+            if (resultsGrid) clearElement(resultsGrid);
+            if (resultsSection) resultsSection.hidden = true;
+            if (noResults) noResults.hidden = true;
+        }
+
+        function filtrarRadios(termo) {
+            var t = normalizeText(termo);
+            var clearBtn = document.getElementById('search-clear');
+            var countEl = document.getElementById('search-result-count');
+            var resultsSection = document.getElementById('search-results-section');
+            var resultsGrid = document.getElementById('search-results-grid');
+            var noResults = document.getElementById('search-no-results');
+
+            if (!t) {
+                restaurarResultadosBusca();
+                if (clearBtn) clearBtn.classList.remove('visible');
+                if (countEl) countEl.textContent = '';
+                return;
+            }
+
+            if (clearBtn) clearBtn.classList.add('visible');
+            restaurarResultadosBusca();
+            if (resultsGrid) clearElement(resultsGrid);
+
+            var total = 0;
+            var sections = document.querySelectorAll('.section[data-section]');
+            sections.forEach(function(sec){
+                var tipo = sec.dataset.section;
+                if (['youtube', 'timer', 'search-results', 'backup', 'hub', 'help', 'about'].includes(tipo)) return;
+                var items = Array.from(sec.querySelectorAll('.media-item'));
+                items.forEach(function(item){
+                    var nome = normalizeText(item.dataset.nome || '');
+                    var texto = normalizeText(item.textContent || '');
+                    if (nome.includes(t) || texto.includes(t)) {
+                        var placeholder = document.createComment('item-original');
+                        item.parentNode.insertBefore(placeholder, item);
+                        searchPlaceholders.set(item, placeholder);
+                        if (resultsGrid) resultsGrid.appendChild(item);
+                        total++;
+                    }
+                });
+            });
+
+            if (resultsSection) resultsSection.hidden = false;
+            if (noResults) noResults.hidden = total !== 0;
+            if (countEl) {
+                countEl.textContent = total === 0
+                    ? 'Nenhuma rádio encontrada.'
+                    : total + (total === 1 ? ' rádio encontrada.' : ' rádios encontradas.');
+            }
+        }
+
+        function limparBusca() {
+            var input = document.getElementById('search-input');
+            if (input) input.value = '';
+            filtrarRadios('');
+            if (input) input.focus();
+        }
+
+        window.addEventListener('DOMContentLoaded', function(){
+            var searchInput = document.getElementById('search-input');
+            if (searchInput) searchInput.addEventListener('input', function(){ return filtrarRadios(searchInput.value); });
+        });
+
+        var hlsJsLoadPromise = null;
+        function loadHlsJs() {
+            if (typeof Hls !== 'undefined') return Promise.resolve(Hls);
+            if (hlsJsLoadPromise) return hlsJsLoadPromise;
+            hlsJsLoadPromise = new Promise(function(resolve, reject){
+                var script = document.createElement('script');
+                script.src = 'https://cdn.jsdelivr.net/npm/hls.js@1.4.14/dist/hls.min.js';
+                script.async = true;
+                script.onload = function(){ if (typeof Hls !== 'undefined') resolve(Hls); else { hlsJsLoadPromise = null; reject(new Error('Hls não definido')); } };
+                script.onerror = function(){ hlsJsLoadPromise = null; reject(new Error('Falha ao carregar HLS.js')); };
+                document.head.appendChild(script);
+            });
+            return hlsJsLoadPromise;
+        }
+        function urlNeedsHls(url) { return typeof url === 'string' && (/\.m3u8(?:$|[?#])/i.test(url) || /mpegurl/i.test(url)); }
+        function canUseNativeHls(audio) { return !!audio && typeof audio.canPlayType === 'function' && !!audio.canPlayType('application/vnd.apple.mpegurl'); }
+
+        var radioController = {
+            state: 'IDLE',
+            token: 0,
+            timeoutId: 0,
+            channelId: '',
+            audio: null,
+            hls: null
+        };
+
+        function safeStopAudio(audio) {
+            if (!audio) return;
+            try { audio.__portalInvalid = true; } catch (_) {}
+            try { audio.pause(); } catch (_) {}
+            try { audio.removeAttribute('src'); } catch (_) {}
+            try { audio.load(); } catch (_) {}
+        }
+
+        function clearRadioTimeout() {
+            if (radioController.timeoutId) {
+                clearTimeout(radioController.timeoutId);
+                radioController.timeoutId = 0;
+            }
+        }
+
+        function destroyHls() {
+            if (!hlsInstance) return;
+            try { hlsInstance.stopLoad(); } catch (_) {}
+            try { hlsInstance.detachMedia(); } catch (_) {}
+            try { hlsInstance.destroy(); } catch (_) {}
+            hlsInstance = null;
+            radioController.hls = null;
+        }
+
+        function cleanupRadio() {
+            clearRadioTimeout();
+            destroyHls();
+            while (radioAudioPool.length) safeStopAudio(radioAudioPool.pop());
+            radioAudio = null;
+            radioController.audio = null;
+            radioController.state = 'IDLE';
+            radioPlaying = false;
+        }
+
+        function createRadioAudio() {
+            var audio = new Audio();
+            audio.preload = 'none';
+            audio.autoplay = false;
+            audio.volume = radioVolume;
+            audio.__portalInvalid = false;
+            radioAudioPool.push(audio);
+            return audio;
+        }
+
+        function invalidateStaleAudio() {
+            radioAudioPool.forEach(function(audio) {
+                if (audio !== radioAudio) safeStopAudio(audio);
+            });
+        }
+
+        function updateNowPlaying(title, subtitle, hidden) {
+            var bar = document.getElementById('top-now-playing');
+            if (!bar) return;
+            var titleEl = document.getElementById('top-now-title');
+            var subEl = document.getElementById('top-now-subtitle');
+            if (hidden || !title) { bar.hidden = true; return; }
+            bar.hidden = false;
+            if (titleEl) titleEl.textContent = title;
+            if (subEl) subEl.textContent = subtitle || 'Tocando agora';
+        }
+
+        function updateMiniPlayer(title, isPaused) {
+            var mini = document.getElementById('mini-player');
+            var dot = document.getElementById('playing-dot');
+            var btn = document.getElementById('btn-play-pause');
+            var titleEl = document.getElementById('mini-title');
+            if (!mini) return;
+            if (!currentChannelId) {
+                mini.classList.remove('visible');
+                updateNowPlaying('', '', true);
+                return;
+            }
+            mini.classList.add('visible');
+            if (titleEl) titleEl.textContent = title || currentChannelId;
+            if (dot) dot.classList.toggle('paused', !!isPaused);
+            if (btn) btn.textContent = isPaused ? '▶' : '❚❚';
+            updateNowPlaying(currentChannelLabel || title || currentChannelId, isPaused ? 'Pausado' : 'Tocando agora', false);
+        }
+
+        function setStatus(id, text) {
+            var el = document.getElementById('status-' + id);
+            if (el) el.textContent = text;
+        }
+
+        function setRadioMediaSession(channel) {
+            if (!('mediaSession' in navigator) || !channel) return;
+            try {
+                navigator.mediaSession.metadata = new MediaMetadata({
+                    title: channel.label,
+                    artist: 'Portal de Mídia'
+                });
+                try { navigator.mediaSession.setActionHandler('play', function() { togglePlayPause(); }); } catch (_) {}
+                try { navigator.mediaSession.setActionHandler('pause', function() { togglePlayPause(); }); } catch (_) {}
+                try { navigator.mediaSession.setActionHandler('stop', stopRadio); } catch (_) {}
+            } catch (_) {}
+        }
+
+        function clearRadioUi() {
+            document.querySelectorAll('.radio-btn').forEach(function(b) {
+                b.classList.remove('playing', 'error');
+            });
+            document.querySelectorAll('[id^="status-"]').forEach(function(el) {
+                el.textContent = '';
+            });
+        }
+
+        function finishRadioError(token, channelId, btnEl, statusId, message) {
+            if (token !== radioController.token) return;
+            radioController.state = 'IDLE';
+            radioPlaying = false;
+            setStatus(statusId, message || 'Indisponível');
+            if (btnEl) {
+                btnEl.classList.remove('playing');
+                btnEl.classList.add('error');
+            }
+            updateMiniPlayer(message || ('Indisponível: ' + channelId), true);
+        }
+
+        function playChannel(channelId, btnEl, statusIdOverride) {
+            var channel = RADIO_CHANNELS[channelId];
+            var statusId = statusIdOverride || channelId;
+            if (!channel) {
+                setStatus(statusId, 'Canal indisponível');
+                return;
+            }
+
+            try { stopLibrary(false); } catch (_) {}
+
+            if (ytPlayer && typeof ytPlayer.pauseVideo === 'function') {
+                try { ytPlayer.pauseVideo(); } catch (_) {}
+            }
+
+            if (currentChannelId === channelId && radioAudio) {
+                try { togglePlayPause(); } catch (_) {}
+                return;
+            }
+
+            radioController.token += 1;
+            var token = radioController.token;
+            cleanupRadio();
+            currentChannelId = channelId;
+            currentChannelLabel = channel.label;
+            radioController.channelId = channelId;
+            radioController.state = 'RADIO_LOADING';
+            var urlIndex = 0;
+
+            setRadioMediaSession(channel);
+            clearRadioUi();
+            if (btnEl) btnEl.classList.add('playing');
+            setStatus(statusId, 'Conectando…');
+            updateMiniPlayer('Conectando… ' + channel.label, true);
+
+            function stillCurrent(audio) {
+                return token === radioController.token &&
+                       currentChannelId === channelId &&
+                       radioAudio === audio &&
+                       !audio.__portalInvalid;
+            }
+
+            function failAttempt(message) {
+                if (token !== radioController.token) return;
+                clearRadioTimeout();
+                destroyHls();
+                if (radioAudio) safeStopAudio(radioAudio);
+                radioAudio = null;
+                radioController.audio = null;
+                radioPlaying = false;
+
+                urlIndex += 1;
+                if (urlIndex < channel.urls.length) {
+                    radioController.state = 'RADIO_LOADING';
+                    setStatus(statusId, 'Tentando ' + (urlIndex + 1) + '/' + channel.urls.length + '…');
+                    setTimeout(function() {
+                        if (token === radioController.token) tryNextUrl();
+                    }, 180);
+                    return;
+                }
+                currentRadioUrl = '';
+                finishRadioError(token, channelId, btnEl, statusId, message || 'Indisponível');
+            }
+
+            function markPlaying(audio) {
+                if (!stillCurrent(audio)) return;
+                clearRadioTimeout();
+                radioController.state = 'RADIO_PLAYING';
+                radioPlaying = true;
+                setStatus(statusId, '✅ Tocando');
+                updateMiniPlayer(channel.label, false);
+                try { requestWakeLock(); } catch (_) {}
+                try { bumpPlayStat(); } catch (_) {}
+                try { if (radioAudio) ensureAudioGraph(radioAudio); } catch (_) {}
+                try { setTimeout(scrollToPlaying, 200); } catch (_) {}
+                try { setStoredValue('portal-last-channel', channelId); } catch (_) {}
+                try { pushHistory({ id: channelId, label: channel.label, type: 'radio' }); } catch (_) {}
+                try { renderHub(); } catch (_) {}
+                currentRadioUrl = audio.__portalUrl || '';
+            }
+
+            function armTimeout(ms, message) {
+                clearRadioTimeout();
+                radioController.timeoutId = setTimeout(function() {
+                    if (token === radioController.token && !radioPlaying) failAttempt(message || 'Tempo esgotado');
+                }, ms);
+            }
+
+            function tryNextUrl() {
+                if (token !== radioController.token) return;
+                if (urlIndex >= channel.urls.length) {
+                    currentRadioUrl = '';
+                    finishRadioError(token, channelId, btnEl, statusId, 'Indisponível');
+                    return;
+                }
+
+                var url = channel.urls[urlIndex];
+                currentRadioUrl = url;
+
+                var needsHls = channel.needsHls || urlNeedsHls(url);
+                setStatus(statusId, 'Tentando ' + (urlIndex + 1) + '/' + channel.urls.length + '…');
+
+                var audio = createRadioAudio();
+                audio.__portalUrl = url;
+                radioAudio = audio;
+                radioController.audio = audio;
+                invalidateStaleAudio();
+
+                var onPlaying = function() { markPlaying(audio); };
+                var onError = function() {
+                    if (!stillCurrent(audio)) return;
+                    failAttempt('Erro no stream');
+                };
+                audio.addEventListener('playing', onPlaying);
+                audio.addEventListener('error', onError);
+
+                if (needsHls) {
+                    if (canUseNativeHls(audio)) {
+                        armTimeout(10000, 'Tempo esgotado');
+                        try {
+                            audio.src = url;
+                            audio.load();
+                            var p = audio.play();
+                            if (p && typeof p.catch === 'function') p.catch(function() {
+                                if (stillCurrent(audio)) failAttempt('Reprodução bloqueada');
+                            });
+                        } catch (_) {
+                            failAttempt('Erro no stream');
+                        }
+                        return;
+                    }
+
+                    armTimeout(12000, 'Tempo esgotado');
+                    loadHlsJs().then(function(HlsLib) {
+                        if (!stillCurrent(audio)) return;
+                        if (!HlsLib || !HlsLib.isSupported()) {
+                            failAttempt('HLS não suportado neste navegador');
+                            return;
+                        }
+                        var lite = document.documentElement.classList.contains('lite-mode');
+                        hlsInstance = new HlsLib({
+                            enableWorker: !lite,
+                            maxBufferLength: lite ? 8 : 18,
+                            maxMaxBufferLength: lite ? 16 : 36,
+                            lowLatencyMode: false,
+                            backBufferLength: 0
+                        });
+                        radioController.hls = hlsInstance;
+                        hlsInstance.loadSource(url);
+                        hlsInstance.attachMedia(audio);
+                        hlsInstance.on(HlsLib.Events.MANIFEST_PARSED, function() {
+                            if (!stillCurrent(audio)) return;
+                            try {
+                                var p = audio.play();
+                                if (p && typeof p.then === 'function') {
+                                    p.then(function() { markPlaying(audio); }).catch(function() {
+                                        if (stillCurrent(audio)) failAttempt('Reprodução bloqueada');
+                                    });
+                                }
+                            } catch (_) {
+                                failAttempt('Erro HLS');
+                            }
+                        });
+                        hlsInstance.on(HlsLib.Events.ERROR, function(_evt, data) {
+                            if (!stillCurrent(audio) || !data || !data.fatal) return;
+                            failAttempt('Erro HLS');
+                        });
+                    }).catch(function() {
+                        if (stillCurrent(audio)) failAttempt('Falha ao carregar HLS');
+                    });
+                    return;
+                }
+
+                armTimeout(10000, 'Tempo esgotado');
+                try {
+                    audio.src = url;
+                    audio.load();
+                    var p = audio.play();
+                    if (p && typeof p.catch === 'function') p.catch(function() {
+                        if (stillCurrent(audio)) failAttempt('Reprodução bloqueada');
+                    });
+                } catch (_) {
+                    failAttempt('Erro no stream');
+                }
+            }
+
+            tryNextUrl();
+        }
+
+        function togglePlayPause() {
+            if (libraryMode && libraryAudio) {
+                if (libraryAudio.paused) {
+                    libraryAudio.play().then(function() {
+                        updateMiniPlayer(currentChannelLabel, false);
+                    }).catch(function() {});
+                } else {
+                    libraryAudio.pause();
+                    updateMiniPlayer(currentChannelLabel, true);
+                }
+                return;
+            }
+            var audio = radioAudio;
+            if (!audio || audio.__portalInvalid || !currentChannelId) return;
+            if (audio.paused) {
+                radioController.state = 'RADIO_LOADING';
+                var p = audio.play();
+                if (p && typeof p.then === 'function') {
+                    p.then(function() {
+                        if (audio !== radioAudio || audio.__portalInvalid) return;
+                        radioController.state = 'RADIO_PLAYING';
+                        radioPlaying = true;
+                        updateMiniPlayer(currentChannelLabel, false);
+                    }).catch(function() {
+                        if (audio === radioAudio && !audio.__portalInvalid) updateMiniPlayer(currentChannelLabel, true);
+                    });
+                }
+            } else {
+                audio.pause();
+                radioController.state = 'RADIO_PAUSED';
+                radioPlaying = false;
+                updateMiniPlayer(currentChannelLabel, true);
+            }
+        }
+
+        function stopRadio() {
+            radioController.token += 1;
+            radioController.state = 'RADIO_STOPPING';
+            cleanupRadio();
+            currentChannelId = '';
+            currentChannelLabel = '';
+            currentRadioUrl = '';
+            updateNowPlaying('', '', true);
+            radioController.channelId = '';
+            clearRadioUi();
+            var mini = document.getElementById('mini-player');
+            if (mini) mini.classList.remove('visible');
+            radioController.state = 'IDLE';
+        }
+
+        function setVolume(v) {
+            radioVolume = Math.max(0, Math.min(1, parseInt(v, 10) / 100));
+            radioAudioPool.forEach(function(audio) {
+                try { audio.volume = radioVolume; } catch (_) {}
+            });
+            if (libraryAudio) {
+                try { libraryAudio.volume = radioVolume; } catch (_) {}
+            }
+            try { localStorage.setItem('radio-vol', String(v)); } catch (_) {}
+        }
+
+        function setCastUi(connected, text) {
+            var btn = document.getElementById('cast-btn');
+            var note = document.getElementById('cast-note');
+            if (btn) {
+                btn.classList.toggle('connected', !!connected);
+                btn.textContent = connected ? '📺 Chromecast conectado' : '📺 Enviar para Chromecast';
+            }
+            if (note && text) note.textContent = text;
+        }
+
+        function initCastApi() {
+            if (castReady && window.cast && cast.framework) return Promise.resolve();
+            if (castSdkPromise) return castSdkPromise;
+            castSdkPromise = new Promise(function(resolve, reject){
+                var initialize = function(isAvailable) {
+                    if (!isAvailable || !window.cast || !cast.framework || !window.chrome || !chrome.cast) {
+                        castSdkPromise = null;
+                        reject(new Error('Google Cast não está disponível neste navegador.'));
+                        return;
+                    }
+                    try {
+                        var context = cast.framework.CastContext.getInstance();
+                        context.setOptions({
+                            receiverApplicationId: chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID,
+                            autoJoinPolicy: chrome.cast.AutoJoinPolicy.ORIGIN_SCOPED
+                        });
+                        context.addEventListener(cast.framework.CastContextEventType.SESSION_STATE_CHANGED, function(event) {
+                            castConnected = event.sessionState === cast.framework.SessionState.SESSION_STARTED || event.sessionState === cast.framework.SessionState.SESSION_RESUMED;
+                            setCastUi(castConnected, castConnected ? 'Chromecast conectado. Use os controles do dispositivo para volume e reprodução.' : 'O Chromecast pode reproduzir as rádios diretamente.');
+                        });
+                        castReady = true;
+                        resolve();
+                    } catch (err) {
+                        castSdkPromise = null;
+                        reject(err);
+                    }
+                };
+                window.__onGCastApiAvailable = initialize;
+                if (window.cast && cast.framework && window.chrome && chrome.cast) {
+                    initialize(true);
+                    return;
+                }
+                var script = document.createElement('script');
+                script.src = 'https://www.gstatic.com/cv/js/sender/v1/cast_sender.js?loadCastFramework=1';
+                script.async = true;
+                script.onerror = function() { castSdkPromise = null; reject(new Error('Falha ao carregar o Google Cast.')); };
+                document.head.appendChild(script);
+            });
+            return castSdkPromise;
+        }
+
+        function requestCastSession() {
+            return initCastApi().then(function() {
+                return cast.framework.CastContext.getInstance().requestSession();
+            });
+        }
+
+        function guessCastContentType(url) {
+            var value = String(url || '').toLowerCase();
+            if (/\.m3u8(?:$|[?#])|mpegurl/.test(value)) return 'application/x-mpegURL';
+            if (/\.aac(?:$|[?#])/.test(value)) return 'audio/aac';
+            if (/\.ogg(?:$|[?#])|\.oga(?:$|[?#])/.test(value)) return 'audio/ogg';
+            if (/\.mp4(?:$|[?#])/.test(value)) return 'video/mp4';
+            return 'audio/mpeg';
+        }
+
+        function castCurrentMedia() {
+            if (currentChannelId && currentRadioUrl) {
+                castCurrentRadio();
+                return;
+            }
+            if (ytCurrentId) {
+                setYouTubeStatus('ℹ️ O Cast do YouTube deve ser iniciado pelo ícone Cast dentro do próprio player, quando disponível.', 'ready');
+                return;
+            }
+            setCastUi(false, 'Selecione uma rádio ou carregue um vídeo antes de enviar para o Chromecast.');
+        }
+
+        function castCurrentRadio() {
+            var channel = RADIO_CHANNELS[currentChannelId];
+            var url = currentRadioUrl || (channel && channel.urls ? channel.urls[0] : '');
+            if (!channel || !url) {
+                setCastUi(false, 'Selecione uma rádio antes de enviar para o Chromecast.');
+                return;
+            }
+            setStatus(currentChannelId, 'Conectando Chromecast…');
+            requestCastSession().then(function() {
+                var session = cast.framework.CastContext.getInstance().getCurrentSession();
+                if (!session) throw new Error('Nenhuma sessão Cast foi iniciada.');
+                var mediaInfo = new chrome.cast.media.MediaInfo(url, guessCastContentType(url));
+                mediaInfo.streamType = chrome.cast.media.StreamType.LIVE;
+                mediaInfo.metadata = new chrome.cast.media.MusicTrackMediaMetadata();
+                mediaInfo.metadata.title = channel.label;
+                mediaInfo.metadata.artist = 'Portal de Mídia';
+                var request = new chrome.cast.media.LoadRequest(mediaInfo);
+                return session.loadMedia(request);
+            }).then(function() {
+                stopRadio();
+                setCastUi(true, 'Rádio enviada ao Chromecast. O áudio continua no dispositivo Cast.');
+            }).catch(function(err) {
+                console.warn('[Portal Cast]', err);
+                setStatus(currentChannelId, 'Cast indisponível');
+                setCastUi(false, 'Não foi possível iniciar o Chromecast.');
+            });
+        }
+
+        function stopCasting() {
+            try {
+                if (castReady) {
+                    var session = cast.framework.CastContext.getInstance().getCurrentSession();
+                    if (session) session.endSession(true);
+                }
+            } catch (_) {}
+            castConnected = false;
+            setCastUi(false, 'O Chromecast pode reproduzir as rádios diretamente.');
+        }
+
+        var muted = false;
+        var volumeBeforeMute = 50;
+        var sessionPlays = 0;
+        var listenSeconds = 0;
+        var listenTick = null;
+        var vizRaf = 0;
+        var libraryFavs = [];
+
+        function loadLibraryFavs() {
+            try {
+                var raw = JSON.parse(localStorage.getItem('portal-lib-favs') || '[]');
+                libraryFavs = Array.isArray(raw) ? raw : [];
+            } catch (_) { libraryFavs = []; }
+        }
+        function saveLibraryFavs() {
+            try { localStorage.setItem('portal-lib-favs', JSON.stringify(libraryFavs)); } catch (_) {}
+        }
+        function toggleLibraryFav(id) {
+            var i = libraryFavs.indexOf(id);
+            if (i >= 0) libraryFavs.splice(i, 1); else libraryFavs.push(id);
+            saveLibraryFavs();
+            renderLibrary();
+        }
+
+        function toggleMute() {
+            var slider = document.getElementById('volume-slider');
+            var btn = document.getElementById('btn-mute');
+            if (!muted) {
+                volumeBeforeMute = slider ? slider.value : '50';
+                muted = true;
+                setVolume(0);
+                if (slider) slider.value = 0;
+                if (btn) btn.textContent = '🔇';
+            } else {
+                muted = false;
+                setVolume(volumeBeforeMute);
+                if (slider) slider.value = volumeBeforeMute;
+                if (btn) btn.textContent = '🔊';
+            }
+        }
+
+        function bumpPlayStat() {
+            sessionPlays += 1;
+            updateStatsUi();
+            startListenTicker();
+        }
+        function startListenTicker() {
+            if (listenTick) return;
+            listenTick = setInterval(function() {
+                if (radioPlaying || (libraryMode && libraryAudio && !libraryAudio.paused)) {
+                    listenSeconds += 1;
+                    if (listenSeconds % 15 === 0) updateStatsUi();
+                }
+            }, 1000);
+        }
+        function updateStatsUi() {
+            var a = document.getElementById('stat-plays');
+            var b = document.getElementById('stat-mins');
+            var c = document.getElementById('stat-tracks');
+            if (a) a.textContent = String(sessionPlays);
+            if (b) b.textContent = String(Math.floor(listenSeconds / 60));
+            if (c) c.textContent = String(getLibraryTracks().length);
+        }
+
+        function scrollToPlaying() {
+            var el = document.querySelector('.radio-btn.playing, .track-item.playing-track');
+            if (el && el.scrollIntoView) {
+                try { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (_) {
+                    try { el.scrollIntoView(true); } catch (__) {}
+                }
+            }
+        }
+
+        function ensureAudioGraph(audioEl) {
+            try {
+                if (document.documentElement.classList.contains('lite-mode')) return;
+                if (document.documentElement.classList.contains('visual-simple')) return;
+                if (!audioEl) return;
+                startViz();
+            } catch (err) {
+                console.warn('[Portal] visualizer', err);
+            }
+        }
+
+        function startViz() {
+            var wrap = document.getElementById('viz-wrap');
+            if (!wrap) return;
+            if (!wrap.children.length) {
+                for (var i = 0; i < 12; i++) {
+                    var s = document.createElement('span');
+                    wrap.appendChild(s);
+                }
+            }
+            if (vizRaf) clearInterval(vizRaf);
+            var bars = wrap.children;
+            vizRaf = setInterval(function() {
+                for (var i = 0; i < bars.length; i++) {
+                    var h = 15 + Math.round(Math.random() * 85);
+                    bars[i].style.height = h + '%';
+                }
+            }, 220);
+        }
+        function stopViz() {
+            if (vizRaf) clearInterval(vizRaf);
+            vizRaf = 0;
+            var wrap = document.getElementById('viz-wrap');
+            if (wrap) {
+                for (var i = 0; i < wrap.children.length; i++) wrap.children[i].style.height = '15%';
+            }
+        }
+
+        var sleepFadeTimer = null;
+        function fadeOutAndStop(ms) {
+            ms = ms || 8000;
+            var steps = 16;
+            var stepTime = Math.floor(ms / steps);
+            var startVol = radioVolume;
+            var i = 0;
+            if (sleepFadeTimer) clearInterval(sleepFadeTimer);
+            sleepFadeTimer = setInterval(function() {
+                i += 1;
+                var v = Math.max(0, startVol * (1 - i / steps));
+                if (radioAudio) try { radioAudio.volume = v; } catch (_) {}
+                if (libraryAudio) try { libraryAudio.volume = v; } catch (_) {}
+                if (i >= steps) {
+                    clearInterval(sleepFadeTimer);
+                    sleepFadeTimer = null;
+                    stopCurrentMedia();
+                    if (radioAudio) try { radioAudio.volume = radioVolume; } catch (_) {}
+                    if (libraryAudio) try { libraryAudio.volume = radioVolume; } catch (_) {}
+                }
+            }, stepTime);
+        }
+
+        function loadYouTubePlaylist(listId, videoId, btnEl, autoPlay) {
+            if (typeof autoPlay === 'undefined') autoPlay = true;
+            if (!ytPlayerActivated) {
+                ytPlayerActivated = true;
+                showYouTubeUi(true);
+            }
+            stopLibrary(false);
+            stopRadio();
+            document.querySelectorAll('.yt-presets button, #yt-salvos-grid button').forEach(function(b) {
+                b.classList.remove('active', 'playing', 'active-yt');
+            });
+            if (btnEl) btnEl.classList.add('active', 'active-yt');
+            var id = videoId || '';
+            if (!id && listId) {
+                id = 'odouCACH9-w';
+            }
+            ytCurrentId = id;
+            setYTDiag('id', id + (listId ? ' · list=' + listId : ''));
+            setYouTubeStatus('Carregando playlist…', 'loading');
+            destroyYouTubePlayer();
+            var container = document.getElementById('yt-player');
+            clearElement(container);
+            var token = ++ytLoadToken;
+            loadYouTubeApi().then(function(YTLib) {
+                if (token !== ytLoadToken) return;
+                ytPlayer = new YTLib.Player('yt-player', {
+                    videoId: id,
+                    host: 'https://www.youtube.com',
+                    playerVars: {
+                        autoplay: autoPlay ? 1 : 0,
+                        controls: 1,
+                        playsinline: 1,
+                        rel: 0,
+                        list: listId,
+                        listType: 'playlist',
+                        origin: window.location.origin,
+                        enablejsapi: 1,
+                        modestbranding: 1
+                    },
+                    events: {
+                        onReady: function(e) {
+                            if (token !== ytLoadToken) return;
+                            setYTDiag('api', 'pronta');
+                            setYTDiag('state', 'playlist pronta');
+                            setYouTubeStatus('Playlist pronta', 'ready');
+                            try {
+                                if (listId && e.target.loadPlaylist) {
+                                    e.target.loadPlaylist({ list: listId, listType: 'playlist', index: 0 });
+                                }
+                                if (autoPlay) e.target.playVideo();
+                            } catch (_) {}
+                        },
+                        onStateChange: function(e) {
+                            if (token !== ytLoadToken) return;
+                            if (e.data === 1) { stopRadio(); setYouTubeStatus('✅ Reproduzindo playlist', 'ok'); }
+                        },
+                        onError: function(e) {
+                            if (token !== ytLoadToken) return;
+                            setYouTubeStatus('❌ Erro na playlist (' + e.data + '). Tentando só o vídeo…', 'error');
+                            if (id) loadYouTubeId(id, btnEl, autoPlay);
+                        }
+                    }
+                });
+            }).catch(function(err) {
+                setYouTubeStatus('❌ ' + (err && err.message ? err.message : err), 'error');
+            });
+        }
+
+        var wakeLockSentinel = null;
+        function requestWakeLock() {
+            if (!('wakeLock' in navigator)) return;
+            try {
+                navigator.wakeLock.request('screen').then(function(s) {
+                    wakeLockSentinel = s;
+                    s.addEventListener('release', function() { wakeLockSentinel = null; });
+                }).catch(function() {});
+            } catch (_) {}
+        }
+        function releaseWakeLock() {
+            if (!wakeLockSentinel) return;
+            try { wakeLockSentinel.release(); } catch (_) {}
+            wakeLockSentinel = null;
+        }
+        function updateNetworkBanner() {
+            var el = document.getElementById('net-banner');
+            if (!el) return;
+            if (navigator.onLine === false) {
+                el.textContent = 'Sem conexão — streams e YouTube precisam de internet.';
+                el.className = 'net-banner show';
+            } else if (el.classList.contains('show') && el.textContent.indexOf('Sem conexão') === 0) {
+                el.textContent = 'Conexão restabelecida.';
+                el.className = 'net-banner show online';
+                setTimeout(function() { el.className = 'net-banner'; el.textContent = ''; }, 2500);
+            }
+        }
+        function setupNetworkAndWake() {
+            window.addEventListener('online', updateNetworkBanner);
+            window.addEventListener('offline', updateNetworkBanner);
+            updateNetworkBanner();
+            document.addEventListener('visibilitychange', function() {
+                if (document.visibilityState === 'visible' && (radioPlaying || (libraryMode && libraryAudio && !libraryAudio.paused))) {
+                    requestWakeLock();
+                }
+            });
+        }
+
+        function getHistory() {
+            try {
+                var raw = JSON.parse(localStorage.getItem('portal-history') || '[]');
+                return Array.isArray(raw) ? raw : [];
+            } catch (_) { return []; }
+        }
+        function pushHistory(entry) {
+            if (!entry || !entry.id || !entry.label) return;
+            var list = getHistory().filter(function(h) { return h.id !== entry.id; });
+            list.unshift({ id: entry.id, label: entry.label, type: entry.type || 'radio', at: Date.now() });
+            if (list.length > 12) list = list.slice(0, 12);
+            try { localStorage.setItem('portal-history', JSON.stringify(list)); } catch (_) {}
+            try { renderHub(); } catch (_) {}
+        }
+        var deferredInstallPrompt = null;
+        function dismissInstallBanner() {
+            var b = document.getElementById('install-banner');
+            if (b) { b.hidden = true; b.classList.remove('show'); }
+            setStoredValue('portal-install-dismissed', '1');
+        }
+        function promptPwaInstall() {
+            if (!deferredInstallPrompt) {
+                alert('iPhone: Safari → Compartilhar → Adicionar à Tela de Início.\nAndroid/Chrome: menu → Instalar app (quando disponível).');
+                return;
+            }
+            deferredInstallPrompt.prompt();
+            deferredInstallPrompt.userChoice.then(function() {
+                deferredInstallPrompt = null;
+                dismissInstallBanner();
+            }).catch(function() {});
+        }
+        function setupPwa() {
+            window.addEventListener('beforeinstallprompt', function(e) {
+                e.preventDefault();
+                deferredInstallPrompt = e;
+                if (getStoredValue('portal-install-dismissed', '0') === '1') return;
+                var b = document.getElementById('install-banner');
+                if (b) { b.hidden = false; b.classList.add('show'); }
+            });
+            if ('serviceWorker' in navigator) {
+                var swUrl = new URL('sw.js', window.location.href).href;
+                navigator.serviceWorker.register(swUrl).then(function() {
+                    var note = document.getElementById('sw-note');
+                    if (note) note.textContent = 'Modo app: interface pode abrir offline (streams precisam de rede).';
+                }).catch(function() {});
+            }
+        }
+        function compartilharAgora() {
+            var title = currentChannelLabel || 'Portal de Mídia';
+            var text = currentChannelLabel ? ('Ouvindo: ' + currentChannelLabel + ' no Portal de Mídia') : 'Portal de Mídia — rádios e músicas';
+            var url = window.location.href;
+            if (navigator.share) {
+                navigator.share({ title: 'Portal de Mídia', text: text, url: url }).catch(function() {});
+            } else {
+                try {
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                        navigator.clipboard.writeText(text + ' — ' + url);
+                        alert('Copiado para a área de transferência.');
+                    } else {
+                        prompt('Copie o link:', url);
+                    }
+                } catch (_) { prompt('Copie o link:', url); }
+            }
+        }
+
+        function setLibraryStatus(text, type) {
+            var el = document.getElementById('lib-status');
+            if (!el) return;
+            el.textContent = text || '';
+            el.className = 'lib-status' + (type ? ' ' + type : '');
+        }
+
+        function mergeLibraryTracks(incoming, mode) {
+            var current = getLibraryTracks();
+            var byUrl = {};
+            current.forEach(function(t) { byUrl[String(t.url)] = t; });
+            var list = mode === 'replace' ? [] : current.slice();
+            var seen = {};
+            if (mode !== 'replace') list.forEach(function(t) { seen[String(t.url)] = true; });
+            (incoming || []).forEach(function(raw) {
+                if (!raw) return;
+                var title = String(raw.title || raw.nome || raw.name || '').trim();
+                var urlText = String(raw.url || raw.src || '').trim();
+                if (!title || !urlText) return;
+                try {
+                    var u = new URL(urlText, window.location.href);
+                    if (u.protocol !== 'https:' && u.protocol !== 'http:') return;
+                    var href = u.href;
+                    if (seen[href]) return;
+                    seen[href] = true;
+                    var prev = byUrl[href];
+                    list.push({
+                        id: (prev && prev.id) || raw.id || getStableId('track'),
+                        title: title,
+                        artist: String(raw.artist || raw.artista || '').trim(),
+                        url: href
+                    });
+                } catch (_) {}
+            });
+            setLibraryTracks(list);
+            return list.length;
+        }
+
+        function carregarPlaylistJson() {
+            setLibraryStatus('Carregando playlist.json…', '');
+            var url = new URL('playlist.json', window.location.href).href;
+            fetch(url, { cache: 'no-store' }).then(function(res) {
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                return res.json();
+            }).then(function(data) {
+                var tracks = [];
+                if (Array.isArray(data)) tracks = data;
+                else if (data && Array.isArray(data.tracks)) tracks = data.tracks;
+                else throw new Error('JSON inválido');
+                if (!confirm('Importar ' + tracks.length + ' faixa(s) do playlist.json?\nOK = mesclar · Cancelar = abortar')) {
+                    setLibraryStatus('Importação cancelada.', '');
+                    return;
+                }
+                var n = mergeLibraryTracks(tracks, 'append');
+                renderLibrary();
+                setLibraryStatus('Biblioteca atualizada — ' + n + ' faixa(s) no total.', 'ok');
+            }).catch(function(err) {
+                setLibraryStatus('Não foi possível carregar playlist.json. Coloque o arquivo na raiz do site.', 'err');
+            });
+        }
+
+        function bindKeyboardShortcuts() {
+            document.addEventListener('keydown', function(e) {
+                var tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : '';
+                if (tag === 'input' || tag === 'textarea' || tag === 'select' || (e.target && e.target.isContentEditable)) return;
+                var key = e.key || '';
+                if (key === ' ' || key === 'Spacebar') {
+                    e.preventDefault();
+                    togglePlayPause();
+                } else if (key === 'n' || key === 'N') {
+                    if (libraryMode) libraryNext();
+                } else if (key === 'p' || key === 'P') {
+                    if (libraryMode) libraryPrev();
+                } else if (key === 's' || key === 'S') {
+                    stopAllMedia();
+                }
+            });
+        }
+
+        function setLibraryMediaSession(track) {
+            if (!('mediaSession' in navigator) || !track) return;
+            try {
+                navigator.mediaSession.metadata = new MediaMetadata({
+                    title: track.title,
+                    artist: track.artist || 'Portal de Mídia',
+                    album: 'Minhas músicas'
+                });
+                try { navigator.mediaSession.setActionHandler('play', function() { togglePlayPause(); }); } catch (_) {}
+                try { navigator.mediaSession.setActionHandler('pause', function() { togglePlayPause(); }); } catch (_) {}
+                try { navigator.mediaSession.setActionHandler('stop', stopAllMedia); } catch (_) {}
+                try { navigator.mediaSession.setActionHandler('nexttrack', function() { libraryNext(); }); } catch (_) {}
+                try { navigator.mediaSession.setActionHandler('previoustrack', function() { libraryPrev(); }); } catch (_) {}
+            } catch (_) {}
+        }
+
+        function getLibraryTracks() {
+            try {
+                var raw = JSON.parse(localStorage.getItem('portal-library') || '[]');
+                if (!Array.isArray(raw)) return [];
+                return raw.filter(function(t) {
+                    return t && t.id && t.title && t.url;
+                });
+            } catch (_) { return []; }
+        }
+
+        function setLibraryTracks(tracks) {
+            try { localStorage.setItem('portal-library', JSON.stringify(tracks || [])); } catch (_) {}
+        }
+
+        function renderLibrary() {
+            var grid = document.getElementById('library-grid');
+            var empty = document.getElementById('library-empty');
+            if (!grid) return;
+            var tracks = getLibraryTracks();
+            Array.prototype.slice.call(grid.querySelectorAll('.media-item')).forEach(function(n) { n.remove(); });
+            if (!tracks.length) {
+                if (empty) { empty.hidden = false; if (!empty.parentNode) grid.appendChild(empty); }
+                updateLibraryNavButtons();
+                return;
+            }
+            if (empty) empty.hidden = true;
+            tracks.forEach(function(track) {
+                var div = document.createElement('div');
+                div.className = 'media-item track-item';
+                div.dataset.nome = (track.title + ' ' + (track.artist || '')).toLowerCase();
+                if (libraryMode && libraryQueue[libraryIndex] === track.id) div.classList.add('playing-track');
+                var btn = document.createElement('button');
+                btn.className = 'radio-btn';
+                btn.type = 'button';
+                if (libraryMode && libraryQueue[libraryIndex] === track.id && libraryAudio && !libraryAudio.paused) {
+                    btn.classList.add('playing');
+                }
+                btn.onclick = function() { playLibraryTrack(track.id, false); };
+                var icon = document.createElement('span');
+                icon.className = 'icon';
+                icon.textContent = '🎵';
+                var label = document.createElement('span');
+                label.className = 'label';
+                var name = document.createElement('span');
+                name.className = 'name';
+                name.textContent = track.title;
+                var small = document.createElement('small');
+                small.textContent = track.artist || 'Minha música';
+                var status = document.createElement('span');
+                status.className = 'status';
+                status.id = 'status-lib-' + track.id;
+                label.appendChild(name);
+                label.appendChild(small);
+                label.appendChild(status);
+                btn.appendChild(icon);
+                btn.appendChild(label);
+                var fav = document.createElement('button');
+                fav.className = 'fav-btn' + (libraryFavs.indexOf(track.id) >= 0 ? ' active' : '');
+                fav.type = 'button';
+                fav.textContent = libraryFavs.indexOf(track.id) >= 0 ? '★' : '☆';
+                fav.onclick = function() { toggleLibraryFav(track.id); };
+                var del = document.createElement('button');
+                del.className = 'delete-btn';
+                del.type = 'button';
+                del.textContent = '🗑';
+                del.onclick = function() { removerFaixaBiblioteca(track.id); };
+                div.appendChild(btn);
+                div.appendChild(fav);
+                div.appendChild(del);
+                grid.appendChild(div);
+            });
+            updateLibraryNavButtons();
+        }
+
+        function adicionarFaixaBiblioteca() {
+            var title = (document.getElementById('lib-title').value || '').trim();
+            var artist = (document.getElementById('lib-artist').value || '').trim();
+            var urlText = (document.getElementById('lib-url').value || '').trim();
+            if (!title || !urlText) { alert('Informe o nome e a URL HTTPS da faixa.'); return; }
+            var url;
+            try { url = new URL(urlText); } catch (_) { alert('URL inválida.'); return; }
+            var tracks = getLibraryTracks();
+            var existing = tracks.findIndex(function(t) { return String(t.url) === url.href; });
+            var item = {
+                id: existing >= 0 ? tracks[existing].id : getStableId('track'),
+                title: title,
+                artist: artist,
+                url: url.href
+            };
+            if (existing >= 0) tracks[existing] = item; else tracks.push(item);
+            setLibraryTracks(tracks);
+            document.getElementById('lib-title').value = '';
+            document.getElementById('lib-artist').value = '';
+            document.getElementById('lib-url').value = '';
+            renderLibrary();
+        }
+
+        function removerFaixaBiblioteca(id) {
+            if (!confirm('Remover esta faixa?')) return;
+            var tracks = getLibraryTracks().filter(function(t) { return t.id !== id; });
+            setLibraryTracks(tracks);
+            if (libraryMode && libraryQueue.indexOf(id) >= 0) {
+                stopLibrary(true);
+            }
+            renderLibrary();
+        }
+
+        function updateLibraryNavButtons() {
+            var prev = document.getElementById('btn-prev');
+            var next = document.getElementById('btn-next');
+            var enable = libraryMode && libraryQueue.length > 1;
+            if (prev) prev.disabled = !enable;
+            if (next) next.disabled = !enable;
+        }
+
+        function getTrackById(id) {
+            var tracks = getLibraryTracks();
+            for (var i = 0; i < tracks.length; i++) {
+                if (tracks[i].id === id) return tracks[i];
+            }
+            return null;
+        }
+
+        function shuffleIds(ids) {
+            var arr = ids.slice();
+            for (var i = arr.length - 1; i > 0; i--) {
+                var j = Math.floor(Math.random() * (i + 1));
+                var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+            }
+            return arr;
+        }
+
+        function playLibraryAll(shuffle) {
+            var tracks = getLibraryTracks();
+            if (!tracks.length) { alert('Adicione pelo menos uma faixa.'); return; }
+            libraryPlayMode = shuffle ? 'shuffle' : 'linear';
+            var ids = tracks.map(function(t) { return t.id; });
+            libraryQueue = shuffle ? shuffleIds(ids) : ids;
+            libraryIndex = 0;
+            playLibraryTrack(libraryQueue[0], true);
+        }
+
+        function setLibraryMode(mode) {
+            libraryPlayMode = mode || 'repeat-all';
+            try {
+                var note = document.querySelector('#section-library .lib-mode-note');
+                if (note) {
+                    var base = note.getAttribute('data-base') || note.textContent;
+                    note.setAttribute('data-base', base);
+                    note.textContent = 'Modo da fila: ' + (mode === 'repeat-all' ? 'repetir todas' : mode) + '.';
+                    setTimeout(function() { note.textContent = note.getAttribute('data-base') || base; }, 2500);
+                }
+            } catch (_) {}
+        }
+
+        function playLibraryTrack(trackId, fromQueue) {
+            var track = getTrackById(trackId);
+            if (!track) return;
+
+            if (typeof stopRadio === 'function') {
+                radioController.token += 1;
+                cleanupRadio();
+                currentChannelId = '';
+                currentChannelLabel = '';
+                currentRadioUrl = '';
+                clearRadioUi();
+            }
+            if (ytPlayer && typeof ytPlayer.pauseVideo === 'function') {
+                try { ytPlayer.pauseVideo(); } catch (_) {}
+            }
+            stopLibrary(true);
+
+            if (!fromQueue) {
+                var all = getLibraryTracks().map(function(t) { return t.id; });
+                var idx = all.indexOf(trackId);
+                libraryQueue = all;
+                libraryIndex = idx >= 0 ? idx : 0;
+                libraryPlayMode = 'linear';
+            } else {
+                libraryIndex = Math.max(0, libraryQueue.indexOf(trackId));
+            }
+
+            libraryMode = true;
+            var audio = new Audio();
+            audio.preload = 'none';
+            audio.volume = radioVolume;
+            libraryAudio = audio;
+            currentChannelId = 'library:' + track.id;
+            currentChannelLabel = track.title + (track.artist ? ' — ' + track.artist : '');
+            currentRadioUrl = track.url;
+            setStoredValue('portal-last-library', track.id);
+            setLibraryMediaSession(track);
+            pushHistory({ id: 'library:' + track.id, label: track.title, type: 'library' });
+            try { renderHub(); } catch (_) {}
+
+            audio.onended = function() {
+                if (!libraryMode) return;
+                libraryAdvance(1);
+            };
+            audio.onerror = function() {
+                if (libraryAudio !== audio) return;
+                updateMiniPlayer('Erro: ' + track.title, true);
+                libraryAdvance(1);
+            };
+            audio.onplaying = function() {
+                if (libraryAudio !== audio) return;
+                updateMiniPlayer(currentChannelLabel, false);
+                requestWakeLock();
+                bumpPlayStat();
+                ensureAudioGraph(audio);
+                renderLibrary();
+                setTimeout(scrollToPlaying, 200);
+            };
+
+            try {
+                audio.src = track.url;
+                audio.load();
+                var p = audio.play();
+                if (p && typeof p.catch === 'function') {
+                    p.catch(function() {
+                        updateMiniPlayer('Toque em play: ' + track.title, true);
+                    });
+                }
+            } catch (_) {
+                updateMiniPlayer('Erro ao tocar', true);
+            }
+            updateLibraryNavButtons();
+            renderLibrary();
+            updateMiniPlayer(currentChannelLabel, true);
+        }
+
+        function libraryAdvance(delta) {
+            if (!libraryQueue.length) { stopLibrary(false); stopAllMedia(); return; }
+            var next = libraryIndex + delta;
+            if (libraryPlayMode === 'repeat-all') {
+                if (next >= libraryQueue.length) next = 0;
+                if (next < 0) next = libraryQueue.length - 1;
+            } else if (libraryPlayMode === 'shuffle' && delta > 0 && next >= libraryQueue.length) {
+                libraryQueue = shuffleIds(libraryQueue);
+                next = 0;
+            } else {
+                if (next >= libraryQueue.length || next < 0) {
+                    stopLibrary(false);
+                    var mini = document.getElementById('mini-player');
+                    if (mini) mini.classList.remove('visible');
+                    currentChannelId = '';
+                    currentChannelLabel = '';
+                    updateLibraryNavButtons();
+                    renderLibrary();
+                    return;
+                }
+            }
+            libraryIndex = next;
+            playLibraryTrack(libraryQueue[libraryIndex], true);
+        }
+
+        function libraryNext() {
+            if (!libraryMode) return;
+            libraryAdvance(1);
+        }
+        function libraryPrev() {
+            if (!libraryMode) return;
+            libraryAdvance(-1);
+        }
+
+        function stopAllMedia() {
+            stopLibrary(false);
+            stopRadio();
+            releaseWakeLock();
+            stopViz();
+            if (ytPlayer && typeof ytPlayer.pauseVideo === 'function') {
+                try { ytPlayer.pauseVideo(); } catch (_) {}
+            }
+        }
+
+        function stopCurrentMedia() {
+            stopLibrary(false);
+            stopRadio();
+            stopCasting();
+            if (ytPlayer && typeof ytPlayer.pauseVideo === 'function') { try { ytPlayer.pauseVideo(); } catch (_) {} }
+        }
+        function setSleepTimer(minutos, btnEl) {
+            cancelSleepTimer(); sleepTimerEnd = Date.now() + minutos * 60 * 1000;
+            document.querySelectorAll('.timer-wrap .timer-btn').forEach(function(b){ b.classList.remove('active'); });
+            if (btnEl) btnEl.classList.add('active');
+            sleepTimerInterval = setInterval(atualizarTimerStatus, 1000); atualizarTimerStatus();
+            sleepTimerId = setTimeout(function() {
+                fadeOutAndStop(10000);
+                cancelSleepTimer();
+                var status = document.getElementById('timer-status');
+                if (status) { status.textContent = '⏰ Fade e parada pelo Sleep Timer.'; status.classList.add('active'); }
+            }, Math.max(0, minutos * 60 * 1000 - 10000));
+        }
+        function cancelSleepTimer() {
+            if (sleepTimerId) { clearTimeout(sleepTimerId); sleepTimerId = null; }
+            if (sleepTimerInterval) { clearInterval(sleepTimerInterval); sleepTimerInterval = null; }
+            sleepTimerEnd = 0;
+            document.querySelectorAll('.timer-wrap .timer-btn').forEach(function(b){ b.classList.remove('active'); });
+            var status = document.getElementById('timer-status'); if (status) { status.textContent = ''; status.classList.remove('active'); }
+        }
+        function atualizarTimerStatus() {
+            var status = document.getElementById('timer-status'); if (!status) return;
+            if (!sleepTimerEnd) { status.textContent = ''; return; }
+            var restante = Math.max(0, sleepTimerEnd - Date.now()); var min = Math.floor(restante / 60000); var seg = Math.floor((restante % 60000) / 1000);
+            status.textContent = '⏰ Desliga em ' + min + 'm ' + ('0' + seg).slice(-2) + 's'; status.classList.add('active');
+        }
+
+        function showYouTubeUi(activated) {
+            var wrap = document.getElementById('yt-activate-wrap');
+            var container = document.getElementById('yt-video-container');
+            var diag = document.querySelector('.yt-diagnostics');
+            if (wrap) wrap.hidden = !!activated;
+            if (container) container.hidden = !activated;
+            if (diag) diag.hidden = !activated;
+        }
+
+        function ativarYouTubePlayer(autoLoadEntry) {
+            if (typeof autoLoadEntry === 'undefined') autoLoadEntry = true;
+            ytPlayerActivated = true;
+            showYouTubeUi(true);
+            setYTDiag('origin', window.location.origin);
+            setYTDiag('api', 'aguardando');
+            setYouTubeStatus(autoLoadEntry ? 'Carregando player do YouTube…' : 'Player ativado.', autoLoadEntry ? 'loading' : 'ready');
+            if (autoLoadEntry) loadYouTubeId(YT_ENTRY_ID, null, false);
+        }
+
+        function exportarDadosPortal() {
+            try {
+                var dados = getDadosSalvos();
+                var payload = {
+                    app: 'Portal de Mídia',
+                    version: 3,
+                    exportedAt: new Date().toISOString(),
+                    favoritos: carregarFavoritos(),
+                    dados: { version: 3, radio: dados.radio || [], youtube: dados.youtube || [] },
+                    volume: localStorage.getItem('radio-vol') || '50',
+                    theme: getStoredValue('portal-theme', 'auto'),
+                    performance: getStoredValue('portal-performance', 'auto'),
+                    compact: getStoredValue('portal-compact', '0'),
+                    colorTheme: getStoredValue('portal-color-theme', 'violet'),
+                    visualLevel: getStoredValue('portal-visual-level', 'full'),
+                    library: getLibraryTracks(),
+                    history: getHistory()
+                };
+                var blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+                var url = URL.createObjectURL(blob);
+                var a = document.createElement('a');
+                a.href = url;
+                a.download = 'portal-midia-backup-' + new Date().toISOString().slice(0, 10) + '.json';
+                document.body.appendChild(a);
+                a.click();
+                setTimeout(function() { try { URL.revokeObjectURL(url); a.remove(); } catch (_) {} }, 500);
+            } catch (err) {
+                alert('Não foi possível exportar o backup: ' + (err && err.message ? err.message : err));
+            }
+        }
+
+        function importarDadosPortal(event) {
+            var file = event && event.target && event.target.files && event.target.files[0];
+            if (!file) return;
+            var reader = new FileReader();
+            reader.onload = function() {
+                try {
+                    var raw = JSON.parse(String(reader.result || '{}'));
+                    var dadosIn = raw.dados || raw;
+                    var radio = Array.isArray(dadosIn.radio) ? dadosIn.radio : [];
+                    var youtube = Array.isArray(dadosIn.youtube) ? dadosIn.youtube : [];
+                    if (!radio.length && !youtube.length && !Array.isArray(raw.favoritos)) {
+                        alert('Arquivo de backup inválido ou vazio.');
+                        return;
+                    }
+                    if (!confirm('Importar backup? Isso substitui favoritos, rádios salvas e YouTube salvos atuais.')) {
+                        event.target.value = '';
+                        return;
+                    }
+                    setDadosSalvos({ version: 3, radio: radio, youtube: youtube });
+                    if (Array.isArray(raw.favoritos)) salvarFavoritos(raw.favoritos);
+                    if (Array.isArray(raw.library)) setLibraryTracks(raw.library);
+                    if (Array.isArray(raw.history)) { try { localStorage.setItem('portal-history', JSON.stringify(raw.history)); } catch (_) {} }
+                    if (raw.volume != null) {
+                        try { localStorage.setItem('radio-vol', String(raw.volume)); } catch (_) {}
+                        var slider = document.getElementById('volume-slider');
+                        if (slider) slider.value = String(raw.volume);
+                        radioVolume = Math.max(0, Math.min(1, parseInt(raw.volume, 10) / 100));
+                        if (radioAudio) radioAudio.volume = radioVolume;
+                    }
+                    if (raw.theme) setThemeMode(raw.theme);
+                    if (raw.performance) setPerformanceMode(raw.performance);
+                    if (raw.colorTheme) setColorTheme(raw.colorTheme);
+                    if (raw.visualLevel) setVisualLevel(raw.visualLevel);
+                    renderCanaisSalvos(); renderFavoritos(); sincronizarEstrelas(); renderHub(); renderLibrary();
+                    alert('Backup importado com sucesso.');
+                } catch (err) {
+                    alert('Falha ao ler o backup: ' + (err && err.message ? err.message : err));
+                }
+                try { event.target.value = ''; } catch (_) {}
+            };
+            reader.readAsText(file);
+        }
+
+        function renderHub() {
+            var cont = document.getElementById('hub-continue');
+            var favsEl = document.getElementById('hub-favs');
+            var histEl = document.getElementById('hub-history');
+            if (!cont || !favsEl) return;
+            clearElement(cont);
+            clearElement(favsEl);
+            if (histEl) clearElement(histEl);
+            var hasContinue = false;
+            var lastId = getStoredValue('portal-last-channel', '');
+            if (lastId && RADIO_CHANNELS[lastId]) {
+                var ch = RADIO_CHANNELS[lastId];
+                var b = document.createElement('button');
+                b.type = 'button';
+                b.className = 'hub-chip hub-chip-primary';
+                b.textContent = '▶ ' + ch.label;
+                b.onclick = function() { playChannel(lastId, null); };
+                cont.appendChild(b);
+                hasContinue = true;
+            }
+            var lastLib = getStoredValue('portal-last-library', '');
+            var libTrack = lastLib ? getTrackById(lastLib) : null;
+            if (libTrack) {
+                var b2 = document.createElement('button');
+                b2.type = 'button';
+                b2.className = 'hub-chip' + (hasContinue ? '' : ' hub-chip-primary');
+                b2.textContent = '🎵 ' + libTrack.title;
+                b2.onclick = function() { playLibraryTrack(libTrack.id, false); };
+                cont.appendChild(b2);
+                hasContinue = true;
+            }
+            if (!hasContinue) {
+                var span = document.createElement('span');
+                span.className = 'hub-empty';
+                span.textContent = 'Nenhuma rádio ou faixa recente';
+                cont.appendChild(span);
+            }
+            var favs = migrateLegacyFavoriteIds().filter(function(id) { return RADIO_CHANNELS[id]; }).slice(0, 8);
+            if (!favs.length) {
+                var span = document.createElement('span');
+                span.className = 'hub-empty';
+                span.textContent = 'Toque na ☆ para favoritar';
+                favsEl.appendChild(span);
+            } else {
+                favs.forEach(function(id) {
+                    var ch = RADIO_CHANNELS[id];
+                    var b = document.createElement('button');
+                    b.type = 'button';
+                    b.className = 'hub-chip';
+                    b.textContent = '★ ' + ch.label;
+                    b.onclick = function() { playChannel(id, null); };
+                    favsEl.appendChild(b);
+                });
+            }
+            if (histEl) {
+                var hist = getHistory().slice(0, 8);
+                if (!hist.length) {
+                    var span = document.createElement('span');
+                    span.className = 'hub-empty';
+                    span.textContent = 'O histórico aparece após você ouvir algo';
+                    histEl.appendChild(span);
+                } else {
+                    hist.forEach(function(h) {
+                        var b = document.createElement('button');
+                        b.type = 'button';
+                        b.className = 'hub-chip';
+                        b.textContent = (h.type === 'library' ? '🎵 ' : '📻 ') + h.label;
+                        b.onclick = function() {
+                            if (h.type === 'library') {
+                                var id = String(h.id).replace(/^library:/, '');
+                                playLibraryTrack(id, false);
+                            } else {
+                                playChannel(h.id, null);
+                            }
+                        };
+                        histEl.appendChild(b);
+                    });
+                }
+            }
+        }
+
+        function setActiveQuickNav() {
+            var links = document.querySelectorAll('.quick-nav a[href^="#"]');
+            if (!links.length) return;
+            var sections = [];
+            links.forEach(function(a) {
+                var id = a.getAttribute('href').slice(1);
+                var el = document.getElementById(id);
+                if (el) sections.push({ id: id, el: el, link: a });
+            });
+            function update() {
+                var y = window.scrollY + 160;
+                var current = sections[0];
+                sections.forEach(function(s) {
+                    if (s.el.offsetTop <= y) current = s;
+                });
+                links.forEach(function(a) { a.classList.remove('active'); });
+                if (current) current.link.classList.add('active');
+            }
+            window.addEventListener('scroll', update);
+            update();
+        }
+
+        window.addEventListener('DOMContentLoaded', function() {
+            refreshAppearanceControls();
+            var savedVol = localStorage.getItem('radio-vol') || '50';
+            var slider = document.getElementById('volume-slider');
+            if (slider) slider.value = savedVol;
+            radioVolume = parseInt(savedVol, 10) / 100;
+            renderCanaisSalvos();
+            renderFavoritos();
+            sincronizarEstrelas();
+            renderHub();
+            renderLibrary();
+            setActiveQuickNav();
+            bindKeyboardShortcuts();
+            setupPwa();
+            setupNetworkAndWake();
+            loadLibraryFavs();
+            updateStatsUi();
+            showYouTubeUi(false);
+            setYTDiag('origin', window.location.origin);
+            setYTDiag('api', 'em espera');
+            setYTDiag('state', 'player não ativado');
+            setYouTubeStatus('Player em espera — ative quando quiser usar o YouTube.', 'ready');
+        });
+    </script>
+</body>
+</html>
