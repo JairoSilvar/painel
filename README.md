@@ -1,4 +1,4 @@
-# Painel Mídia v6.1 — Híbrido / iOS 9
+# Painel Mídia v6.2 — Híbrido / iOS 9
 
 Build revisado para um único portal híbrido: Android, iPhone/iPad antigos e modernos, desktop e navegadores atuais.
 
@@ -52,3 +52,10 @@ Build revisado para um único portal híbrido: Android, iPhone/iPad antigos e mo
 ## Observação sobre streams
 
 A compatibilidade do código não garante que um servidor externo de rádio esteja online, aceite HTTPS/CORS ou permaneça disponível. Streams de terceiros devem ser validados separadamente no momento do teste.
+
+
+## v6.2
+- Preserva todas as rádios existentes, incluindo Total Hits.
+- Amplia os presets do YouTube com Reiki, meditação e música instrumental calmante.
+- Adiciona categoria Instrumental / Acalmar aos vídeos salvos.
+- Mantém a reprodução embutida e a exclusividade rádio/YouTube.

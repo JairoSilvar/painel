@@ -596,7 +596,7 @@ html.lite-mode .header-inner, html.lite-mode .section, html.lite-mode .search-wr
 <div class="brand-mark" role="button" tabindex="0" title="Voltar ao início" onclick="goHome()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goHome();}" style="cursor :pointer">🎧</div>
 <div class="brand-copy" role="button" tabindex="0" title="Voltar ao início" onclick="goHome()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goHome();}" style="cursor :pointer">
 <h1>Portal de Mídia</h1>
-<span class="version-tag">v6.1 • Painel Mídia • Rádios, YouTube e Músicas</span>
+<span class="version-tag">v6.2 • Painel Mídia • Rádios, YouTube e Músicas</span>
 </div>
 <div class="header-actions">
 <button class="header-action" id="theme-menu-btn" type="button" onclick="toggleAppearancePanel()" aria-expanded="false" aria-controls="appearance-panel" title="Aparência">◐</button>
@@ -713,6 +713,14 @@ html.lite-mode .header-inner, html.lite-mode .section, html.lite-mode .search-wr
 <button class="timer-btn" onclick="loadYouTubeId('XExeWpVldDo', this, true)" title="Dance e remixes nonstop" type="button">🔥 80/90/2000 — 1 hora</button>
 <button class="timer-btn" onclick="loadYouTubeId('WF1ypdkbmv8', this, true)" title="Best 80s Love Songs" type="button">✨ Best 80s Love Songs</button>
 <button class="timer-btn" onclick="loadYouTubeId('FN7hdDqJftQ', this, true)" title="Meditação, yoga, Reiki e sono" type="button">🧘 Reiki &amp; Relaxamento — 2 horas</button>
+<button class="timer-btn" onclick="loadYouTubeId('Leob7Fv1ibM', this, true)" title="Reiki, meditação e relaxamento" type="button">✨ Reiki — Meditação</button>
+<button class="timer-btn" onclick="loadYouTubeId('4AGrxBGEo7o', this, true)" title="Reiki e meditação profunda" type="button">🌿 Reiki — 432Hz / 111Hz</button>
+<button class="timer-btn" onclick="loadYouTubeId('x7e2Dm5WdNg', this, true)" title="Reiki, sons da natureza e meditação Zen" type="button">🌊 Reiki + Natureza</button>
+<button class="timer-btn" onclick="loadYouTubeId('nTnW0copqhI', this, true)" title="Reiki para relaxamento e sono" type="button">😴 Reiki — Sono &amp; Relaxamento</button>
+<button class="timer-btn" onclick="loadYouTubeId('2kegDq_YB7o', this, true)" title="1 hora de piano instrumental para meditação e relaxamento" type="button">🎹 Piano Instrumental — 1 hora</button>
+<button class="timer-btn" onclick="loadYouTubeId('dOOJW-F7Sx0', this, true)" title="1 hora de piano instrumental calmante" type="button">🎼 Instrumental Calmante — 1 hora</button>
+<button class="timer-btn" onclick="loadYouTubeId('F0opURoKM6w', this, true)" title="1 hora de piano para relaxamento e meditação" type="button">🌙 Piano Healing — 1 hora</button>
+<button class="timer-btn" onclick="loadYouTubeId('pL14qTbM3ng', this, true)" title="Chuva suave com piano instrumental" type="button">🌧️ Chuva + Piano — 1 hora</button>
 <button class="timer-btn" onclick="loadYouTubeId('Gx-QTJ9cAko', this, true)" title="Synthwave / foco / relaxamento" type="button">🌌 Ambiente 80s — 1 hora</button>
 </div>
 <details class="yt-add-panel">
@@ -725,6 +733,7 @@ html.lite-mode .header-inner, html.lite-mode .section, html.lite-mode .search-wr
 <option value="ambiente">🌌 Ambiente</option>
 <option value="meditacao">🧘 Meditação</option>
 <option value="reiki">✨ Reiki / Relaxamento</option>
+<option value="instrumental">🎹 Instrumental / Acalmar</option>
 <option value="lofi">☕ Lofi / Foco</option>
 <option value="outros">⭐ Outros</option>
 </select>
@@ -1674,6 +1683,7 @@ function categoriaYouTubeLabel(categoria) {
         ambiente: '🌌 Ambiente',
         meditacao: '🧘 Meditação',
         reiki: '✨ Reiki / Relaxamento',
+        instrumental: '🎹 Instrumental / Acalmar',
         lofi: '☕ Lofi / Foco',
         outros: '⭐ Outros'
     };
@@ -1686,7 +1696,7 @@ function renderCanaisSalvos() {
         filtrarRadios('');
     }
     var dados = getDadosSalvos();
-    Object.keys(RADIO_CHANNELS).filter(function (id) { return id.startsWith('custom_saved_'); }).forEach(function (id) { return delete RADIO_CHANNELS[id]; });
+    Object.keys(RADIO_CHANNELS).filter(function (id) { return id.indexOf('custom_saved_') === 0; }).forEach(function (id) { return delete RADIO_CHANNELS[id]; });
     var radioGrid = document.getElementById('custom-salvos-grid');
     clearElement(radioGrid);
     if (dados.radio.length) {
