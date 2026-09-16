@@ -6,6 +6,7 @@
 <meta content="strict-origin-when-cross-origin" name="referrer"/>
 <meta content="#0a0e1a" name="theme-color"/>
 <link rel="manifest" href="/manifest.webmanifest"/>
+<link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192.png"/>
 <meta name="mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
@@ -34,6 +35,7 @@ html, body { margin: 0; padding: 0; height: 100%; }
 --radius: 16px;
 --radius-sm: 12px;
 --safe-bottom: env(safe-area-inset-bottom, 0px);
+--nav-bottom: 0px;
 }
 body {
 font-family: -apple-system, "Roboto", Arial, sans-serif;
@@ -77,6 +79,14 @@ width: 40px; height: 40px; border: 1px solid var(--line); border-radius: 12px;
 background: var(--surface-2); color: #cbd5e1; cursor: pointer; font: 700 1rem inherit;
 }
 .header-action:active { transform: scale(.96); }
+.top-now-playing { margin:7px auto 0; display:flex; align-items:center; justify-content:center; gap:7px; max-width:92vw; min-height:24px; padding:5px 9px; border:1px solid var(--line); border-radius:999px; background:rgba(255,255,255,.035); font-size:.74em; }
+.top-now-playing strong { min-width:0; max-width:58%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:var(--text); }
+.top-now-playing small { color:var(--muted); white-space:nowrap; }
+@media (max-width:380px) { .top-now-playing { font-size:.68em; gap:5px; } .top-now-playing strong { max-width:48%; } }
+.weather-display { margin: 7px auto 0; display:flex; align-items:center; justify-content:center; gap:6px; min-height:24px; color:var(--muted); font-size:.76em; }
+.weather-display span:last-child { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:85vw; }
+.weather-display.is-error { color:var(--faint); }
+@media (max-width:380px) { .weather-display { font-size:.72em; } }
 .clock-display {
 margin-top: 8px; font-size: 1.55rem; font-weight: 700; letter-spacing: -.02em;
 color: var(--text); font-variant-numeric: tabular-nums; line-height: 1;
@@ -322,7 +332,7 @@ border-color: rgba(139,92,246,.5); color: #fff;
 .empty-state { text-align: center; color: var(--faint); font-size: .85em; padding: 16px 0; font-style: italic; }
 
  .mini-player {
- position: fixed; bottom: calc(8px + var(--safe-bottom)); left: 8px; right: 8px;
+ position: fixed; bottom: calc(16px + var(--safe-bottom) + var(--nav-bottom)); left: 8px; right: 8px;
  width: auto; max-width: 1100px; margin: 0 auto;
  background: rgba(15,23,42,.97);
  backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
@@ -348,13 +358,13 @@ border-color: rgba(139,92,246,.5); color: #fff;
  .viz-wrap span { flex:1; min-width:2px; margin-right:2px; border-radius:2px 2px 0 0; background:linear-gradient(180deg,#a78bfa,#ec4899); height:20%; }
  html.lite-mode .viz-wrap { display:none; }
  @media (max-width:600px) {
-   .mini-player { left: 6px; right: 6px; padding: 9px 10px; border-radius: 16px; }
+   .mini-player { left: 6px; right: 6px; bottom: calc(16px + var(--safe-bottom) + var(--nav-bottom)); padding: 9px 10px; border-radius: 16px; }
    .mini-controls button { flex-basis: 38px; width:38px; height:38px; margin-right:4px; }
    .mini-mute { flex-basis:34px !important; width:34px !important; height:34px !important; }
    .viz-wrap { display:none; }
  }
  @media (max-width:380px) {
-   .mini-player { left:4px; right:4px; bottom:calc(5px + var(--safe-bottom)); padding:8px; }
+   .mini-player { left:4px; right:4px; bottom:calc(12px + var(--safe-bottom) + var(--nav-bottom)); padding:8px; }
    .mini-controls button { flex-basis:36px; width:36px; height:36px; margin-right:3px; }
    .mini-mute { flex-basis:32px !important; width:32px !important; height:32px !important; }
    .volume-wrap { min-width:42px; }
@@ -577,6 +587,15 @@ html.lite-mode .section, html.lite-mode .media-item { box-shadow:none !important
 @media (max-width:700px) { .radio-grid > .media-item { flex-basis:100%; } .yt-presets > .timer-btn { flex-basis:46%; min-width:0; } }
 @media (max-width:380px) { .yt-presets > .timer-btn { flex-basis:100%; } .section { padding-left:10px; padding-right:10px; } .header-actions { margin-left:6px; } .header-action { width:36px; height:36px; } }
 
+/* Modern mobile browser navigation compensation */
+@media (max-width:700px) {
+  body { padding-bottom: calc(145px + var(--safe-bottom) + var(--nav-bottom)); }
+  .mini-player { z-index: 60; }
+}
+@media (max-width:380px) {
+  body { padding-bottom: calc(138px + var(--safe-bottom) + var(--nav-bottom)); }
+}
+
 /* iOS 9 / WebKit legacy hardening */
 html.lite-mode .mini-player { backdrop-filter:none !important; -webkit-backdrop-filter:none !important; }
 html.lite-mode .header-inner, html.lite-mode .section, html.lite-mode .search-wrap, html.lite-mode .quick-nav { max-width:1100px; }
@@ -596,7 +615,7 @@ html.lite-mode .header-inner, html.lite-mode .section, html.lite-mode .search-wr
 <div class="brand-mark" role="button" tabindex="0" title="Voltar ao início" onclick="goHome()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goHome();}" style="cursor :pointer">🎧</div>
 <div class="brand-copy" role="button" tabindex="0" title="Voltar ao início" onclick="goHome()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goHome();}" style="cursor :pointer">
 <h1>Portal de Mídia</h1>
-<span class="version-tag">v6.2 • Painel Mídia • Rádios, YouTube e Músicas</span>
+<span class="version-tag">v6.3 • Painel Mídia • Rádios, YouTube e Músicas</span>
 </div>
 <div class="header-actions">
 <button class="header-action" id="theme-menu-btn" type="button" onclick="toggleAppearancePanel()" aria-expanded="false" aria-controls="appearance-panel" title="Aparência">◐</button>
@@ -608,6 +627,8 @@ html.lite-mode .header-inner, html.lite-mode .section, html.lite-mode .search-wr
 <span id="clock-time">--:--</span>
 <small id="clock-date">Carregando…</small>
 </div>
+<div class="weather-display" id="weather-display" aria-live="polite"><span id="weather-icon">🌤️</span><span id="weather-text">Clima carregando…</span></div>
+<div class="top-now-playing" id="top-now-playing" hidden aria-live="polite"><span>🎵</span><strong id="top-now-title">—</strong><small id="top-now-subtitle">Tocando agora</small></div>
 <div class="appearance-panel" id="appearance-panel" hidden>
 <div class="appearance-title">Modo claro / escuro</div>
 <div class="appearance-row" role="group" aria-label="Modo">
@@ -984,6 +1005,11 @@ html.lite-mode .header-inner, html.lite-mode .section, html.lite-mode .search-wr
 
 <footer>Portal de Mídia • Criado por Break Troy</footer>
 
+<section id="debug-panel" hidden style="position:fixed;inset:12px;z-index:1000;background:#0b1220;color:#e5e7eb;border:1px solid rgba(255,255,255,.14);border-radius:16px;padding:16px;overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.6);font:14px/1.5 -apple-system,Roboto,Arial,sans-serif;">
+<h2 style="margin:0 0 12px">🧪 Portal Debug</h2>
+<div id="debug-content"></div>
+</section>
+
 <div class="mini-player" id="mini-player">
 <div class="mini-info">
 <div class="playing-dot" id="playing-dot"></div>
@@ -1133,6 +1159,14 @@ var radioVolume = 0.5;
 var currentChannelId = '';
 var currentChannelLabel = '';
 var currentRadioUrl = '';
+var radioRetryCount = 0;
+var radioLastError = '';
+var radioStartedAt = 0;
+var nowPlayingTimer = null;
+var nowPlayingLast = '';
+var weatherTimer = null;
+var debugEnabled = false;
+
 var castSdkPromise = null;
 var castReady = false;
 var castConnected = false;
@@ -2036,6 +2070,65 @@ function limparBusca() {
     if (input)
         input.focus();
 }
+function weatherSet(icon, text, error) {
+    var el = document.getElementById('weather-display');
+    var iconEl = document.getElementById('weather-icon');
+    var textEl = document.getElementById('weather-text');
+    if (iconEl) iconEl.textContent = icon || '🌤️';
+    if (textEl) textEl.textContent = text || 'Clima indisponível';
+    if (el) el.classList.toggle('is-error', !!error);
+}
+function loadWeather() {
+    if (!navigator.geolocation) { weatherSet('🌤️', 'Clima indisponível', true); return; }
+    navigator.geolocation.getCurrentPosition(function (pos) {
+        var lat = pos.coords.latitude, lon = pos.coords.longitude;
+        var url = 'https://api.open-meteo.com/v1/forecast?latitude=' + encodeURIComponent(lat) + '&longitude=' + encodeURIComponent(lon) + '&current=temperature_2m,weather_code&timezone=auto';
+        xhrJson(url, 9000, function (data) {
+            if (!data || !data.current) { weatherSet('🌤️', 'Clima indisponível', true); return; }
+            var code = Number(data.current.weather_code);
+            var icon = code === 0 ? '☀️' : (code <= 3 ? '⛅' : (code <= 48 ? '🌫️' : (code <= 67 ? '🌧️' : (code <= 82 ? '🌦️' : '⛈️'))));
+            var temp = Math.round(Number(data.current.temperature_2m));
+            weatherSet(icon, isFinite(temp) ? (temp + '°C • agora') : 'Clima disponível', false);
+        });
+    }, function () { weatherSet('🌤️', 'Ative a localização para o clima', true); }, { enableHighAccuracy: false, timeout: 8000, maximumAge: 1800000 });
+}
+function setupWeather() {
+    loadWeather();
+    if (weatherTimer) clearInterval(weatherTimer);
+    weatherTimer = setInterval(loadWeather, 1800000);
+}
+function debugRender() {
+    if (!debugEnabled) return;
+    var panel = document.getElementById('debug-panel');
+    var out = document.getElementById('debug-content');
+    if (!panel || !out) return;
+    panel.hidden = false;
+    var uptime = radioStartedAt ? Math.floor((new Date().getTime() - radioStartedAt) / 1000) : 0;
+    var mm = Math.floor(uptime / 60), ss = uptime % 60;
+    var rows = [
+        ['Stream atual', currentRadioUrl || '—'],
+        ['Rádio', currentChannelLabel || '—'],
+        ['Estado', radioController.state || '—'],
+        ['Retries', String(radioRetryCount)],
+        ['Último erro', radioLastError || '—'],
+        ['Uptime', radioStartedAt ? (mm + 'm ' + (ss < 10 ? '0' : '') + ss + 's') : '—'],
+        ['Agora tocando', nowPlayingLast || '—'],
+        ['YouTube', (typeof ytPlayer !== 'undefined' && ytPlayer && typeof ytPlayer.getPlayerState === 'function') ? String(ytPlayer.getPlayerState()) : 'parado'],
+        ['Online', navigator.onLine ? 'sim' : 'não'],
+        ['Viewport', window.innerWidth + '×' + window.innerHeight]
+    ];
+    var html = '<button type="button" onclick="document.getElementById(\'debug-panel\').hidden=true" style="float:right;background:#243044;color:#fff;border:1px solid #475569;border-radius:8px;padding:6px 10px">Fechar</button><p style="color:#94a3b8">Diagnóstico local • atualização automática</p><dl>';
+    for (var i = 0; i < rows.length; i++) html += '<dt style="font-weight:700;margin-top:8px">' + rows[i][0] + '</dt><dd style="margin:2px 0;word-break:break-word">' + String(rows[i][1]).replace(/[&<>]/g, function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c];}) + '</dd>';
+    out.innerHTML = html + '</dl>';
+}
+function setupDebug() {
+    debugEnabled = window.location.pathname === '/debug' || /(?:^|&)debug=1(?:&|$)/.test(window.location.search.replace(/^\?/, ''));
+    if (!debugEnabled) return;
+    var panel = document.getElementById('debug-panel');
+    if (panel) panel.hidden = false;
+    setInterval(debugRender, 1000);
+    debugRender();
+}
 window.addEventListener('DOMContentLoaded', function () {
     var searchInput = document.getElementById('search-input');
     if (searchInput)
@@ -2144,6 +2237,89 @@ function invalidateStaleAudio() {
             safeStopAudio(audio);
     });
 }
+function xhrJson(url, timeout, done) {
+    var xhr;
+    try { xhr = new XMLHttpRequest(); } catch (_) { done(null, 'xhr'); return; }
+    var finished = false;
+    var timer = setTimeout(function () { if (finished) return; finished = true; try { xhr.abort(); } catch (_) {} done(null, 'timeout'); }, timeout || 8000);
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState !== 4 || finished) return;
+        finished = true; clearTimeout(timer);
+        if (xhr.status >= 200 && xhr.status < 300) {
+            var data = null;
+            try { data = JSON.parse(xhr.responseText); } catch (_) {}
+            done(data, data ? null : 'json');
+        } else done(null, 'http');
+    };
+    try { xhr.open('GET', url, true); xhr.setRequestHeader('Accept', 'application/json, text/javascript, */*'); xhr.send(null); }
+    catch (_) { clearTimeout(timer); if (!finished) { finished = true; done(null, 'open'); } }
+}
+function parseFastCastStreamInfo(text) {
+    if (!text) return '';
+    var patterns = [
+        /(?:song|title|nowplaying|current(?:Song|Title))\s*[:=]\s*["']([^"']+)["']/i,
+        /(?:song|title|nowplaying|current(?:Song|Title))\s*[:=]\s*([^;\n]+)/i
+    ];
+    for (var i = 0; i < patterns.length; i++) {
+        var m = text.match(patterns[i]);
+        if (m && m[1]) return String(m[1]).replace(/^\s+|\s+$/g, '');
+    }
+    return '';
+}
+function setNowPlayingMetadata(title, source) {
+    title = String(title || '').replace(/^\s+|\s+$/g, '');
+    if (!title || title === nowPlayingLast) return false;
+    nowPlayingLast = title;
+    updateNowPlaying(title, source || 'Total Hits • Agora tocando', false);
+    var mini = document.getElementById('mini-title');
+    if (currentChannelId === 'total_hits' && radioPlaying && mini) mini.textContent = title;
+    setStatus('total_hits', '✅ Tocando • ' + title);
+    try {
+        if ('mediaSession' in navigator && typeof MediaMetadata !== 'undefined') {
+            navigator.mediaSession.metadata = new MediaMetadata({ title: title, artist: 'Total Hits' });
+        }
+    } catch (_) {}
+    return true;
+}
+function pollTotalHitsNowPlaying() {
+    if (currentChannelId !== 'total_hits' || !radioPlaying) return;
+    var stamp = new Date().getTime();
+    var base = '/api/totalhits-streaminfo.js?_=' + stamp;
+    var xhr;
+    try { xhr = new XMLHttpRequest(); } catch (_) { return; }
+    var done = false;
+    var timer = setTimeout(function () { if (!done) { done = true; try { xhr.abort(); } catch (_) {} } }, 7000);
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState !== 4 || done) return;
+        done = true; clearTimeout(timer);
+        if (xhr.status >= 200 && xhr.status < 300) {
+            var title = parseFastCastStreamInfo(xhr.responseText || '');
+            if (title) setNowPlayingMetadata(title, 'Total Hits • FastCast4U');
+            else pollTotalHitsStatus();
+        } else pollTotalHitsStatus();
+    };
+    try { xhr.open('GET', base, true); xhr.send(null); } catch (_) { pollTotalHitsStatus(); }
+}
+function pollTotalHitsStatus() {
+    if (currentChannelId !== 'total_hits' || !radioPlaying) return;
+    var stamp = new Date().getTime();
+    xhrJson('/api/totalhits-status.xsl?_=' + stamp, 7000, function (data) {
+        if (!data || !data.icestats) return;
+        var source = data.icestats.source;
+        if (source && Object.prototype.toString.call(source) === '[object Array]') source = source[0];
+        if (source && source.title) setNowPlayingMetadata(source.title, 'Total Hits • status');
+    });
+}
+function startNowPlayingPolling() {
+    stopNowPlayingPolling();
+    if (currentChannelId !== 'total_hits') return;
+    pollTotalHitsNowPlaying();
+    nowPlayingTimer = setInterval(function () { pollTotalHitsNowPlaying(); }, 15000);
+}
+function stopNowPlayingPolling() {
+    if (nowPlayingTimer) { clearInterval(nowPlayingTimer); nowPlayingTimer = null; }
+    nowPlayingLast = '';
+}
 function updateNowPlaying(title, subtitle, hidden) {
     var bar = document.getElementById('top-now-playing');
     if (!bar)
@@ -2218,6 +2394,7 @@ function clearRadioUi() {
     });
 }
 function finishRadioError(token, channelId, btnEl, statusId, message) {
+    radioLastError = message || 'Indisponível';
     if (token !== radioController.token)
         return;
     radioController.state = 'IDLE';
@@ -2242,6 +2419,9 @@ function playChannel(channelId, btnEl, statusIdOverride) {
     }
     stopAllMedia();
     radioController.token += 1;
+    radioStartedAt = new Date().getTime();
+    radioRetryCount = 0;
+    radioLastError = '';
     var token = radioController.token;
     cleanupRadio();
     currentChannelId = channelId;
@@ -2262,6 +2442,8 @@ function playChannel(channelId, btnEl, statusIdOverride) {
             !audio.__portalInvalid;
     }
     function failAttempt(message) {
+        radioRetryCount += 1;
+        radioLastError = message || 'Erro no stream';
         if (token !== radioController.token)
             return;
         clearRadioTimeout();
@@ -2290,6 +2472,10 @@ function playChannel(channelId, btnEl, statusIdOverride) {
         clearRadioTimeout();
         radioController.state = 'RADIO_PLAYING';
         radioPlaying = true;
+        radioStartedAt = radioStartedAt || new Date().getTime();
+        radioRetryCount = 0;
+        radioLastError = '';
+        if (channelId === 'total_hits') startNowPlayingPolling();
         setStatus(statusId, '✅ Tocando');
         updateMiniPlayer(channel.label, false);
         try {
@@ -3426,6 +3612,7 @@ function libraryPrev() {
     libraryAdvance(-1);
 }
 function stopAllMedia() {
+    stopNowPlayingPolling();
     radioController.token += 1;
     try { clearRadioTimeout(); } catch (_) {}
     try { destroyHls(); } catch (_) {}
@@ -3762,6 +3949,8 @@ window.addEventListener('DOMContentLoaded', function () {
     setActiveQuickNav();
     bindKeyboardShortcuts();
     setupPwa();
+    setupWeather();
+    setupDebug();
     setupNetworkAndWake();
     loadLibraryFavs();
     updateStatsUi();
