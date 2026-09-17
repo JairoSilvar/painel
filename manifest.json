@@ -1,0 +1,30 @@
+{
+  "name": "Total Hits — DJ Break Troy",
+  "short_name": "Total Hits",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#050505",
+  "theme_color": "#050505",
+  "description": "Total Hits — Dance, Eurodance e música eletrônica com DJ Break Troy.",
+  "lang": "pt-BR",
+  "icons": [
+    {
+      "src": "./total-hits-logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">Total Hits — TH Broadcast</title>
+  <desc id="desc">Ícone final de Total Hits: monograma TH e ondas de rádio.</desc>
+  <defs>
+    <linearGradient id="th" x1="102" y1="100" x2="405" y2="412" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#2BE1FF"/><stop offset=".49" stop-color="#687DF5"/><stop offset="1" stop-color="#E852B4"/>
+    </linearGradient>
+    <linearGradient id="bg" x1="40" y1="32" x2="476" y2="482" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#151A28"/><stop offset="1" stop-color="#07090F"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+  <rect x="1" y="1" width="510" height="510" rx="111" fill="none" stroke="#fff" stroke-opacity=".08" stroke-width="2"/>
+  <path fill="url(#th)" d="M87 144h234v62h-87v194h-66V206H87v-62Zm159 92h68v50h72V166h66v234h-66v-53h-72v53h-68V236Z"/>
+  <g fill="none" stroke="url(#th)" stroke-linecap="round">
+    <path d="M345 150c29 0 52 23 52 52" stroke-width="17"/>
+    <path d="M350 107c60 0 109 49 109 109" stroke-width="15" opacity=".93"/>
+    <path d="M354 63c84 0 152 68 152 152" stroke-width="13" opacity=".8"/>
+  </g>
+</svg>
