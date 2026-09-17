@@ -35,7 +35,6 @@ html, body { margin: 0; padding: 0; height: 100%; }
 --radius: 16px;
 --radius-sm: 12px;
 --safe-bottom: 0px;
---nav-bottom: 0px;
 --card-pad: 20px;
 }
 @supports (padding: env(safe-area-inset-bottom)) {
@@ -52,7 +51,7 @@ color: var(--text);
 overflow-x: hidden;
 overflow-y: auto;
 -webkit-overflow-scrolling: touch;
-padding-bottom: calc(140px + var(--safe-bottom) + var(--nav-bottom));
+padding-bottom: calc(160px + var(--safe-bottom));
 }
 header {
 padding: 12px 16px 10px;
@@ -400,29 +399,33 @@ border: 1px solid rgba(139,92,246,.35); background: rgba(139,92,246,.12); }
 color: #fff; border-radius: 10px; padding: 8px 12px; font: 700 .8rem inherit; cursor: pointer; }
 .install-banner .ghost { background: transparent; color: #cbd5e1; border-color: var(--line); }
 .sw-note { font-size: .7em; color: var(--faint); text-align: center; margin-top: 8px; }
+/* ---------- MINI-PLAYER FIXO NA BASE (estilo Total Hits) ---------- */
 .mini-player {
 position: fixed;
-left: 12px; right: 12px;
-bottom: calc(16px + var(--safe-bottom) + var(--nav-bottom));
-max-width: 1200px; margin: 0 auto;
-background: rgba(15,23,42,.97);
-backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
-border: 1px solid rgba(255,255,255,.12); border-radius: 20px;
-padding: 12px 14px; z-index: 20;
-box-shadow: 0 16px 40px -8px rgba(0,0,0,.65);
+left: 0; right: 0;
+bottom: 0;
+width: 100%; max-width: 100%; margin: 0;
+background: rgba(15,23,42,.98);
+backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+border: none;
+border-top: 1px solid rgba(255,255,255,.12);
+border-radius: 0;
+padding: 10px 14px calc(10px + var(--safe-bottom));
+z-index: 20;
+box-shadow: 0 -8px 24px -8px rgba(0,0,0,.55);
 display: none;
 }
 .mini-player.visible { display: block; }
 .mini-inner { display: flex; align-items: center; gap: 12px; }
 .mini-cover-wrap {
-width: 52px; height: 52px; border-radius: 12px; flex: 0 0 auto;
+width: 48px; height: 48px; border-radius: 12px; flex: 0 0 auto;
 background: linear-gradient(145deg, rgba(139,92,246,.3), rgba(236,72,153,.18));
 border: 1px solid rgba(139,92,246,.25); overflow: hidden;
 display: flex; align-items: center; justify-content: center;
 }
 .mini-cover-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.mini-cover-wrap svg { width: 26px; height: 26px; color: #e9d5ff; display: block; }
-.mini-cover-wrap .mini-emoji { font-size: 26px; line-height: 1; }
+.mini-cover-wrap svg { width: 24px; height: 24px; color: #e9d5ff; display: block; }
+.mini-cover-wrap .mini-emoji { font-size: 24px; line-height: 1; }
 .mini-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
 .mini-title { font-size: .92em; font-weight: 700; color: var(--text);
 white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -473,15 +476,6 @@ background: rgba(100,116,139,.4); border-radius: 2px; outline: none; }
 input[type="range"].volume-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px;
 background: linear-gradient(135deg, #8b5cf6, #ec4899); border-radius: 50%; border: 2px solid #fff; }
 @media (max-width: 700px) {
-  .mini-player {
-    left: 0; right: 0;
-    bottom: 0;
-    border-radius: 0;
-    border-left: none; border-right: none; border-bottom: none;
-    padding: 10px 12px calc(10px + var(--safe-bottom));
-    max-width: none;
-  }
-  .mini-inner { gap: 10px; }
   .mini-cover-wrap { width: 44px; height: 44px; }
   .mini-eq { height: 18px; gap: 2px; margin-left: 6px; }
   .mini-eq i { width: 3px; }
@@ -489,14 +483,12 @@ background: linear-gradient(135deg, #8b5cf6, #ec4899); border-radius: 50%; borde
   .mini-controls button svg { width: 16px; height: 16px; }
   .mini-controls .mini-mute { width: 32px; height: 32px; }
   .volume-wrap { flex: 1 1 auto; max-width: 90px; }
-  body { padding-bottom: calc(150px + var(--safe-bottom)); }
 }
 @media (max-width: 380px) {
   .mini-cover-wrap { display: none; }
   .mini-eq { display: none; }
   .mini-controls button { width: 36px; height: 36px; }
   .volume-wrap { min-width: 50px; max-width: 70px; }
-  body { padding-bottom: calc(140px + var(--safe-bottom)); }
 }
 footer { text-align: center; padding: 24px 16px 12px; margin-bottom: 12px;
 font-size: .78em; color: var(--faint); letter-spacing: .05em; text-transform: uppercase; }
@@ -521,12 +513,11 @@ radial-gradient(ellipse at bottom right, rgba(236,72,153,.06), transparent 52%) 
 color: #0f172a !important; }
 html.light-mode header { background: rgba(255,255,255,.94) !important;
 border-bottom-color: rgba(15,23,42,.1) !important; }
-html.light-mode .clock-display,
 html.light-mode .brand-copy h1,
 html.light-mode .version-tag { color: #0f172a !important; -webkit-text-fill-color: #0f172a !important; }
 html.light-mode .media-item { background: #ffffff !important; }
-html.light-mode .mini-player { background: rgba(255,255,255,.97) !important;
-border-color: rgba(15,23,42,.12) !important; }
+html.light-mode .mini-player { background: rgba(255,255,255,.98) !important;
+border-top-color: rgba(15,23,42,.12) !important; }
 html.light-mode .mini-controls button { background: #f1f5f9 !important;
 border-color: rgba(15,23,42,.15) !important; color: #0f172a !important; }
 html.light-mode .mini-controls button.play-main { background: var(--accent) !important; color: #fff !important; }
@@ -591,7 +582,8 @@ html.lite-mode .media-item { background: var(--surface-2); }
 }
 </style>
 <meta content="dark" name="color-scheme"/>
-</head><body>
+</head>
+<body>
 <a class="skip" href="#section-hub" style="position:fixed;left:10px;top:-100px;background:#8b5cf6;color:#fff;padding:10px 14px;z-index:9999;border-radius:8px;text-decoration:none;font-weight:700;" onfocus="this.style.top='10px'" onblur="this.style.top='-100px'">Pular para o conteúdo</a>
 
 <header>
@@ -602,7 +594,7 @@ html.lite-mode .media-item { background: var(--surface-2); }
 </div>
 <div class="brand-copy" role="button" tabindex="0" title="Voltar ao início" onclick="goHome()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goHome();}">
 <h1>Painel Mídia — Total Hits</h1>
-<span class="version-tag">v6.7.2 • Rádios, YouTube e Músicas</span>
+<span class="version-tag">v6.7.4 • Rádios, YouTube e Músicas</span>
 </div>
 <div class="header-actions">
 <button class="header-action" id="theme-menu-btn" type="button" onclick="toggleAppearancePanel()" aria-expanded="false" aria-controls="appearance-panel" title="Aparência">
@@ -1188,9 +1180,11 @@ html.lite-mode .media-item { background: var(--surface-2); }
 <div class="stat-pill"><b id="stat-tracks">0</b><span>faixas salvas</span></div>
 </div>
 <ul class="changelog" style="margin-top:14px;">
-<li><strong>v6.7.2</strong> — Equalizador animado no mini-player (cor do tema); mini-player mostra emoji da rádio quando sem metadata; capa do iTunes aparece quando há metadata.</li>
-<li><strong>v6.7.1</strong> — recenttracks.js removido; bloco de exposição global mantido dentro da IIFE.</li>
-<li><strong>v6.7</strong> — Visual dashboard moderno; restaurados 7 presets do YouTube + categoria Instrumental; metadata Total Hits em 3 camadas; enriquecimento via iTunes; reconexão com backoff; status bar; logo Total Hits; tema Neon.</li>
+<li><strong>v6.7.4</strong> — Estabilização do motor de mídia: reconexão com backoff preservado, parada segura da biblioteca, token único contra callbacks antigos e circuit breaker da metadata Total Hits.</li>
+<li><strong>v6.7.3</strong> — Mini-player fixo na base (estilo Total Hits); equalizador animado; warmup de áudio para iOS 9 e Puffin; capa dinâmica no mini-player.</li>
+<li><strong>v6.7.2</strong> — Equalizador animado no mini-player; mini-player mostra emoji da rádio quando sem metadata.</li>
+<li><strong>v6.7.1</strong> — recenttracks.js removido; exposição global no lugar certo.</li>
+<li><strong>v6.7</strong> — Visual dashboard; 7 presets YouTube restaurados; metadata Total Hits em 3 camadas.</li>
 </ul>
 <p class="lib-mode-note" style="margin-top:12px;">Criado por Break Troy · tudo funciona dentro desta página · sem redirecionar para fora.</p>
 </div>
@@ -1227,9 +1221,10 @@ html.lite-mode .media-item { background: var(--surface-2); }
 </div>
 </div>
 
-<!-- Elementos ocultos para metadata FastCast4U -->
 <span id="cc-now-playing" class="cc_streaminfo" data-type="song" data-username="breaktroy" hidden>Atualizando…</span>
-<div class="cc_recenttracks_list" data-username="breaktroy" hidden></div><script>
+<div class="cc_recenttracks_list" data-username="breaktroy" hidden></div>
+
+<script>
 (function(){
 'use strict';
 
@@ -1254,6 +1249,30 @@ html.lite-mode .media-item { background: var(--surface-2); }
     function MiniPromise(executor){var self=this;self.state=0;self.value=void 0;self.h=[];function f(v){if(self.state)return;self.state=1;self.value=v;fl();}function r(x){if(self.state)return;self.state=2;self.value=x;fl();}function fl(){setTimeout(function(){var h=self.h.slice();self.h=[];for(var i=0;i<h.length;i++){var x=h[i];try{if(self.state===1){if(x.ok){x.res(x.ok(self.value));}else{x.res(self.value);}}else{if(x.fail){x.res(x.fail(self.value));}else{x.rej(self.value);}}}catch(e){x.rej(e);}}},0);}self.then=function(ok,fail){return new MiniPromise(function(res,rej){self.h.push({ok:typeof ok==='function'?ok:null,fail:typeof fail==='function'?fail:null,res:res,rej:rej});if(self.state)fl();});};self.catch=function(fail){return self.then(null,fail);};try{executor(f,r);}catch(e){r(e);}}
     MiniPromise.resolve=function(v){return new MiniPromise(function(res){res(v);});};MiniPromise.reject=function(v){return new MiniPromise(function(_,rej){rej(v);});};window.Promise=MiniPromise;
   }
+}());
+
+// ---------- WARMUP iOS 9 + PUFFIN ----------
+(function warmupAudio(){
+  var unlocked=false;
+  function unlock(){
+    if(unlocked)return;
+    unlocked=true;
+    try{
+      var w=new Audio();
+      w.src='data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==';
+      w.volume=0.001;
+      var p=w.play();
+      if(p&&typeof p.then==='function'){
+        p.then(function(){try{w.pause();w=null;}catch(_){}}).catch(function(){});
+      } else {
+        setTimeout(function(){try{w.pause();w=null;}catch(_){}},50);
+      }
+    }catch(_){}
+    try{document.removeEventListener('touchend',unlock,false);}catch(_){}
+    try{document.removeEventListener('click',unlock,false);}catch(_){}
+  }
+  try{document.addEventListener('touchend',unlock,false);}catch(_){}
+  try{document.addEventListener('click',unlock,false);}catch(_){}
 }());
 
 // ---------- DADOS DE RÁDIOS ----------
@@ -1296,6 +1315,9 @@ var radioRetryCount = 0;
 var radioLastError = '';
 var radioStartedAt = 0;
 var nowPlayingTimer = null;
+var nowPlayingCircuitUntil = 0;
+var NOW_PLAYING_FAIL_LIMIT = 3;
+var NOW_PLAYING_CIRCUIT_MS = 60000;
 var nowPlayingLast = '';
 var nowPlayingConsecutiveFails = 0;
 var weatherTimer = null;
@@ -1319,7 +1341,6 @@ var backoffCount = 0;
 var intentionalPause = false;
 var lastTrackTitle = '';
 
-// ---------- HELPERS ----------
 function portalOrigin(){ try{ if(window.location.origin)return window.location.origin; return window.location.protocol+'//'+window.location.host; }catch(_){ return ''; } }
 function addEventListenerOnce(el,type,fn){ if(!el||!el.addEventListener)return; var w=function(e){ try{el.removeEventListener(type,w,false);}catch(_){} fn(e); }; el.addEventListener(type,w,false); }
 function replaceNode(oldN,newN){ if(!oldN||!oldN.parentNode)return; oldN.parentNode.insertBefore(newN,oldN); oldN.parentNode.removeChild(oldN); }
@@ -1329,7 +1350,6 @@ function clearElement(el){ if(!el)return; if(typeof el.replaceChildren==='functi
 function normalizeText(v){ var t=String(v==null?'':v); try{ if(t.normalize)t=t.normalize('NFD').replace(/[\u0300-\u036f]/g,''); }catch(_){} return t.toLowerCase().trim(); }
 function getStableId(p){ p=p||'id'; try{ if(window.crypto&&typeof window.crypto.randomUUID==='function')return window.crypto.randomUUID(); }catch(_){} return p+'_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,10); }
 
-// ---------- TEMA ----------
 function clearColorThemeClasses(){ var r=document.documentElement; for(var i=0;i<COLOR_THEMES.length;i++){var t=COLOR_THEMES[i]; if(t!=='violet')r.classList.remove('theme-'+t);} }
 function applyColorTheme(name){
   name=name||getStoredValue('portal-color-theme','violet')||'violet';
@@ -1391,36 +1411,12 @@ function refreshAppearanceControls(){
   }catch(_){}
 }());
 
-// ---------- DETECÇÃO DE BARRA DE NAVEGAÇÃO ----------
-var __navBarLast=-1;
-function detectNavigationBar(){
-  try{
-    var nav=0; var ua=navigator.userAgent||''; var isA=/Android/i.test(ua);
-    if(window.visualViewport&&typeof window.visualViewport.height==='number'){
-      var d=window.innerHeight-window.visualViewport.height;
-      if(d>15&&d<160)nav=Math.round(d);
-    }
-    if(nav===0&&isA){ var sd=(window.screen?window.screen.height:0)-window.innerHeight; if(sd>100)nav=48; }
-    if(nav<0)nav=0; if(nav>120)nav=120;
-    if(nav!==__navBarLast){ __navBarLast=nav; document.documentElement.style.setProperty('--nav-bottom',nav+'px'); }
-  }catch(_){}
-}
-detectNavigationBar();
-window.addEventListener('resize',function(){ setTimeout(detectNavigationBar,60); });
-window.addEventListener('orientationchange',function(){ setTimeout(detectNavigationBar,250); });
-if(window.visualViewport&&window.visualViewport.addEventListener){
-  window.visualViewport.addEventListener('resize',function(){ setTimeout(detectNavigationBar,60); });
-}
-
-// ---------- STATUS BAR ----------
 function setStatusBar(state,mainText,subText){
   var s=document.getElementById('status-strip'); if(!s)return;
   s.className='status-strip state-'+state;
   var m=document.getElementById('status-main'); if(m)m.textContent=mainText;
   var sub=document.getElementById('status-sub'); if(sub)sub.textContent=subText||'';
 }
-
-// ---------- CLIMA ----------
 function weatherSet(icon,text,error){
   var el=document.getElementById('weather-text'), iconEl=document.getElementById('weather-icon');
   if(iconEl)iconEl.textContent=icon||'🌤️';
@@ -1442,7 +1438,6 @@ function loadWeather(){
 }
 function setupWeather(){ loadWeather(); if(weatherTimer)clearInterval(weatherTimer); weatherTimer=setInterval(loadWeather,1800000); }
 
-// ---------- RELÓGIO ----------
 function atualizarRelogio(){
   var a=new Date();
   var hh=String(a.getHours()).padStart(2,'0'), mm=String(a.getMinutes()).padStart(2,'0');
@@ -1450,7 +1445,6 @@ function atualizarRelogio(){
 }
 atualizarRelogio(); setInterval(atualizarRelogio,30000);
 
-// ---------- DEBUG ----------
 function debugRender(){
   if(!debugEnabled)return;
   var panel=document.getElementById('debug-panel'), out=document.getElementById('debug-content');
@@ -1468,8 +1462,7 @@ function debugRender(){
     ['Agora tocando',nowPlayingLast||'—'],
     ['YouTube',(ytPlayer&&typeof ytPlayer.getPlayerState==='function')?String(ytPlayer.getPlayerState()):'parado'],
     ['Online',navigator.onLine?'sim':'não'],
-    ['Viewport',window.innerWidth+'×'+window.innerHeight],
-    ['Nav bar',(document.documentElement.style.getPropertyValue('--nav-bottom')||'0px')]
+    ['Viewport',window.innerWidth+'×'+window.innerHeight]
   ];
   var h='<button type="button" onclick="document.getElementById(\'debug-panel\').hidden=true" style="float:right;background:#243044;color:#fff;border:1px solid #475569;border-radius:8px;padding:6px 10px">Fechar</button><dl>';
   for(var i=0;i<rows.length;i++)h+='<dt style="font-weight:700;margin-top:8px">'+rows[i][0]+'</dt><dd style="margin:2px 0;word-break:break-word">'+String(rows[i][1]).replace(/[&<>]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c];})+'</dd>';
@@ -1482,7 +1475,6 @@ function setupDebug(){
   setInterval(debugRender,1000); debugRender();
 }
 
-// ---------- STORAGE / DADOS SALVOS ----------
 function getDadosSalvos(){
   var empty={version:3,radio:[],youtube:[]};
   try{
@@ -1510,7 +1502,6 @@ function migrateLegacyFavoriteIds(){
 function getHistory(){ try{ var r=JSON.parse(localStorage.getItem('portal-history')||'[]'); return Array.isArray(r)?r:[]; }catch(_){ return []; } }
 function pushHistory(e){ if(!e||!e.id||!e.label)return; var l=getHistory().filter(function(h){return h.id!==e.id;}); l.unshift({id:e.id,label:e.label,type:e.type||'radio',at:Date.now()}); if(l.length>12)l=l.slice(0,12); try{ localStorage.setItem('portal-history',JSON.stringify(l)); }catch(_){} try{ renderHub(); }catch(_){} }
 
-// ---------- XHR JSON ----------
 function xhrJson(url,timeout,done){
   var xhr; try{ xhr=new XMLHttpRequest(); }catch(_){ done(null,'xhr'); return; }
   var fin=false;
@@ -1524,7 +1515,6 @@ function xhrJson(url,timeout,done){
   catch(_){ clearTimeout(timer); if(!fin){ fin=true; done(null,'open'); } }
 }
 
-// ---------- META / ITUNES ----------
 function cleanNowPlaying(v){ return String(v||'').replace(/<[^>]*>/g,'').replace(/^\s+|\s+$/g,''); }
 function splitTrack(raw){
   var s=String(raw||'').replace(/\s+/g,' ').trim();
@@ -1565,18 +1555,17 @@ function enrichTrack(artist,title){
     updateMediaSession(!radioAudio.paused);
   });
 }
-// CORRIGIDO: renderTrackInfo agora usa emoji da rádio quando não há artwork
 function renderTrackInfo(){
   var miniT=document.getElementById('mini-title'), miniS=document.getElementById('mini-sub'), miniC=document.getElementById('mini-cover-wrap');
   if(miniT)miniT.textContent=trackInfo.title||lastTrackTitle||currentChannelLabel||'—';
   var sub=[trackInfo.artist,trackInfo.year].filter(Boolean).join(' • ')||currentChannelLabel||'Tocando';
   if(miniS)miniS.textContent=sub;
+  if(currentChannelId==='total_hits'&&radioPlaying){ var statusSub=document.getElementById('status-sub'); if(statusSub)statusSub.textContent=(currentChannelLabel||'Total Hits')+(trackInfo.title?' • '+trackInfo.title:''); }
   if(!miniC)return;
   if(trackInfo.artwork){
     miniC.innerHTML='<img src="'+trackInfo.artwork+'" alt="" loading="lazy" onerror="this.parentNode.innerHTML=\'<span class=&quot;mini-emoji&quot;>🎵</span>\';"/>';
     return;
   }
-  // Sem artwork: pega emoji do card da rádio atual
   var emoji='🎵';
   if(currentChannelId){
     var cardEmoji=document.querySelector('.radio-btn[onclick*="'+currentChannelId+'"] .icon .emoji');
@@ -1584,7 +1573,6 @@ function renderTrackInfo(){
   }
   miniC.innerHTML='<span class="mini-emoji">'+emoji+'</span>';
 }
-// CORRIGIDO: setNowPlayingMetadata agora chama renderTrackInfo
 function setNowPlayingMetadata(meta,source){
   var info=typeof meta==='string'?{song:cleanNowPlaying(meta)}:(meta||{});
   var song=cleanNowPlaying(info.song||info.title);
@@ -1602,7 +1590,7 @@ function setNowPlayingMetadata(meta,source){
     var parsed=splitTrack(song);
     trackInfo.artist=artist||parsed.artist;
     trackInfo.title=trackT||parsed.title;
-    trackInfo.artwork=''; // limpa artwork antigo, espera iTunes
+    trackInfo.artwork='';
     renderTrackInfo();
     enrichTrack(trackInfo.artist,trackInfo.title);
   }
@@ -1631,7 +1619,6 @@ function setupMediaSession(){
   Object.keys(handlers).forEach(function(a){ try{ navigator.mediaSession.setActionHandler(a,handlers[a]); }catch(_){} });
 }
 
-// ---------- FASTCAST BRIDGE ----------
 function setupFastcastBridge(){
   var el=document.getElementById('cc-now-playing'); if(!el)return;
   var script=document.createElement('script');
@@ -1650,10 +1637,12 @@ function setupFastcastBridge(){
   }
 }
 
-// ---------- POLLING TOTAL HITS ----------
 function pollTotalHitsNowPlaying(){
   if(currentChannelId!=='total_hits'||!radioPlaying)return;
-  var stamp=new Date().getTime();
+  var now=new Date().getTime();
+  if(nowPlayingCircuitUntil&&now<nowPlayingCircuitUntil)return;
+  if(nowPlayingCircuitUntil&&now>=nowPlayingCircuitUntil){ nowPlayingCircuitUntil=0; nowPlayingConsecutiveFails=0; }
+  var stamp=now;
   xhrJson('https://eu8.fastcast4u.com/proxy/breaktroy/status-json.xsl?_='+stamp,7000,function(data,err){
     if(currentChannelId!=='total_hits'||!radioPlaying)return;
     if(!err&&data){
@@ -1669,19 +1658,20 @@ function pollTotalHitsNowPlaying(){
         if(meta&&setNowPlayingMetadata(meta,'Total Hits')){ nowPlayingConsecutiveFails=0; return; }
       }
       nowPlayingConsecutiveFails++;
+      if(nowPlayingConsecutiveFails>=NOW_PLAYING_FAIL_LIMIT){ nowPlayingCircuitUntil=new Date().getTime()+NOW_PLAYING_CIRCUIT_MS; }
     });
   });
 }
 function startNowPlayingPolling(){
   stopNowPlayingPolling();
+  nowPlayingCircuitUntil=0;
   if(currentChannelId!=='total_hits')return;
   nowPlayingConsecutiveFails=0;
   pollTotalHitsNowPlaying();
   nowPlayingTimer=setInterval(pollTotalHitsNowPlaying,15000);
 }
-function stopNowPlayingPolling(){ if(nowPlayingTimer){ clearInterval(nowPlayingTimer); nowPlayingTimer=null; } nowPlayingLast=''; nowPlayingConsecutiveFails=0; }
+function stopNowPlayingPolling(){ if(nowPlayingTimer){ clearInterval(nowPlayingTimer); nowPlayingTimer=null; } nowPlayingLast=''; nowPlayingConsecutiveFails=0; nowPlayingCircuitUntil=0; }
 
-// ---------- MINI-PLAYER UI (CORRIGIDO) ----------
 function updateMiniPlayer(title,isPaused){
   var mini=document.getElementById('mini-player');
   var t=document.getElementById('mini-title');
@@ -1692,7 +1682,6 @@ function updateMiniPlayer(title,isPaused){
   if(!currentChannelId){ mini.classList.remove('visible'); return; }
   mini.classList.add('visible');
   if(t&&title)t.textContent=title;
-  // Atualiza subtítulo com nome da rádio (ou metadata rica se houver)
   if(sub){
     var subText;
     if(trackInfo.artist&&trackInfo.title){
@@ -1703,7 +1692,6 @@ function updateMiniPlayer(title,isPaused){
     }
     sub.textContent=subText;
   }
-  // Atualiza capa se não há artwork (fallback para emoji da rádio)
   if(coverWrap&&!trackInfo.artwork){
     var emoji='🎵';
     if(currentChannelId){
@@ -1712,14 +1700,12 @@ function updateMiniPlayer(title,isPaused){
     }
     coverWrap.innerHTML='<span class="mini-emoji">'+emoji+'</span>';
   }
-  // Botão play/pause
   if(b)b.innerHTML=isPaused?'<svg viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"/></svg>':'<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>';
-  // Equalizador: pausa animação se áudio está pausado
-  mini.classList.toggle('paused', !!isPaused);
+  if(isPaused) mini.classList.add('paused');
+  else mini.classList.remove('paused');
 }
 function setStatus(id,text){ var el=document.getElementById(id.indexOf('status-')===0?id:'status-'+id); if(el)el.textContent=text; }
 
-// ---------- HLS / UTIL ----------
 var hlsJsLoadPromise=null;
 function isLegacyIOSWebKit(){ var ua=navigator.userAgent||''; return /iPad|iPhone|iPod/i.test(ua)&&/OS 9_[0-9_]+/i.test(ua)&&/AppleWebKit/i.test(ua); }
 function preferNativeHlsOnLegacy(urls){ if(!isLegacyIOSWebKit()||!urls||urls.length<2)return urls; var h=[],o=[]; for(var i=0;i<urls.length;i++){ if(urlNeedsHls(urls[i]))h.push(urls[i]); else o.push(urls[i]); } return h.concat(o); }
@@ -1737,19 +1723,17 @@ function loadHlsJs(){
   return hlsJsLoadPromise;
 }
 
-// ---------- RADIO CONTROLLER ----------
 var radioController = { state:'IDLE', token:0, timeoutId:0, channelId:'', audio:null, hls:null };
-function safeStopAudio(a){ if(!a)return; try{a.__portalInvalid=true;}catch(_){} try{a.pause();}catch(_){} try{a.removeAttribute('src');}catch(_){} try{a.load();}catch(_){} }
+function safeStopAudio(a){ if(!a)return; try{a.pause();}catch(_){} try{a.removeAttribute('src');}catch(_){} try{a.load();}catch(_){} }
 function clearRadioTimeout(){ if(radioController.timeoutId){ clearTimeout(radioController.timeoutId); radioController.timeoutId=0; } }
 function destroyHls(){ if(!hlsInstance)return; try{hlsInstance.stopLoad();}catch(_){} try{hlsInstance.detachMedia();}catch(_){} try{hlsInstance.destroy();}catch(_){} hlsInstance=null; radioController.hls=null; }
 function cleanupRadio(){
   clearRadioTimeout(); destroyHls();
   if(radioAudio)safeStopAudio(radioAudio);
-  radioAudio.__portalInvalid=false; radioAudio.preload='none'; radioAudio.autoplay=false; radioAudio.volume=radioVolume;
+  radioAudio.preload='none'; radioAudio.autoplay=false; radioAudio.volume=radioVolume;
   radioController.audio=null; radioController.state='IDLE'; radioPlaying=false;
 }
 
-// ---------- BACKOFF RETRY ----------
 function scheduleRetry(reason){
   if(intentionalPause||backoffTimer||!navigator.onLine)return;
   backoffCount++;
@@ -1759,23 +1743,23 @@ function scheduleRetry(reason){
   backoffTimer=setTimeout(function(){
     backoffTimer=null;
     if(!intentionalPause&&navigator.onLine&&currentChannelId){
-      playChannel(currentChannelId);
+      playChannel(currentChannelId,null,null,true);
     }
   },delay);
 }
 function resetBackoff(){ if(backoffTimer){ clearTimeout(backoffTimer); backoffTimer=null; } backoffCount=0; }
 
-// ---------- PLAY ----------
-function playChannel(channelId,btnEl,statusIdOverride){
+function playChannel(channelId,btnEl,statusIdOverride,isAutoRetry){
   var channel=RADIO_CHANNELS[channelId];
   var statusId=statusIdOverride||channelId;
   if(!channel){ setStatus(statusId,'Canal indisponível'); return; }
-  if(currentChannelId===channelId&&radioAudio&&radioAudio.src){
+  if(!isAutoRetry&&currentChannelId===channelId&&radioAudio&&radioAudio.src){
     try{togglePlayPause();}catch(_){}
     return;
   }
+  var retryBackoff=isAutoRetry?backoffCount:0;
   stopAllMedia();
-  resetBackoff();
+  if(isAutoRetry)backoffCount=retryBackoff; else resetBackoff();
   intentionalPause=false;
   radioController.token++;
   radioStartedAt=new Date().getTime();
@@ -1784,7 +1768,6 @@ function playChannel(channelId,btnEl,statusIdOverride){
   cleanupRadio();
   currentChannelId=channelId; currentChannelLabel=channel.label;
   radioController.channelId=channelId; radioController.state='RADIO_LOADING';
-  // Limpa metadata antiga
   trackInfo={artist:'',title:'',year:'',genre:'',album:'',artwork:''};
   lastTrackTitle='';
   var urlIndex=0;
@@ -1802,13 +1785,13 @@ function playChannel(channelId,btnEl,statusIdOverride){
   setStatusBar('retry','CONECTANDO',channel.label);
   updateMiniPlayer(channel.label,true);
 
-  function stillCurrent(a){ return token===radioController.token && currentChannelId===channelId && radioAudio===a && !a.__portalInvalid; }
+  function stillCurrent(a){ return token===radioController.token && currentChannelId===channelId && radioAudio===a; }
   function failAttempt(msg){
     radioRetryCount++; radioLastError=msg||'Erro';
     if(token!==radioController.token)return;
     clearRadioTimeout(); destroyHls();
     if(radioAudio)safeStopAudio(radioAudio);
-    radioAudio.__portalInvalid=false; radioController.audio=null; radioPlaying=false;
+    radioController.audio=null; radioPlaying=false;
     urlIndex++;
     if(urlIndex<channel.urls.length){
       radioController.state='RADIO_LOADING';
@@ -1849,7 +1832,7 @@ function playChannel(channelId,btnEl,statusIdOverride){
     var needsHls=urlNeedsHls(url);
     setStatus(statusId,'Tentando '+(urlIndex+1)+'/'+channel.urls.length+'…');
     var audio=radioAudio;
-    audio.__portalUrl=url; audio.__portalInvalid=false;
+    audio.__portalUrl=url;
     radioController.audio=audio;
     addEventListenerOnce(audio,'playing',function(){ markPlaying(audio); });
     addEventListenerOnce(audio,'error',function(){ if(stillCurrent(audio))failAttempt('Erro no stream'); });
@@ -1910,12 +1893,12 @@ function togglePlayPause(){
     return;
   }
   var a=radioAudio;
-  if(!a||a.__portalInvalid||!currentChannelId||!a.src)return;
+  if(!a||!currentChannelId||!a.src)return;
   if(a.paused){
     radioController.state='RADIO_LOADING';
     var s=false;
-    addEventListenerOnce(a,'playing',function(){ if(s)return; s=true; if(a!==radioAudio||a.__portalInvalid)return; radioController.state='RADIO_PLAYING'; radioPlaying=true; updateMiniPlayer(currentChannelLabel,false); setStatusBar('live','AO VIVO',currentChannelLabel); });
-    try{ var p=a.play(); if(p&&typeof p.then==='function'){ p.then(function(){},function(){ if(a===radioAudio&&!a.__portalInvalid)updateMiniPlayer(currentChannelLabel,true); }); } }
+    addEventListenerOnce(a,'playing',function(){ if(s)return; s=true; if(a!==radioAudio)return; radioController.state='RADIO_PLAYING'; radioPlaying=true; updateMiniPlayer(currentChannelLabel,false); setStatusBar('live','AO VIVO',currentChannelLabel); });
+    try{ var p=a.play(); if(p&&typeof p.then==='function'){ p.then(function(){},function(){ if(a===radioAudio)updateMiniPlayer(currentChannelLabel,true); }); } }
     catch(_){}
   } else {
     a.pause(); intentionalPause=true; radioController.state='RADIO_PAUSED'; radioPlaying=false;
@@ -1947,17 +1930,14 @@ function toggleMute(){
   else { muted=false; setVolume(volumeBeforeMute); if(sl)sl.value=volumeBeforeMute; if(b)b.textContent='🔊'; }
 }
 
-// ---------- WAKE LOCK ----------
 var wakeLockSentinel=null;
 function requestWakeLock(){ if(!('wakeLock' in navigator))return; try{ navigator.wakeLock.request('screen').then(function(s){ wakeLockSentinel=s; s.addEventListener('release',function(){ wakeLockSentinel=null; }); }).catch(function(){}); }catch(_){} }
 function releaseWakeLock(){ if(!wakeLockSentinel)return; try{ wakeLockSentinel.release(); }catch(_){} wakeLockSentinel=null; }
 
-// ---------- VIZ ----------
 var vizRaf=0;
 function startViz(){}
 function stopViz(){ if(vizRaf){ clearInterval(vizRaf); vizRaf=0; } }
 
-// ---------- STATS ----------
 var sessionPlays=0, listenSeconds=0, listenTick=null;
 function bumpPlayStat(){ sessionPlays++; updateStatsUi(); if(!listenTick)listenTick=setInterval(function(){ if(radioPlaying||(libraryMode&&libraryAudio&&!libraryAudio.paused)){ listenSeconds++; if(listenSeconds%15===0)updateStatsUi(); } },1000); }
 function updateStatsUi(){
@@ -1967,7 +1947,6 @@ function updateStatsUi(){
   if(c)c.textContent=String(getLibraryTracks().length);
 }
 
-// ---------- NETWORK ----------
 function updateNetworkBanner(){
   var el=document.getElementById('net-banner'); if(!el)return;
   if(navigator.onLine===false){ el.textContent='Sem conexão — streams precisam de internet.'; el.className='net-banner show'; setStatusBar('offline','SEM INTERNET','Aguardando conexão'); }
@@ -1980,7 +1959,6 @@ function setupNetworkAndWake(){
   document.addEventListener('visibilitychange',function(){ if(document.visibilityState==='visible'&&(radioPlaying||(libraryMode&&libraryAudio&&!libraryAudio.paused)))requestWakeLock(); });
 }
 
-// ---------- HUB ----------
 function renderHub(){
   var cont=document.getElementById('hub-continue'), fv=document.getElementById('hub-favs'), hi=document.getElementById('hub-history');
   if(!cont||!fv)return;
@@ -2009,7 +1987,6 @@ function renderHub(){
   }
 }
 
-// ---------- FAVORITOS ----------
 function toggleFav(btn,channelId){
   var favs=migrateLegacyFavoriteIds();
   var i=favs.indexOf(channelId);
@@ -2053,7 +2030,6 @@ function sincronizarEstrelas(){
   });
 }
 
-// ---------- CANAIS SALVOS ----------
 function renderCanaisSalvos(){
   var dados=getDadosSalvos();
   Object.keys(RADIO_CHANNELS).filter(function(id){ return id.indexOf('custom_saved_')===0; }).forEach(function(id){ delete RADIO_CHANNELS[id]; });
@@ -2145,7 +2121,6 @@ function adicionarYouTubeSalvo(){
   loadYouTubeId(videoId,null,true);
 }
 
-// ---------- BUSCA ----------
 var searchPlaceholders=[];
 function restaurarResultadosBusca(){
   for(var i=0;i<searchPlaceholders.length;i++){
@@ -2193,7 +2168,6 @@ function filtrarRadios(termo){
 }
 function limparBusca(){ var i=document.getElementById('search-input'); if(i)i.value=''; filtrarRadios(''); if(i)i.focus(); }
 
-// ---------- YOUTUBE ----------
 var ytPlayer=null, ytApiPromise=null, ytCurrentId='', ytLoadToken=0, ytPlayerActivated=false;
 var YT_ENTRY_ID='odouCACH9-w';
 function youtubeErrorMessage(c){
@@ -2321,14 +2295,15 @@ function ativarYouTubePlayer(autoLoad){
   setYTDiag('origin',portalOrigin()); setYTDiag('api','aguardando');
   setYouTubeStatus(autoLoad?'Carregando player…':'Player ativado.',autoLoad?'loading':'ready');
   if(autoLoad)loadYouTubeId(YT_ENTRY_ID,null,false);
-}// ---------- BIBLIOTECA ----------
+}
+
 function getLibraryTracks(){ try{ var r=JSON.parse(localStorage.getItem('portal-library')||'[]'); if(!Array.isArray(r))return []; return r.filter(function(t){ return t&&t.id&&t.title&&t.url; }); }catch(_){ return []; } }
 function setLibraryTracks(t){ try{ localStorage.setItem('portal-library',JSON.stringify(t||[])); }catch(_){} }
 function getTrackById(id){ var l=getLibraryTracks(); for(var i=0;i<l.length;i++)if(l[i].id===id)return l[i]; return null; }
 function shuffleIds(ids){ var a=ids.slice(); for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
 function updateLibraryNavButtons(){ var p=document.getElementById('btn-prev'), n=document.getElementById('btn-next'); var e=libraryMode&&libraryQueue.length>1; if(p)p.disabled=!e; if(n)n.disabled=!e; }
 function stopLibrary(keepUi){
-  if(libraryAudio){ try{ libraryAudio.onended=null; libraryAudio.onerror=null; libraryAudio.onplaying=null; libraryAudio.pause(); libraryAudio.removeAttribute('src'); libraryAudio.load(); }catch(_){} libraryAudio=null; }
+  if(libraryAudio){ try{ libraryAudio.onended=null; libraryAudio.onerror=null; libraryAudio.onplaying=null; }catch(_){} safeStopAudio(libraryAudio); libraryAudio=null; }
   libraryMode=false;
   if(!keepUi){ libraryQueue=[]; libraryIndex=0; }
   try{ updateLibraryNavButtons(); }catch(_){}
@@ -2485,7 +2460,6 @@ function carregarPlaylistJson(){
   });
 }
 
-// ---------- SLEEP TIMER ----------
 var sleepFadeTimer=null;
 function fadeOutAndStop(ms){
   ms=ms||8000;
@@ -2534,7 +2508,6 @@ function atualizarTimerStatus(){
   s.classList.add('active');
 }
 
-// ---------- STOP / BACKUP / IMPORT ----------
 function stopAllMedia(){
   stopNowPlayingPolling();
   resetBackoff();
@@ -2543,7 +2516,6 @@ function stopAllMedia(){
   try{ destroyHls(); }catch(_){}
   try{ stopLibrary(false); }catch(_){}
   try{ if(radioAudio)safeStopAudio(radioAudio); }catch(_){}
-  radioAudio.__portalInvalid=false;
   radioController.audio=null; radioController.channelId=''; radioController.state='IDLE';
   radioPlaying=false;
   currentChannelId=''; currentChannelLabel=''; currentRadioUrl='';
@@ -2600,7 +2572,6 @@ function importarDadosPortal(event){
   r.readAsText(f);
 }
 
-// ---------- HUB / QUICKNAV ----------
 function setActiveQuickNav(){
   var links=document.querySelectorAll('.quick-nav a[href^="#"]'); if(!links.length)return;
   var secs=[];
@@ -2615,7 +2586,6 @@ function compartilharAgora(){
   else { try{ if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(x+' — '+u); alert('Copiado.'); } else prompt('Copie:',u); }catch(_){ prompt('Copie:',u); } }
 }
 
-// ---------- PWA ----------
 var deferredInstallPrompt=null;
 function dismissInstallBanner(){ var b=document.getElementById('install-banner'); if(b){ b.hidden=true; b.classList.remove('show'); } setStoredValue('portal-install-dismissed','1'); }
 function promptPwaInstall(){ if(!deferredInstallPrompt){ alert('iPhone: Safari → Compartilhar → Adicionar à Tela de Início.\nAndroid/Chrome: menu → Instalar app.'); return; } deferredInstallPrompt.prompt(); deferredInstallPrompt.userChoice.then(function(){ deferredInstallPrompt=null; dismissInstallBanner(); }).catch(function(){}); }
@@ -2624,7 +2594,6 @@ function setupPwa(){
   if('serviceWorker' in navigator){ navigator.serviceWorker.register('sw.js').then(function(){ var n=document.getElementById('sw-note'); if(n)n.textContent='Modo app: interface pode abrir offline.'; }).catch(function(){}); }
 }
 
-// ---------- CAST ----------
 function setCastUi(c,t){ var b=document.getElementById('cast-btn'), n=document.getElementById('cast-note'); if(b){ b.classList.toggle('connected',!!c); b.textContent=c?'📺 Chromecast conectado':'📺 Enviar para Chromecast'; } if(n&&t)n.textContent=t; }
 function initCastApi(){
   if(castReady&&window.cast&&cast.framework)return Promise.resolve();
@@ -2660,7 +2629,6 @@ function castCurrentRadio(){
   }).then(function(){ stopRadio(); setCastUi(true,'Enviado ao Chromecast.'); }).catch(function(){ setCastUi(false,'Não foi possível iniciar Cast.'); });
 }
 
-// ---------- KEYBOARD ----------
 function bindKeyboardShortcuts(){
   document.addEventListener('keydown',function(e){
     var t=(e.target&&e.target.tagName)?e.target.tagName.toLowerCase():'';
@@ -2673,7 +2641,6 @@ function bindKeyboardShortcuts(){
   });
 }
 
-// ---------- INIT ----------
 window.addEventListener('DOMContentLoaded',function(){
   refreshAppearanceControls();
   var sv=localStorage.getItem('radio-vol')||'50';
@@ -2700,9 +2667,6 @@ window.addEventListener('DOMContentLoaded',function(){
   setYTDiag('state','não ativado');
   setYouTubeStatus('Player em espera — ative quando quiser.','ready');
   setStatusBar('idle','PRONTO','Toque em uma rádio');
-  setTimeout(detectNavigationBar,100);
-  setTimeout(detectNavigationBar,500);
-
   var si=document.getElementById('search-input');
   if(si)si.addEventListener('input',function(){ filtrarRadios(si.value); });
 });

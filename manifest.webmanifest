@@ -1,16 +1,40 @@
 {
-  "name": "Painel Mídia",
+  "name": "Painel Mídia — Total Hits",
   "short_name": "Painel Mídia",
-  "description": "Rádios, YouTube e suas músicas em um player web leve e híbrido.",
-  "start_url": "./",
-  "scope": "./",
+  "description": "Rádios, YouTube e suas músicas em um player web leve e moderno.",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "orientation": "any",
   "background_color": "#0a0e1a",
   "theme_color": "#0a0e1a",
   "lang": "pt-BR",
+  "dir": "ltr",
+  "categories": ["music", "entertainment"],
   "icons": [
-    {"src":"./icons/icon-192.png","sizes":"192x192","type":"image/png","purpose":"any maskable"},
-    {"src":"./icons/icon-512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}
+    {
+      "src": "/total-hits-logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ]
 }
