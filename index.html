@@ -594,7 +594,7 @@ html.lite-mode .media-item { background: var(--surface-2); }
 </div>
 <div class="brand-copy" role="button" tabindex="0" title="Voltar ao início" onclick="goHome()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goHome();}">
 <h1>Painel Mídia — Total Hits</h1>
-<span class="version-tag">v6.7.4 • Rádios, YouTube e Músicas</span>
+<span class="version-tag">v6.8.0 • Legacy Engine iPad 3</span>
 </div>
 <div class="header-actions">
 <button class="header-action" id="theme-menu-btn" type="button" onclick="toggleAppearancePanel()" aria-expanded="false" aria-controls="appearance-panel" title="Aparência">
@@ -1180,7 +1180,8 @@ html.lite-mode .media-item { background: var(--surface-2); }
 <div class="stat-pill"><b id="stat-tracks">0</b><span>faixas salvas</span></div>
 </div>
 <ul class="changelog" style="margin-top:14px;">
-<li><strong>v6.7.4</strong> — Estabilização do motor de mídia: reconexão com backoff preservado, parada segura da biblioteca, token único contra callbacks antigos e circuit breaker da metadata Total Hits.</li>
+<li><strong>v6.8.0</strong> — Legacy Engine: bootstrap diagnóstico ES5 para Safari iOS 9, captura de erros de inicialização e proteção dos controles no iPad 3.</li>
+<li><strong>v6.7.5</strong> — Estabilização do motor de mídia: reconexão com backoff preservado, parada segura da biblioteca, token único contra callbacks antigos e circuit breaker da metadata Total Hits.</li>
 <li><strong>v6.7.3</strong> — Mini-player fixo na base (estilo Total Hits); equalizador animado; warmup de áudio para iOS 9 e Puffin; capa dinâmica no mini-player.</li>
 <li><strong>v6.7.2</strong> — Equalizador animado no mini-player; mini-player mostra emoji da rádio quando sem metadata.</li>
 <li><strong>v6.7.1</strong> — recenttracks.js removido; exposição global no lugar certo.</li>
@@ -1224,6 +1225,60 @@ html.lite-mode .media-item { background: var(--surface-2); }
 <span id="cc-now-playing" class="cc_streaminfo" data-type="song" data-username="breaktroy" hidden>Atualizando…</span>
 <div class="cc_recenttracks_list" data-username="breaktroy" hidden></div>
 
+
+<script id="legacy-bootstrap">
+(function(){
+  var ua=navigator.userAgent||'';
+  var legacy=/iPad/i.test(ua)&&/OS 9[_\.]/i.test(ua);
+  window.__PORTAL_LEGACY_IPAD3=legacy;
+  window.__PORTAL_BOOT={stage:'bootstrap',errors:[]};
+
+  function esc(s){
+    return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+  function panel(){
+    if(!legacy)return null;
+    var p=document.getElementById('legacy-diag');
+    if(p)return p;
+    p=document.createElement('div');
+    p.id='legacy-diag';
+    p.style.cssText='position:fixed;left:6px;right:6px;bottom:6px;z-index:2147483647;background:#111;color:#fff;padding:8px 10px;border-radius:8px;font:12px/1.35 Arial,sans-serif;max-height:34%;overflow:auto;box-shadow:0 2px 12px rgba(0,0,0,.45)';
+    p.innerHTML='<b>iPad Legacy v6.8</b> — <span id="legacy-stage">BOOT OK</span> <button type="button" id="legacy-hide" style="float:right;font-size:12px">fechar</button><div id="legacy-error" style="margin-top:4px;color:#ffd27a"></div>';
+    (document.body||document.documentElement).appendChild(p);
+    var b=document.getElementById('legacy-hide');
+    if(b)b.onclick=function(){p.style.display='none';};
+    return p;
+  }
+  function show(stage,msg){
+    window.__PORTAL_BOOT.stage=stage;
+    if(msg)window.__PORTAL_BOOT.errors.push(String(msg));
+    if(!legacy)return;
+    panel();
+    var s=document.getElementById('legacy-stage');
+    var e=document.getElementById('legacy-error');
+    if(s)s.innerHTML=esc(stage);
+    if(e&&msg)e.innerHTML=esc(msg);
+  }
+
+  window.__portalLegacyShow=show;
+  window.onerror=function(msg,url,line,col,err){
+    show('ERRO JS', String(msg||'erro')+' | linha '+String(line||'?')+(col?' coluna '+col:''));
+    return false;
+  };
+  if(document.addEventListener){
+    document.addEventListener('DOMContentLoaded',function(){
+      show('DOM OK');
+      setTimeout(function(){
+        var ok=typeof window.playChannel==='function'&&typeof window.stopAllMedia==='function';
+        show(ok?'CONTROLES OK':'CONTROLES AUSENTES',
+             ok?'':'O script principal não expôs playChannel/stopAllMedia.');
+      },300);
+    },false);
+  }
+  show('BOOT OK');
+}());
+</script>
+
 <script>
 (function(){
 'use strict';
@@ -1243,13 +1298,40 @@ html.lite-mode .media-item { background: var(--surface-2); }
   if(!String.prototype.padStart){String.prototype.padStart=function(t,p){t=t>>0;p=String(typeof p!=='undefined'?p:' ');if(this.length>=t)return String(this);t=t-this.length;if(t>p.length){p+=Array(Math.ceil(t/p.length)+1).join(p);}return p.slice(0,t)+String(this);};}
   if(typeof Object.assign!=='function'){Object.assign=function(t){if(t==null)throw new TypeError('Cannot convert');var to=Object(t);for(var i=1;i<arguments.length;i++){var s=arguments[i];if(s!=null){for(var k in s){if(Object.prototype.hasOwnProperty.call(s,k))to[k]=s[k];}}}return to;};}
   if(typeof NodeList!=='undefined'&&!NodeList.prototype.forEach){NodeList.prototype.forEach=Array.prototype.forEach;}
+  if(typeof HTMLCollection!=='undefined'&&!HTMLCollection.prototype.forEach){HTMLCollection.prototype.forEach=Array.prototype.forEach;}
   if(typeof Element!=='undefined'&&!Element.prototype.remove){Element.prototype.remove=function(){if(this.parentNode)this.parentNode.removeChild(this);};}
   if(typeof Element!=='undefined'&&!Element.prototype.replaceWith){Element.prototype.replaceWith=function(){var p=this.parentNode;if(!p)return;for(var i=0;i<arguments.length;i++){var n=arguments[i];p.insertBefore(typeof n==='string'?document.createTextNode(n):n,this);}p.removeChild(this);};}
   if(typeof Promise==='undefined'){
-    function MiniPromise(executor){var self=this;self.state=0;self.value=void 0;self.h=[];function f(v){if(self.state)return;self.state=1;self.value=v;fl();}function r(x){if(self.state)return;self.state=2;self.value=x;fl();}function fl(){setTimeout(function(){var h=self.h.slice();self.h=[];for(var i=0;i<h.length;i++){var x=h[i];try{if(self.state===1){if(x.ok){x.res(x.ok(self.value));}else{x.res(self.value);}}else{if(x.fail){x.res(x.fail(self.value));}else{x.rej(self.value);}}}catch(e){x.rej(e);}}},0);}self.then=function(ok,fail){return new MiniPromise(function(res,rej){self.h.push({ok:typeof ok==='function'?ok:null,fail:typeof fail==='function'?fail:null,res:res,rej:rej});if(self.state)fl();});};self.catch=function(fail){return self.then(null,fail);};try{executor(f,r);}catch(e){r(e);}}
+    var MiniPromise=function(executor){var self=this;self.state=0;self.value=void 0;self.h=[];function f(v){if(self.state)return;self.state=1;self.value=v;fl();}function r(x){if(self.state)return;self.state=2;self.value=x;fl();}function fl(){setTimeout(function(){var h=self.h.slice();self.h=[];for(var i=0;i<h.length;i++){var x=h[i];try{if(self.state===1){if(x.ok){x.res(x.ok(self.value));}else{x.res(self.value);}}else{if(x.fail){x.res(x.fail(self.value));}else{x.rej(self.value);}}}catch(e){x.rej(e);}}},0);}self.then=function(ok,fail){return new MiniPromise(function(res,rej){self.h.push({ok:typeof ok==='function'?ok:null,fail:typeof fail==='function'?fail:null,res:res,rej:rej});if(self.state)fl();});};self.catch=function(fail){return self.then(null,fail);};try{executor(f,r);}catch(e){r(e);}};
     MiniPromise.resolve=function(v){return new MiniPromise(function(res){res(v);});};MiniPromise.reject=function(v){return new MiniPromise(function(_,rej){rej(v);});};window.Promise=MiniPromise;
   }
 }());
+
+// ---------- URL / DOM HELPERS LEGACY (iOS 9) ----------
+function portalParseUrl(value){
+  try{
+    var a=document.createElement('a');
+    a.href=String(value||'');
+    // Safari antigo resolve URLs relativas somente após leitura de href.
+    var href=a.href;
+    if(!href)return null;
+    return {href:href,protocol:a.protocol||'',hostname:a.hostname||'',pathname:a.pathname||'/',search:a.search||''};
+  }catch(_){return null;}
+}
+function portalQueryParam(search,name){
+  var q=String(search||'').replace(/^\?/,'').split('&');
+  for(var i=0;i<q.length;i++){
+    var p=q[i].split('=');
+    try{if(decodeURIComponent(p[0]||'')===name)return decodeURIComponent((p.slice(1).join('=')||'').replace(/\+/g,' '));}catch(_){}
+  }
+  return null;
+}
+function portalRemove(el){if(el&&el.parentNode)el.parentNode.removeChild(el);}
+function portalScrollHome(){
+  var h=document.getElementById('section-hub');
+  if(!h){window.scrollTo(0,0);return;}
+  try{h.scrollIntoView(true);}catch(_){window.scrollTo(0,0);}
+}
 
 // ---------- WARMUP iOS 9 + PUFFIN ----------
 (function warmupAudio(){
@@ -1274,6 +1356,8 @@ html.lite-mode .media-item { background: var(--surface-2); }
   try{document.addEventListener('touchend',unlock,false);}catch(_){}
   try{document.addEventListener('click',unlock,false);}catch(_){}
 }());
+
+if(window.__portalLegacyShow)window.__portalLegacyShow('POLYFILLS OK');
 
 // ---------- DADOS DE RÁDIOS ----------
 var RADIO_CHANNELS = {
@@ -2087,7 +2171,7 @@ function adicionarRadioSalva(){
   var nome=document.getElementById('custom-nome').value.trim();
   var urlText=document.getElementById('custom-url').value.trim();
   if(!nome||!urlText){ alert('Informe nome e URL.'); return; }
-  var url; try{ url=new URL(urlText,window.location.href); }catch(_){ alert('URL inválida.'); return; }
+  var url=portalParseUrl(urlText); if(!url){ alert('URL inválida.'); return; }
   if(url.protocol!=='http:'&&url.protocol!=='https:'){ alert('Use HTTP ou HTTPS.'); return; }
   var dados=getDadosSalvos();
   var existing=dados.radio.findIndex(function(i){ return String(i.url).trim()===url.href; });
@@ -2181,11 +2265,11 @@ function extrairYouTubeId(v){
   if(!v)return null; var r=String(v).trim();
   if(/^[A-Za-z0-9_-]{11}$/.test(r))return r;
   try{
-    var u=new URL(r,window.location.href);
+    var u=portalParseUrl(r); if(!u)return null;
     var h=u.hostname.toLowerCase().replace(/^www\./,'');
     if(h==='youtu.be'){ var id=u.pathname.split('/').filter(Boolean)[0]; return /^[A-Za-z0-9_-]{11}$/.test(id||'')?id:null; }
     if(['youtube.com','m.youtube.com','music.youtube.com'].indexOf(h)>=0){
-      var q=u.searchParams.get('v'); if(/^[A-Za-z0-9_-]{11}$/.test(q||''))return q;
+      var q=portalQueryParam(u.search,'v'); if(/^[A-Za-z0-9_-]{11}$/.test(q||''))return q;
       var parts=u.pathname.split('/').filter(Boolean);
       var mk=['embed','shorts','live','v']; var i=mk.indexOf(parts[0]);
       if(i>=0&&/^[A-Za-z0-9_-]{11}$/.test(parts[i+1]||''))return parts[i+1];
@@ -2314,7 +2398,7 @@ function renderLibrary(){
   var grid=document.getElementById('library-grid'), empty=document.getElementById('library-empty');
   if(!grid)return;
   var tr=getLibraryTracks();
-  Array.prototype.slice.call(grid.querySelectorAll('.media-item')).forEach(function(n){ n.remove(); });
+  Array.prototype.slice.call(grid.querySelectorAll('.media-item')).forEach(function(n){ portalRemove(n); });
   if(!tr.length){
     if(empty){ empty.hidden=false; if(!empty.parentNode)grid.appendChild(empty); }
     updateLibraryNavButtons(); return;
@@ -2350,7 +2434,7 @@ function adicionarFaixaBiblioteca(){
   var a=(document.getElementById('lib-artist').value||'').trim();
   var u=(document.getElementById('lib-url').value||'').trim();
   if(!t||!u){ alert('Informe nome e URL.'); return; }
-  var url; try{ url=new URL(u,window.location.href); }catch(_){ alert('URL inválida.'); return; }
+  var url=portalParseUrl(u); if(!url){ alert('URL inválida.'); return; }
   if(url.protocol!=='https:'&&url.protocol!=='http:'){ alert('Use HTTPS.'); return; }
   var tr=getLibraryTracks();
   var ex=tr.findIndex(function(x){ return String(x.url)===url.href; });
@@ -2448,7 +2532,8 @@ function carregarPlaylistJson(){
       var uu=String(raw.url||raw.src||'').trim();
       if(!ti||!uu)return;
       try{
-        var u=new URL(uu,window.location.href);
+        var u=portalParseUrl(uu);
+        if(!u)return;
         if(u.protocol!=='https:'&&u.protocol!=='http:')return;
         if(seen[u.href])return; seen[u.href]=true;
         cur.push({id:raw.id||getStableId('track'),title:ti,artist:String(raw.artist||raw.artista||'').trim(),url:u.href});
@@ -2541,7 +2626,7 @@ function exportarDadosPortal(){
     var u=URL.createObjectURL(blob); var a=document.createElement('a');
     a.href=u; a.download='portal-midia-backup-'+new Date().toISOString().slice(0,10)+'.json';
     document.body.appendChild(a); a.click();
-    setTimeout(function(){ try{ URL.revokeObjectURL(u); a.remove(); }catch(_){} },500);
+    setTimeout(function(){ try{ URL.revokeObjectURL(u); portalRemove(a); }catch(_){} },500);
   }catch(err){ alert('Erro ao exportar: '+(err&&err.message?err.message:err)); }
 }
 function importarDadosPortal(event){
@@ -2579,7 +2664,7 @@ function setActiveQuickNav(){
   function up(){ var y=window.scrollY+160; var cur=secs[0]; secs.forEach(function(s){ if(s.el.offsetTop<=y)cur=s; }); links.forEach(function(a){ a.classList.remove('active'); }); if(cur)cur.link.classList.add('active'); }
   window.addEventListener('scroll',up,false); up();
 }
-function goHome(){ try{ var h=document.getElementById('section-hub'); if(h&&h.scrollIntoView)h.scrollIntoView({behavior:'smooth'}); else window.scrollTo(0,0); if(history&&history.replaceState)history.replaceState(null,'',window.location.pathname+window.location.search); }catch(_){} }
+function goHome(){ try{ portalScrollHome(); if(window.history&&history.replaceState)history.replaceState(null,'',window.location.pathname+window.location.search); }catch(_){ try{window.scrollTo(0,0);}catch(__){} } }
 function compartilharAgora(){
   var x=currentChannelLabel?('Ouvindo: '+currentChannelLabel):'Painel Mídia', u=window.location.href;
   if(navigator.share){ navigator.share({title:'Painel Mídia',text:x,url:u}).catch(function(){}); }
@@ -2641,36 +2726,6 @@ function bindKeyboardShortcuts(){
   });
 }
 
-window.addEventListener('DOMContentLoaded',function(){
-  refreshAppearanceControls();
-  var sv=localStorage.getItem('radio-vol')||'50';
-  var sl=document.getElementById('volume-slider'); if(sl)sl.value=sv;
-  radioVolume=parseInt(sv,10)/100;
-  radioAudio.volume=radioVolume;
-  renderCanaisSalvos();
-  renderFavoritos();
-  sincronizarEstrelas();
-  renderHub();
-  renderLibrary();
-  setActiveQuickNav();
-  bindKeyboardShortcuts();
-  setupPwa();
-  setupWeather();
-  setupDebug();
-  setupNetworkAndWake();
-  setupMediaSession();
-  setupFastcastBridge();
-  updateStatsUi();
-  showYouTubeUi(false);
-  setYTDiag('origin',portalOrigin());
-  setYTDiag('api','em espera');
-  setYTDiag('state','não ativado');
-  setYouTubeStatus('Player em espera — ative quando quiser.','ready');
-  setStatusBar('idle','PRONTO','Toque em uma rádio');
-  var si=document.getElementById('search-input');
-  if(si)si.addEventListener('input',function(){ filtrarRadios(si.value); });
-});
-
 // ============ EXPOR FUNÇÕES GLOBALMENTE ============
 window.playChannel = playChannel;
 window.toggleFav = toggleFav;
@@ -2706,6 +2761,41 @@ window.goHome = goHome;
 window.compartilharAgora = compartilharAgora;
 window.promptPwaInstall = promptPwaInstall;
 window.dismissInstallBanner = dismissInstallBanner;
+
+if(window.__portalLegacyShow)window.__portalLegacyShow('CONTROLES EXPORTADOS');
+
+window.addEventListener('DOMContentLoaded',function(){
+  if(window.__portalLegacyShow)window.__portalLegacyShow('INIT DOM');
+  refreshAppearanceControls();
+  var sv=localStorage.getItem('radio-vol')||'50';
+  var sl=document.getElementById('volume-slider'); if(sl)sl.value=sv;
+  radioVolume=parseInt(sv,10)/100;
+  radioAudio.volume=radioVolume;
+  renderCanaisSalvos();
+  renderFavoritos();
+  sincronizarEstrelas();
+  renderHub();
+  renderLibrary();
+  setActiveQuickNav();
+  bindKeyboardShortcuts();
+  setupPwa();
+  setupWeather();
+  setupDebug();
+  setupNetworkAndWake();
+  setupMediaSession();
+  setupFastcastBridge();
+  updateStatsUi();
+  showYouTubeUi(false);
+  setYTDiag('origin',portalOrigin());
+  setYTDiag('api','em espera');
+  setYTDiag('state','não ativado');
+  setYouTubeStatus('Player em espera — ative quando quiser.','ready');
+  setStatusBar('idle','PRONTO','Toque em uma rádio');
+  if(window.__portalLegacyShow)window.__portalLegacyShow('PORTAL PRONTO');
+  var si=document.getElementById('search-input');
+  if(si)si.addEventListener('input',function(){ filtrarRadios(si.value); });
+});
+
 
 })();
 </script>
