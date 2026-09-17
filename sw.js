@@ -1,5 +1,5 @@
-/* Painel Mídia v6.3 — service worker leve; áudio/vídeo nunca é cacheado. */
-var CACHE = 'painel-midia-v63-ui';
+/* Painel Mídia v6.6 — service worker leve; áudio/vídeo nunca é cacheado. */
+var CACHE = 'painel-midia-v66-ui';
 var ASSETS = ['./', './index.html', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png'];
 
 self.addEventListener('install', function(event) {
