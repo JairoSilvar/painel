@@ -1,6 +1,6 @@
-/* Painel Mídia v6.6 — service worker leve; áudio/vídeo nunca é cacheado. */
-var CACHE = 'painel-midia-v66-ui';
-var ASSETS = ['./', './index.html', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png'];
+/* Painel Mídia v6.7 — service worker leve; áudio/vídeo nunca é cacheado. */
+var CACHE = 'painel-midia-v67-ui';
+var ASSETS = ['./', './index.html', './manifest.webmanifest', './total-hits-logo.svg', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', function(event) {
   event.waitUntil(
@@ -27,7 +27,7 @@ self.addEventListener('fetch', function(event) {
   if (!req || req.method !== 'GET') return;
   var url;
   try { url = new URL(req.url); } catch (_) { return; }
-  if (/m3u8|mp3|aac|audio|stream|youtube|googlevideo|cast/i.test(url.href)) return;
+  if (/m3u8|mp3|aac|audio|stream|youtube|googlevideo|cast|fastcast4u|itunes|apple/i.test(url.href)) return;
   if (url.origin !== self.location.origin) return;
 
   var isAppShell = req.mode === 'navigate' ||
