@@ -51,7 +51,7 @@ color: var(--text);
 overflow-x: hidden;
 overflow-y: auto;
 -webkit-overflow-scrolling: touch;
-padding-bottom: calc(120px + var(--safe-bottom));
+padding-bottom: calc(120px + var(--safe-bottom) + var(--nav-bottom));
 }
 header {
 padding: 12px 16px 10px;
@@ -335,7 +335,9 @@ border-color: rgba(139,92,246,.5); color: #fff;
 .empty-state { text-align: center; color: var(--faint); font-size: .85em; padding: 16px 0; font-style: italic; }
 
  .mini-player {
- position: fixed; bottom: calc(16px + var(--safe-bottom) + var(--nav-bottom)); left: 8px; right: 8px;
+ position: fixed;
+ bottom: calc(16px + var(--safe-bottom) + var(--nav-bottom));
+ left: 8px; right: 8px;
  width: auto; max-width: 1100px; margin: 0 auto;
  background: rgba(15,23,42,.97);
  backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
@@ -613,7 +615,7 @@ html.lite-mode .header-inner, html.lite-mode .section, html.lite-mode .search-wr
 <div class="brand-mark" role="button" tabindex="0" title="Voltar ao início" onclick="goHome()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goHome();}" style="cursor :pointer">🎧</div>
 <div class="brand-copy" role="button" tabindex="0" title="Voltar ao início" onclick="goHome()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goHome();}" style="cursor :pointer">
 <h1>Portal de Mídia</h1>
-<span class="version-tag">v6.6 • Painel Mídia • Rádios, YouTube e Músicas</span>
+<span class="version-tag">v6.6.1 • Painel Mídia • Rádios, YouTube e Músicas</span>
 </div>
 <div class="header-actions">
 <button class="header-action" id="theme-menu-btn" type="button" onclick="toggleAppearancePanel()" aria-expanded="false" aria-controls="appearance-panel" title="Aparência">◐</button>
@@ -638,7 +640,7 @@ html.lite-mode .header-inner, html.lite-mode .section, html.lite-mode .search-wr
 <div class="appearance-row theme-row" role="group" aria-label="Cor do tema">
 <button type="button" data-color-theme="violet" onclick="setColorTheme('violet')"><span class="swatch" style="background:#8b5cf6"></span>Violeta</button>
 <button type="button" data-color-theme="oled" onclick="setColorTheme('oled')"><span class="swatch" style="background:#111"></span>OLED</button>
-<button type="button" data-color-theme="rose" onclick="setColorTheme('rose')"><span class="swatch" style="background:#fb7185"></span>Rosa</button>
+<button type="button" data-color-theme="rose" onclick="setColorTheme('rose')"><span class="swatch" style="background:#fbbf24"></span>Rosa</button>
 <button type="button" data-color-theme="emerald" onclick="setColorTheme('emerald')"><span class="swatch" style="background:#34d399"></span>Verde</button>
 <button type="button" data-color-theme="ocean" onclick="setColorTheme('ocean')"><span class="swatch" style="background:#38bdf8"></span>Azul</button>
 <button type="button" data-color-theme="amber" onclick="setColorTheme('amber')"><span class="swatch" style="background:#fb923c"></span>Âmbar</button>
@@ -985,10 +987,10 @@ html.lite-mode .header-inner, html.lite-mode .section, html.lite-mode .search-wr
 <div class="stat-pill"><b id="stat-tracks">0</b><span>faixas salvas</span></div>
 </div>
 <ul class="changelog" style="margin-top:14px;padding-left:18px;">
-<li><strong>v6.6</strong> — Correções estruturais: status de favoritos, stop via Media Session, Audio único reutilizado, safe-area com fallback, remoção de :has(), polling duplo da Total Hits, iOS 10/11 no modo econômico. Nenhuma rádio ou recurso removido.</li>
+<li><strong>v6.6.1</strong> — Mini-player agora detecta automaticamente a barra de navegação do celular e ajusta a posição. Padding do body também compensa. Sem mais sobreposição no Android e iPhone.</li>
+<li><strong>v6.6</strong> — Correções estruturais: status de favoritos, stop via Media Session, Audio único reutilizado, safe-area com fallback, remoção de :has(), polling duplo da Total Hits, iOS 10/11 no modo econômico.</li>
 <li><strong>v6.5</strong> — Correções de regex (HLS, YouTube www, Chromecast); remoção do vídeo Chuva + Piano; retomada após pausa no iOS 9.</li>
-<li><strong>v6.4</strong> — Foco em Safari/iOS 9: HLS nativo sem HLS.js no WebKit legado; URLs HTTPS alternativas para Atlântida/102.3; CBN/BandNews priorizando HLS.</li>
-<li><strong>v6.1</strong> — Núcleo ES5 real para navegadores antigos, reforço de compatibilidade iOS 9.</li>
+<li><strong>v6.4</strong> — Foco em Safari/iOS 9: HLS nativo sem HLS.js no WebKit legado; URLs HTTPS alternativas para Atlântida/102.3.</li>
 </ul>
 <p class="lib-mode-note" style="margin-top:12px;">Criado por Break Troy · tudo funciona dentro desta página · sem redirecionar para fora.</p>
 </div>
@@ -1088,6 +1090,82 @@ html.lite-mode .header-inner, html.lite-mode .section, html.lite-mode .search-wr
     }
 }());
 
+// ============================================================
+// v6.6.1 — DETECÇÃO DA BARRA DE NAVEGAÇÃO DO CELULAR
+// Calcula a altura real da barra (Android, iOS, gestos ou botões)
+// e aplica em --nav-bottom para o mini-player não ficar atrás.
+// ============================================================
+var __navBarLastValue = -1;
+function detectNavigationBar() {
+    try {
+        var navBar = 0;
+        var ua = navigator.userAgent || '';
+        var isIOS = /iPad|iPhone|iPod/i.test(ua);
+        var isAndroid = /Android/i.test(ua);
+
+        // Método 1: visualViewport (mais preciso, navegadores modernos)
+        if (window.visualViewport && typeof window.visualViewport.height === 'number') {
+            var vvDiff = window.innerHeight - window.visualViewport.height;
+            if (vvDiff > 15 && vvDiff < 160) {
+                navBar = Math.round(vvDiff);
+            }
+        }
+
+        // Método 2: screen.height vs innerHeight (fallback)
+        if (navBar === 0 && window.screen && typeof window.screen.height === 'number') {
+            var screenDiff = window.screen.height - window.innerHeight;
+            // Em alguns Androids, o screen.height inclui a barra de status e de navegação.
+            // Se a diferença é pequena, provavelmente é só a barra de status.
+            if (screenDiff > 100 && screenDiff < 260) {
+                // Provavelmente status bar + nav bar
+                navBar = Math.max(0, screenDiff - 24);
+            } else if (screenDiff > 40 && screenDiff < 100) {
+                // Provavelmente só a status bar
+                navBar = 0;
+            } else if (screenDiff >= 260) {
+                // Dispositivo estranho (ex: desktop emulado). Não mexe.
+                navBar = 0;
+            }
+        }
+
+        // Método 3: fallback por UA
+        if (navBar === 0) {
+            if (isAndroid) {
+                // Chute conservador para Android antigo: 3 botões
+                var screenDiffUA = (window.screen ? window.screen.height : 0) - window.innerHeight;
+                if (screenDiffUA > 100) {
+                    navBar = 48;
+                } else {
+                    navBar = 0; // gestos ou tela cheia
+                }
+            }
+            // iOS moderno: safe-area já cobre, não mexe em --nav-bottom
+        }
+
+        // Limita a valores razoáveis
+        if (navBar < 0) navBar = 0;
+        if (navBar > 120) navBar = 120;
+
+        if (navBar !== __navBarLastValue) {
+            __navBarLastValue = navBar;
+            document.documentElement.style.setProperty('--nav-bottom', navBar + 'px');
+        }
+    } catch (_) {
+        // Em caso de erro, mantém 0px (fallback CSS)
+    }
+}
+
+// Executa assim que possível
+detectNavigationBar();
+
+// Recalcula em mudanças
+window.addEventListener('resize', function () { setTimeout(detectNavigationBar, 60); });
+window.addEventListener('orientationchange', function () { setTimeout(detectNavigationBar, 250); });
+if (window.visualViewport && window.visualViewport.addEventListener) {
+    window.visualViewport.addEventListener('resize', function () { setTimeout(detectNavigationBar, 60); });
+    window.visualViewport.addEventListener('scroll', function () { setTimeout(detectNavigationBar, 60); });
+}
+
 // ---------- RADIO CHANNELS ----------
 var RADIO_CHANNELS = {
     atlantida_poa: { label: 'Atlântida FM 94.3', needsHls: true, urls: ['https://1852747t.ha.azioncdn.net/primary/atl_poa.sdp/playlist.m3u8', 'https://liverdatlpoa.rbsdirect.com.br/primary/atl_poa.sdp/playlist.m3u8'] },
@@ -1115,7 +1193,6 @@ var RADIO_CHANNELS = {
 };
 
 // ---------- ESTADO GLOBAL ----------
-// v6.6: Audio único reutilizado. Criado uma vez, nunca recriado.
 var radioAudio = new Audio();
 radioAudio.preload = 'none';
 radioAudio.autoplay = false;
@@ -1227,7 +1304,6 @@ function setVisualLevel(level) {
     applyVisualLevel(level);
 }
 
-// v6.6: detecta iOS 9, 10 e 11 para modo econômico.
 function detectLiteHardware() {
     try {
         var memory = Number(navigator.deviceMemory || 0);
@@ -1544,7 +1620,6 @@ function loadYouTubeId(id, btnEl, autoPlay) {
     if (btnEl) btnEl.classList.add('active', 'active-yt');
     createYouTubePlayer(videoId, autoPlay);
 }
-// v6.6: quando listId é passado, videoId é omitido.
 function loadYouTubePlaylist(listId, videoId, btnEl, autoPlay) {
     if (typeof autoPlay === 'undefined') autoPlay = true;
     if (!ytPlayerActivated) { ytPlayerActivated = true; showYouTubeUi(true); }
@@ -1847,7 +1922,6 @@ function renderFavoritos() {
         status.id = 'status-fav-' + id;
         label.append(name, small, status);
         btn.append(icon, label);
-        // v6.6: passa o ID já completo, sem prefixar de novo.
         btn.onclick = function () { return playChannel(id, btn, 'status-fav-' + id); };
         var favBtn = document.createElement('button');
         favBtn.className = 'fav-btn active';
@@ -1977,7 +2051,8 @@ function debugRender() {
         ['Agora tocando', nowPlayingLast || '—'],
         ['YouTube', (typeof ytPlayer !== 'undefined' && ytPlayer && typeof ytPlayer.getPlayerState === 'function') ? String(ytPlayer.getPlayerState()) : 'parado'],
         ['Online', navigator.onLine ? 'sim' : 'não'],
-        ['Viewport', window.innerWidth + '×' + window.innerHeight]
+        ['Viewport', window.innerWidth + '×' + window.innerHeight],
+        ['Nav bar', (document.documentElement.style.getPropertyValue('--nav-bottom') || '0px')]
     ];
     var html = '<button type="button" onclick="document.getElementById(\'debug-panel\').hidden=true" style="float:right;background:#243044;color:#fff;border:1px solid #475569;border-radius:8px;padding:6px 10px">Fechar</button><p style="color:#94a3b8">Diagnóstico local • atualização automática</p><dl>';
     for (var i = 0; i < rows.length; i++) html += '<dt style="font-weight:700;margin-top:8px">' + rows[i][0] + '</dt><dd style="margin:2px 0;word-break:break-word">' + String(rows[i][1]).replace(/[&<>]/g, function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c];}) + '</dd>';
@@ -2055,7 +2130,6 @@ function destroyHls() {
     hlsInstance = null;
     radioController.hls = null;
 }
-// v6.6: reutiliza o Audio único. Não cria novo objeto.
 function cleanupRadio() {
     clearRadioTimeout();
     destroyHls();
@@ -2123,7 +2197,6 @@ function setNowPlayingMetadata(meta, source) {
     } catch (_) {}
     return true;
 }
-// v6.6: usa o segundo argumento (tipo de erro). Fallback só a cada 4 ciclos ou em erro HTTP.
 function pollTotalHitsNowPlaying() {
     if (currentChannelId !== 'total_hits' || !radioPlaying) return;
     var stamp = new Date().getTime();
@@ -2203,7 +2276,6 @@ function updateMiniPlayer(title, isPaused) {
     if (btn) btn.textContent = isPaused ? '▶' : '❚❚';
     updateNowPlaying(currentChannelLabel || title || currentChannelId, isPaused ? 'Pausado' : 'Tocando agora', false);
 }
-// v6.6: aceita ID literal (com prefixo status-) ou ID curto (prefixa).
 function setStatus(id, text) {
     var el = document.getElementById(id.indexOf('status-') === 0 ? id : 'status-' + id);
     if (el) el.textContent = text;
@@ -2214,11 +2286,9 @@ function setRadioMediaSession(channel) {
         navigator.mediaSession.metadata = new MediaMetadata({ title: channel.label, artist: 'Portal de Mídia' });
         try { navigator.mediaSession.setActionHandler('play', function () { togglePlayPause(); }); } catch (_) { }
         try { navigator.mediaSession.setActionHandler('pause', function () { togglePlayPause(); }); } catch (_) { }
-        // v6.6: stop aponta para stopAllMedia (consistente com setLibraryMediaSession).
         try { navigator.mediaSession.setActionHandler('stop', stopAllMedia); } catch (_) { }
     } catch (_) { }
 }
-// v6.6: limpa apenas status de cards de rádio. Não apaga status-lib-* nem status-fav-* de outros contextos.
 function clearRadioUi() {
     document.querySelectorAll('.radio-btn').forEach(function (b) {
         b.classList.remove('playing', 'error');
@@ -2463,7 +2533,6 @@ function togglePlayPause() {
         updateMiniPlayer(currentChannelLabel, true);
     }
 }
-// v6.6: para também a biblioteca (evita áudio fantasma via Media Session / Cast).
 function stopRadio() {
     stopLibrary(false);
     radioController.token += 1;
@@ -3145,7 +3214,6 @@ function stopLibrary(keepUi) {
     try { updateLibraryNavButtons(); } catch (_) { }
     try { renderLibrary(); } catch (_) { }
 }
-// v6.6: para tudo — rádio, biblioteca, YouTube, HLS, timers, wake lock, viz.
 function stopAllMedia() {
     stopNowPlayingPolling();
     radioController.token += 1;
@@ -3439,6 +3507,9 @@ window.addEventListener('DOMContentLoaded', function () {
     setYTDiag('api', 'em espera');
     setYTDiag('state', 'player não ativado');
     setYouTubeStatus('Player em espera — ative quando quiser usar o YouTube.', 'ready');
+    // Recalcula nav bar depois do layout estabilizar
+    setTimeout(detectNavigationBar, 100);
+    setTimeout(detectNavigationBar, 500);
 });
 
 </script>
