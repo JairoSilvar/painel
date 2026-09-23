@@ -35,6 +35,7 @@ html, body { margin: 0; padding: 0; height: 100%; }
 --radius: 16px;
 --radius-sm: 12px;
 --safe-bottom: 0px;
+--vv-bottom: 0px; /* compensação da barra do Chrome Android (visualViewport) */
 --card-pad: 20px;
 }
 @supports (padding: env(safe-area-inset-bottom)) {
@@ -404,7 +405,8 @@ color: #fff; border-radius: 10px; padding: 8px 12px; font: 700 .8rem inherit; cu
 .mini-player {
 position: fixed !important;
 left: 0 !important; right: 0 !important;
-bottom: 0 !important;
+/* --vv-bottom sobe a barra quando a URL do Chrome Android some/aparece */
+bottom: var(--vv-bottom, 0px) !important;
 top: auto !important;
 width: 100%; max-width: 100%; margin: 0;
 background: rgba(15,23,42,.98);
@@ -415,12 +417,11 @@ padding: 10px 14px calc(10px + env(safe-area-inset-bottom, 0px));
 z-index: 9990;
 box-shadow: 0 -8px 24px -8px rgba(0,0,0,.55);
 display: none;
-/* Camada própria: evita que a barra “role” com o chrome do Android */
 -webkit-transform: translate3d(0,0,0);
 transform: translate3d(0,0,0);
 -webkit-backface-visibility: hidden;
 backface-visibility: hidden;
-will-change: transform;
+will-change: transform, bottom;
 }
 @supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
   .mini-player { backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
@@ -604,7 +605,7 @@ html.lite-mode .media-item { background: var(--surface-2); }
 </div>
 <div class="brand-copy" role="button" tabindex="0" title="Voltar ao início" onclick="goHome()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goHome();}">
 <h1>Painel Mídia — Total Hits</h1>
-<span class="version-tag">v6.9.3 • Mini fixo + scroll YT</span>
+<span class="version-tag">v6.9.4 • Viewport pin + iPad Safari</span>
 </div>
 <div class="header-actions">
 <button class="header-action" id="theme-menu-btn" type="button" onclick="toggleAppearancePanel()" aria-expanded="false" aria-controls="appearance-panel" title="Aparência">
@@ -1221,6 +1222,7 @@ html.lite-mode .media-item { background: var(--surface-2); }
 <div class="stat-pill"><b id="stat-tracks">0</b><span>faixas salvas</span></div>
 </div>
 <ul class="changelog" style="margin-top:14px;">
+<li><strong>v6.9.4</strong> — Mini-player acompanha a visualViewport (barra URL do Chrome); YouTube legado no iPad via youtube-nocookie; orientação: no iPad use sempre o Safari.</li>
 <li><strong>v6.9.3</strong> — Android moderno: mini-player realmente fixo na base (sem rolar com a página); ao tocar um vídeo YouTube a tela rola até o visualizador.</li>
 <li><strong>v6.9.2</strong> — Correção crítica: playChannel não chama mais stopAllMedia (que zerava o token e o src e impedia rádio/YouTube); detecção correta de src ativo; re-play após falha.</li>
 <li><strong>v6.9.1</strong> — Motor de rádio endurecido para dispositivos antigos: Audio fresco a cada tentativa, correção do fallback de URLs, timeouts maiores, progressive preferido no Android antigo, HLS nativo no Safari 9 sem load() agressivo.</li>
@@ -2566,22 +2568,25 @@ function loadYouTubeLegacyIframe(id,autoPlay){
   var c=document.getElementById('yt-player'); if(!c)return;
   destroyYouTubePlayer(); clearElement(c);
   ytCurrentId=id;
+  showYouTubeUi(true);
   setYTDiag('id',id); setYTDiag('api','iframe legacy'); setYTDiag('state','aguardando toque'); setYTDiag('error','—');
-  setYouTubeStatus('iPad 3: player direto. Toque no vídeo para iniciar.','ready');
-  legacyMediaNote('YouTube em iframe direto; Safari 9 exige toque do usuário.');
+  setYouTubeStatus('Safari/iPad: toque no vídeo para iniciar.','ready');
+  legacyMediaNote('YouTube em iframe direto; Safari exige toque do usuário.');
   var f=document.createElement('iframe');
   f.setAttribute('title','YouTube');
   f.setAttribute('frameborder','0');
   f.setAttribute('allowfullscreen','allowfullscreen');
   f.setAttribute('webkitallowfullscreen','webkitallowfullscreen');
+  f.setAttribute('mozallowfullscreen','mozallowfullscreen');
   f.setAttribute('playsinline','playsinline');
-  f.style.width='100%'; f.style.height='100%'; f.style.minHeight='240px';
-  var q='?controls=1&playsinline=1&rel=0';
-  /* No enablejsapi/origin on iOS 9: keep the legacy player independent. */
-  f.src='https://www.youtube.com/embed/'+encodeURIComponent(id)+q;
+  f.setAttribute('allow','accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture');
+  f.style.width='100%'; f.style.height='100%'; f.style.minHeight='240px'; f.style.border='0';
+  /* Sem enablejsapi/origin no iOS 9 — player independente do gesto do usuário. */
+  f.src='https://www.youtube-nocookie.com/embed/'+encodeURIComponent(id)+'?controls=1&playsinline=1&rel=0&fs=1';
   c.appendChild(f);
   trackInfo={artist:'YouTube',title:'Vídeo '+id,year:'',genre:'',album:'',artwork:'https://img.youtube.com/vi/'+id+'/hqdefault.jpg'};
   lastTrackTitle=trackInfo.title; renderTrackInfo();
+  scrollToYouTubeViewer();
 }
 
 function loadYouTubeApi(){
@@ -3195,6 +3200,42 @@ window.dismissInstallBanner = dismissInstallBanner;
 
 if(window.__portalLegacyShow)window.__portalLegacyShow('CONTROLES EXPORTADOS');
 
+/**
+ * Mantém o mini-player colado na base VISÍVEL da tela.
+ * No Chrome Android a barra de URL some/aparece e muda o visualViewport —
+ * sem isso o player “sobe e desce” com a barra.
+ */
+function pinMiniPlayerToVisualViewport(){
+  try{
+    var root=document.documentElement;
+    var vv=window.visualViewport;
+    if(!vv){
+      root.style.setProperty('--vv-bottom','0px');
+      return;
+    }
+    var gap=Math.round(window.innerHeight-vv.height-vv.offsetTop);
+    if(!isFinite(gap)||gap<0)gap=0;
+    // Só compensar quando há diferença real (barra do browser)
+    if(gap>2) root.style.setProperty('--vv-bottom',gap+'px');
+    else root.style.setProperty('--vv-bottom','0px');
+  }catch(_){
+    try{ document.documentElement.style.setProperty('--vv-bottom','0px'); }catch(__){}
+  }
+}
+function setupMiniPlayerViewportPin(){
+  pinMiniPlayerToVisualViewport();
+  var vv=window.visualViewport;
+  if(vv&&vv.addEventListener){
+    vv.addEventListener('resize',pinMiniPlayerToVisualViewport,false);
+    vv.addEventListener('scroll',pinMiniPlayerToVisualViewport,false);
+  }
+  window.addEventListener('resize',pinMiniPlayerToVisualViewport,false);
+  window.addEventListener('orientationchange',function(){
+    setTimeout(pinMiniPlayerToVisualViewport,50);
+    setTimeout(pinMiniPlayerToVisualViewport,300);
+  },false);
+}
+
 window.addEventListener('DOMContentLoaded',function(){
   if(isLegacyIOSWebKit()){ setCastUi(false,'Chromecast Web fica desativado no Safari 9; use aparelhos modernos para Cast.'); }
   if(window.__portalLegacyShow)window.__portalLegacyShow('INIT DOM');
@@ -3202,7 +3243,7 @@ window.addEventListener('DOMContentLoaded',function(){
   var sv=localStorage.getItem('radio-vol')||'50';
   var sl=document.getElementById('volume-slider'); if(sl)sl.value=sv;
   radioVolume=parseInt(sv,10)/100;
-  radioAudio.volume=radioVolume;
+  try{ radioAudio.volume=radioVolume; }catch(_){}
   renderCanaisSalvos();
   renderFavoritos();
   sincronizarEstrelas();
@@ -3216,6 +3257,7 @@ window.addEventListener('DOMContentLoaded',function(){
   setupNetworkAndWake();
   setupMediaSession();
   setupFastcastBridge();
+  setupMiniPlayerViewportPin();
   updateStatsUi();
   showYouTubeUi(false);
   setYTDiag('origin',portalOrigin());
