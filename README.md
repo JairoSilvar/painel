@@ -1,74 +1,21 @@
-# Painel Mídia v6.5 — Híbrido / iOS 9
+# Xadrez Pro 3D v8 — revisão da v7
 
-Build revisado para um único portal híbrido: Android, iPhone/iPad antigos e modernos, desktop e navegadores atuais.
+Extraia o ZIP e publique seu conteúdo na raiz de um servidor HTTP/HTTPS, como na v7. O index.html fica na raiz. A abertura por file:// não carrega os modelos 3D; use um servidor local ou a hospedagem habitual.
 
-## Correções desta revisão
+## Alterações
+- Área de jogo maior: removida a reserva lateral direita, controles compactos e enquadramento mais vertical no celular. Menu móvel começa recolhido.
+- Seletores em uma faixa inferior separada do canvas. Fechar fica acessível no topo; Escape fecha os painéis, exceto a promoção obrigatória.
+- Oito conjuntos GLB preservados. model.glb original continua padrão em uma instalação sem preferência anterior. Nenhum conjunto procedural reintroduzido.
+- Normalização uniforme por geometria e tipo, em função da casa de 1,24 unidade: largura máxima de 60% a 76% da casa e alturas máximas distintas para peão, torre, cavalo, bispo, rainha e rei. Modelos preservam sua silhueta original, sem esticamento de eixos.
+- Voxel: área jogável original de 7,44 unidades corrigida para 9,92 (oito casas). Madeira já possui área jogável correta; Premium e Minimalista recebem a grade comum. Corrigida a orientação clara/escura: a1 escura, h1 clara.
+- Cor e material possuem seletor e preferência independentes do conjunto. Sete acabamentos disponíveis. Cores do tema e Cristal nas cores do tema acompanham a seleção de tema visual.
+- Textos do catálogo corrigidos na origem; arquivos próprios em UTF-8. Rótulos e mensagens dinâmicas revisados, incluindo xeque, vitória, estados e erros de conexão.
+- Corrigido reenvio de lance remoto e rejeição de lances remotos na vez local. Voltar de Paris ao modo local/IA restaura perspectiva branca e encerra a conexão anterior.
+- Cache atualizado para v8. Preferências anteriores de geometria/tabuleiro continuam válidas; acabamento tem chave própria.
 
-- Núcleo JavaScript compatível com ES5: sem `const`, `let` ou arrow functions.
-- Removidos `Map` e `Set` do caminho crítico de inicialização — um `new Map()` no v5.7 podia interromper todo o JavaScript em Safari antigo.
-- Removido `replaceWith()` do caminho crítico; usa substituição DOM compatível.
-- Eventos `once` do áudio passaram a usar wrapper ES5.
-- `addEventListener` com opções `{once/passive}` removido do caminho legacy.
-- `matchMedia` usa `addEventListener` quando disponível e `addListener` como fallback.
-- `window.location.origin` possui fallback para protocolo + host.
-- Parser de URL do YouTube usa elemento `<a>` para maior compatibilidade.
-- `scrollIntoView`/`scrollTo` usam chamadas antigas e seguras no caminho legacy.
-- iOS 9 e Android antigo entram automaticamente em modo econômico.
-- Mini-player reorganizado para telas pequenas, evitando esmagamento/quebra dos controles.
-- Rádios continuam usando um único elemento de áudio e token de controle para evitar áudio fantasma.
-- YouTube/biblioteca/radio continuam mutuamente exclusivos.
-- HLS nativo continua sendo preferido quando o navegador oferece suporte.
-- No iOS 9, HLS.js não é carregado: o Safari tenta apenas HLS nativo, evitando dependência moderna no WebKit legado.
-- Atlântida FM e Rádio 102.3 ganharam URLs HTTPS alternativas atuais da infraestrutura Azion antes dos endpoints RBS anteriores.
-- CBN e BandNews priorizam HLS HTTPS no Safari antes dos fallbacks de áudio.
-- Continental permanece preservada; a URL HTTPS atual não foi substituída por conversão/recodificação. Se o Safari legado continuar recusando a transmissão, ela será candidata a relay HTTPS específico, sem remover a rádio.
-- Layout crítico usa fallback flexível em vez de depender de CSS Grid.
-- `min()`, `inset` e outros recursos modernos deixaram de ser necessários para o layout básico.
-- Service Worker atualizado para a versão 6.1 e com cache de shell em network-first.
-- Manifest atualizado para o nome Painel Mídia e orientação `any`.
+## Recursos da base e limites
+O ZIP v7 recebido contém partida local, IA em três níveis, Sala Paris por PeerJS (entrada direta, anfitrião e visitante), temas, histórico de lances, desfazer, áudio ambiente, sons, Toasty, cinematográficas e modelos selecionáveis. Esses recursos foram mantidos.
 
-## Instalação no Git/Vercel
+Sandbox/Treino, replay e rádio não estão implementados no ZIP v7 recebido. Histórico de lances não é replay; áudio ambiente não é rádio. Esta revisão não afirma preservar funcionalidades ausentes. Para integrá-las, é necessário recuperar a versão que as contém.
 
-1. Extraia este ZIP.
-2. Substitua os arquivos do projeto pelos arquivos desta pasta.
-3. Faça commit/push.
-4. Aguarde o novo deploy da Vercel.
-5. Em dispositivos antigos, faça recarregamento completo depois do primeiro deploy para evitar uma versão antiga do cache.
-
-## Critérios de aceite
-
-### iPad 3 / iOS 9.3.5
-- Página abre.
-- Botões de rádio respondem.
-- Rádio inicia/paralisa pelo mini-player.
-- Troca de rádio encerra a anterior.
-- YouTube não é obrigatório para o funcionamento das rádios.
-- Não deve haver scroll horizontal.
-
-### Celular
-- Mini-player permanece dentro da largura da tela.
-- Play/pause, parar, mudo e volume ficam acessíveis.
-- Nenhum controle deve sobrepor outro.
-
-### Modernos
-- Recursos progressivos continuam disponíveis: YouTube, HLS.js quando necessário, PWA, Cast e Media Session quando suportados.
-
-## Observação sobre streams
-
-A compatibilidade do código não garante que um servidor externo de rádio esteja online, aceite HTTPS/CORS ou permaneça disponível. Streams de terceiros devem ser validados separadamente no momento do teste.
-
-
-## v6.2
-- Preserva todas as rádios existentes, incluindo Total Hits.
-- Amplia os presets do YouTube com Reiki, meditação e música instrumental calmante.
-- Adiciona categoria Instrumental / Acalmar aos vídeos salvos.
-- Mantém a reprodução embutida e a exclusividade rádio/YouTube.
-
-
-## v6.3
-- Reintegra “Agora tocando” para Total Hits via FastCast4U, com consulta direta ao RPC `streaminfo.get` via rewrite HTTPS, usando `breaktroy`, com fallback `status-json.xsl`, atualizada a cada 15s; falha de metadata não interrompe o áudio.
-- Mini-player móvel elevado para evitar sobreposição com a navegação inferior de celulares modernos, preservando safe-area.
-- Clima automático via geolocalização + Open-Meteo, com fallback visual e atualização periódica.
-- Manifest PWA reforçado com ícones PNG 192/512 e metadados de instalação.
-- Adiciona diagnóstico em `/debug`: stream atual, retries, último erro, uptime, agora tocando, estado YouTube e viewport.
-- Mantém todas as rádios, incluindo Total Hits, e todos os recursos da v6.2.
+Leia VALIDACAO.md para o escopo dos testes e as limitações. Multiplayer real depende de internet e do serviço de sinalização; não foi verificado entre dois aparelhos externos.

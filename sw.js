@@ -1,65 +1,12 @@
-/* Painel Mídia v6.7.4 — service worker leve; áudio/vídeo nunca é cacheado. */
-var CACHE = 'painel-midia-v690-ui';
-var ASSETS = ['./', './index.html', './manifest.webmanifest', './total-hits-logo.svg', './icon-192.png', './icon-512.png'];
-
-self.addEventListener('install', function(event) {
-  event.waitUntil(
-    caches.open(CACHE).then(function(cache) {
-      return cache.addAll(ASSETS).catch(function() {});
-    }).then(function() { return self.skipWaiting(); })
-  );
-});
-
-self.addEventListener('activate', function(event) {
-  event.waitUntil(
-    caches.keys().then(function(keys) {
-      var jobs = [];
-      for (var i = 0; i < keys.length; i++) {
-        if (keys[i] !== CACHE) jobs.push(caches.delete(keys[i]));
-      }
-      return Promise.all(jobs);
-    }).then(function() { return self.clients.claim(); })
-  );
-});
-
-self.addEventListener('fetch', function(event) {
-  var req = event.request;
-  if (!req || req.method !== 'GET') return;
-  var url;
-  try { url = new URL(req.url); } catch (_) { return; }
-  if (/m3u8|mp3|aac|audio|stream|youtube|googlevideo|cast|fastcast4u|itunes|apple/i.test(url.href)) return;
-  if (url.origin !== self.location.origin) return;
-
-  var isAppShell = req.mode === 'navigate' ||
-    /\.html$|\.webmanifest$|\/$/.test(url.pathname);
-
-  if (isAppShell) {
-    event.respondWith(
-      fetch(req).then(function(res) {
-        if (res && res.ok) {
-          var copy = res.clone();
-          caches.open(CACHE).then(function(c) { c.put(req, copy); });
-        }
-        return res;
-      }).catch(function() {
-        return caches.match(req).then(function(cached) {
-          return cached || caches.match('./');
-        });
-      })
-    );
-    return;
-  }
-
-  event.respondWith(
-    caches.match(req).then(function(cached) {
-      var network = fetch(req).then(function(res) {
-        if (res && res.ok) {
-          var copy = res.clone();
-          caches.open(CACHE).then(function(c) { c.put(req, copy); });
-        }
-        return res;
-      }).catch(function() { return cached; });
-      return cached || network;
-    })
-  );
+const XP_SW_BUILD='xadrez-pro-3d-v8-20260922';
+const CORE=['./','./index.html','./style.css','./game.js','./assets-v8.js','./three.js','./GLTFLoader.js','./OrbitControls.js','./chess.min.js','./peerjs.min.js','./manifest.json','./models/model.glb','./assets/toasty-sprite.png','./assets/toasty.mp3'];
+self.addEventListener('install',e=>e.waitUntil(caches.open(XP_SW_BUILD).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting())));
+self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('xadrez-pro-3d-')&&k!==XP_SW_BUILD).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
+self.addEventListener('fetch',e=>{
+ const r=e.request,u=new URL(r.url);if(r.method!=='GET'||u.origin!==location.origin||u.pathname.startsWith('/api/'))return;
+ if(u.pathname.endsWith('verify.html')||u.searchParams.has('verify'))return;
+ e.respondWith((async()=>{const c=await caches.open(XP_SW_BUILD);
+  if(u.pathname.includes('/models/')){const hit=await c.match(r);if(hit)return hit;const res=await fetch(r);if(res.ok)await c.put(r,res.clone());return res;}
+  try{const res=await fetch(r,{cache:'no-cache'});if(res.ok)await c.put(r,res.clone());return res;}catch(err){return (await c.match(r))||(r.mode==='navigate'?await c.match('./index.html'):Response.error());}
+ })());
 });
