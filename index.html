@@ -605,7 +605,7 @@ html.lite-mode .media-item { background: var(--surface-2); }
 </div>
 <div class="brand-copy" role="button" tabindex="0" title="Voltar ao início" onclick="goHome()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goHome();}">
 <h1>Painel Mídia — Total Hits</h1>
-<span class="version-tag">v6.9.4 • Viewport pin + iPad Safari</span>
+<span class="version-tag">v6.9.5 • iPad audio unlock</span>
 </div>
 <div class="header-actions">
 <button class="header-action" id="theme-menu-btn" type="button" onclick="toggleAppearancePanel()" aria-expanded="false" aria-controls="appearance-panel" title="Aparência">
@@ -1222,6 +1222,7 @@ html.lite-mode .media-item { background: var(--surface-2); }
 <div class="stat-pill"><b id="stat-tracks">0</b><span>faixas salvas</span></div>
 </div>
 <ul class="changelog" style="margin-top:14px;">
+<li><strong>v6.9.5</strong> — iPad/Safari: desbloqueio do áudio no mesmo gesto do toque; &lt;audio&gt; fixo no DOM; Total Hits com URLs alternativas; corrige “Áudio direto 1/1” sem tocar.</li>
 <li><strong>v6.9.4</strong> — Mini-player acompanha a visualViewport (barra URL do Chrome); YouTube legado no iPad via youtube-nocookie; orientação: no iPad use sempre o Safari.</li>
 <li><strong>v6.9.3</strong> — Android moderno: mini-player realmente fixo na base (sem rolar com a página); ao tocar um vídeo YouTube a tela rola até o visualizador.</li>
 <li><strong>v6.9.2</strong> — Correção crítica: playChannel não chama mais stopAllMedia (que zerava o token e o src e impedia rádio/YouTube); detecção correta de src ativo; re-play após falha.</li>
@@ -1416,7 +1417,11 @@ var RADIO_CHANNELS = {
   salamanca_quarai: { label:'Salamanca FM 101.3', urls:['https://live.paineldj.com.br/proxy/salamancahd?mp=/stream'] },
   cbn: { label:'CBN Rio', urls:['https://playerservices.streamtheworld.com/api/livestream-redirect/CBN_RJ_ADP.m3u8','https://playerservices.streamtheworld.com/api/livestream-redirect/CBN_RJ_ADP.mp3','https://playerservices.streamtheworld.com/api/livestream-redirect/CBN_RJ.mp3'] },
   bandnews: { label:'BandNews FM SP', urls:['https://playerservices.streamtheworld.com/api/livestream-redirect/BANDNEWSFM_SPAAC.m3u8','https://playerservices.streamtheworld.com/api/livestream-redirect/BANDNEWSFM_SPAAC.aac','https://playerservices.streamtheworld.com/api/livestream-redirect/BANDNEWSFM_SPAAC.mp3'] },
-  total_hits: { label:'Total Hits', urls:['https://eu8.fastcast4u.com/proxy/breaktroy?mp=/stream'] },
+  total_hits: { label:'Total Hits', urls:[
+    'https://eu8.fastcast4u.com/proxy/breaktroy?mp=/stream',
+    'https://eu8.fastcast4u.com/proxy/breaktroy/;stream.mp3',
+    'https://eu8.fastcast4u.com/proxy/breaktroy?mp=/stream/;.mp3'
+  ] },
   progressive: { label:'Progressive House', urls:['https://stream.laut.fm/house'] },
   trance: { label:'Trance', urls:['https://stream.laut.fm/main'] },
   techno: { label:'Techno', urls:['https://stream.laut.fm/techno'] },
@@ -1434,14 +1439,54 @@ var RADIO_CHANNELS = {
 };
 
 // ---------- ESTADO GLOBAL ----------
+var SILENT_WAV='data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==';
+/**
+ * Cria o elemento de áudio do portal.
+ * No Safari/iOS 9 o Audio PRECISA estar no DOM e ser o MESMO elemento
+ * desbloqueado pelo toque do usuário — new Audio() solto perde o gesto.
+ */
 function createPortalAudio(){
-  var a=new Audio();
+  var a=null;
+  try{ a=document.getElementById('portal-radio-audio'); }catch(_){}
+  if(!a){
+    try{
+      a=document.createElement('audio');
+      a.id='portal-radio-audio';
+      a.setAttribute('playsinline','');
+      a.setAttribute('webkit-playsinline','');
+      a.setAttribute('preload','none');
+      a.controls=false;
+      // Fora da tela, mas no DOM (requisito Safari legado)
+      a.style.cssText='position:fixed;width:1px;height:1px;opacity:0;pointer-events:none;left:-9999px;bottom:0;';
+      var parent=document.body||document.documentElement;
+      if(parent)parent.appendChild(a);
+    }catch(_){
+      a=new Audio();
+    }
+  }
   a.preload='none';
   a.autoplay=false;
-  try{ a.setAttribute('playsinline',''); a.setAttribute('webkit-playsinline',''); }catch(_){}
   try{ a.playsInline=true; }catch(_){}
-  // Nunca definir crossOrigin em streams de rádio — quebra Icecast/Shoutcast antigos.
+  // Nunca definir crossOrigin em streams de rádio — quebra Icecast/Shoutcast.
   return a;
+}
+/** Desbloqueia o MESMO radioAudio no gesto do usuário (obrigatório no iOS). */
+function unlockRadioAudioForGesture(){
+  var a=radioAudio;
+  if(!a)return;
+  try{
+    a.muted=false;
+    a.volume=Math.max(0.01,radioVolume||0.5);
+    // Toque síncrono no mesmo elemento que vai tocar o stream
+    var prev=a.src;
+    a.src=SILENT_WAV;
+    var p=a.play();
+    if(p&&typeof p.then==='function'){
+      p.then(function(){ try{a.pause();}catch(_){} }).catch(function(){});
+    } else {
+      try{ a.pause(); }catch(_){}
+    }
+  }catch(_){}
 }
 var radioAudio = createPortalAudio();
 var hlsInstance = null;
@@ -1931,7 +1976,6 @@ function safeStopAudio(a){
   try{ a.removeAttribute('src'); }catch(_){}
   try{ a.src=''; }catch(_){}
   // Safari 9: load() após remover src interfere no próximo play ligado a gesto.
-  // Modernos: load() reseta o elemento de forma limpa.
   if(!isLegacyIOSWebKit()){
     try{ a.load(); }catch(_){}
   }
@@ -1952,8 +1996,16 @@ function cleanupRadio(){
   clearRadioTimeout();
   destroyHls();
   if(radioAudio)safeStopAudio(radioAudio);
-  // Em legado, o elemento Audio fica "sujo" após erro — recria sempre no próximo play.
-  if(isLegacyMediaDevice()){
+  // Safari/iOS: NÃO recriar o Audio aqui — precisa ser o mesmo elemento
+  // desbloqueado pelo toque. Só garante que continua no DOM.
+  if(isLegacyIOSWebKit()){
+    try{
+      if(!radioAudio||!radioAudio.parentNode){
+        radioAudio=createPortalAudio();
+      }
+    }catch(_){}
+  } else if(isLegacyMediaDevice()){
+    // Android antigo: recriar pode ajudar após erro fatal
     try{ radioAudio=createPortalAudio(); }catch(_){}
   } else {
     radioAudio.preload='none';
@@ -1986,15 +2038,22 @@ function resetBackoff(){ if(backoffTimer){ clearTimeout(backoffTimer); backoffTi
 
 /**
  * Atribui src e inicia play de forma compatível com Safari 9 / Android antigo.
- * - Não usa Promise.catch em caminhos onde Promise pode ser polyfill frágil.
- * - Em legado, evita load() desnecessário após atribuir src (Safari 9 já inicia o fetch no .src=).
+ * Tudo síncrono no gesto do usuário — sem setTimeout entre unlock e play.
  */
 function assignAndPlay(audio,url,onBlocked){
   try{
+    try{ audio.volume=radioVolume; }catch(_){}
+    try{ audio.muted=false; }catch(_){}
+    // Garante elemento no DOM (Safari 9)
+    try{
+      if(isLegacyIOSWebKit()&&audio&&!audio.parentNode){
+        var parent=document.body||document.documentElement;
+        if(parent)parent.appendChild(audio);
+      }
+    }catch(_){}
     audio.src=url;
-    if(!isLegacyIOSWebKit()){
-      try{ audio.load(); }catch(_){}
-    }
+    // Em Safari 9, load() após src= costuma ser necessário para iniciar o fetch do Icecast
+    try{ audio.load(); }catch(_){}
     var p=audio.play();
     if(p&&typeof p.then==='function'){
       p.then(function(){},function(){ if(typeof onBlocked==='function')onBlocked(); });
@@ -2051,6 +2110,12 @@ function playChannel(channelId,btnEl,statusIdOverride,isAutoRetry){
   radioRetryCount=0; radioLastError='';
   var token=radioController.token;
   cleanupRadio();
+  // CRÍTICO iOS/Safari: desbloquear o MESMO <audio> no gesto do toque,
+  // antes de apontar para o stream. Sem isso o play() fica bloqueado e
+  // o diagnóstico mostra "Áudio direto … 1/1" sem nunca sair do Conectando.
+  if(!isAutoRetry){
+    try{ unlockRadioAudioForGesture(); }catch(_){}
+  }
   currentChannelId=channelId; currentChannelLabel=channel.label;
   radioController.channelId=channelId; radioController.state='RADIO_LOADING';
   trackInfo={artist:'',title:'',year:'',genre:'',album:'',artwork:''};
@@ -2074,6 +2139,7 @@ function playChannel(channelId,btnEl,statusIdOverride,isAutoRetry){
   setStatus(statusId,'Conectando…');
   setStatusBar('retry','CONECTANDO',channel.label);
   updateMiniPlayer(channel.label,true);
+  if(isLegacyIPad3())legacyMediaNote('Unlock+play no mesmo gesto: '+channel.label);
 
   function stillCurrent(a){
     return token===radioController.token && currentChannelId===channelId && (!a||radioAudio===a);
@@ -2091,11 +2157,13 @@ function playChannel(channelId,btnEl,statusIdOverride,isAutoRetry){
     if(urlIndex<totalUrls){
       radioController.state='RADIO_LOADING';
       setStatus(statusId,'Tentando '+(urlIndex+1)+'/'+totalUrls+'…');
-      // Em legado, recria o elemento Audio antes da próxima tentativa
-      if(isLegacyMediaDevice()){
+      // iOS: manter o MESMO <audio> (gesto já foi usado). Android antigo: pode recriar.
+      if(isLegacyAndroidMedia()){
         try{ radioAudio=createPortalAudio(); radioAudio.volume=radioVolume; }catch(_){}
+      } else {
+        try{ radioAudio.volume=radioVolume; }catch(_){}
       }
-      setTimeout(function(){ if(token===radioController.token)tryNextUrl(); }, isLegacyMediaDevice()?320:180);
+      setTimeout(function(){ if(token===radioController.token)tryNextUrl(); }, isLegacyMediaDevice()?280:180);
       return;
     }
     currentRadioUrl='';
