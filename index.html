@@ -594,7 +594,7 @@ html.lite-mode .media-item { background: var(--surface-2); }
 </div>
 <div class="brand-copy" role="button" tabindex="0" title="Voltar ao início" onclick="goHome()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goHome();}">
 <h1>Painel Mídia — Total Hits</h1>
-<span class="version-tag">v6.9.0 • Media & Cast Foundation</span>
+<span class="version-tag">v6.9.1 • Legacy Radio Hardening</span>
 </div>
 <div class="header-actions">
 <button class="header-action" id="theme-menu-btn" type="button" onclick="toggleAppearancePanel()" aria-expanded="false" aria-controls="appearance-panel" title="Aparência">
@@ -1211,6 +1211,7 @@ html.lite-mode .media-item { background: var(--surface-2); }
 <div class="stat-pill"><b id="stat-tracks">0</b><span>faixas salvas</span></div>
 </div>
 <ul class="changelog" style="margin-top:14px;">
+<li><strong>v6.9.1</strong> — Motor de rádio endurecido para dispositivos antigos: Audio fresco a cada tentativa, correção do fallback de URLs, timeouts maiores, progressive preferido no Android antigo, HLS nativo no Safari 9 sem load() agressivo.</li>
 <li><strong>v6.9.0</strong> — Safari/iPad 3: caminho de áudio legado e fallback direto de YouTube; modernos: Cast remoto para rádios e Media Session/artwork aprimorados.</li>
 <li><strong>v6.8.1</strong> — Adiciona 5 presets YouTube de treino longo (~2h), preservando todos os presets existentes e a exclusividade de mídia.</li>
 <li><strong>v6.8.0</strong> — Legacy Engine: bootstrap diagnóstico ES5 para Safari iOS 9, captura de erros de inicialização e proteção dos controles no iPad 3.</li>
@@ -1276,7 +1277,7 @@ html.lite-mode .media-item { background: var(--surface-2); }
     p=document.createElement('div');
     p.id='legacy-diag';
     p.style.cssText='position:fixed;left:6px;right:6px;bottom:6px;z-index:2147483647;background:#111;color:#fff;padding:8px 10px;border-radius:8px;font:12px/1.35 Arial,sans-serif;max-height:34%;overflow:auto;box-shadow:0 2px 12px rgba(0,0,0,.45)';
-    p.innerHTML='<b>iPad Legacy v6.8</b> — <span id="legacy-stage">BOOT OK</span> <button type="button" id="legacy-hide" style="float:right;font-size:12px">fechar</button><div id="legacy-error" style="margin-top:4px;color:#ffd27a"></div>';
+    p.innerHTML='<b>iPad Legacy v6.9.1</b> — <span id="legacy-stage">BOOT OK</span> <button type="button" id="legacy-hide" style="float:right;font-size:12px">fechar</button><div id="legacy-error" style="margin-top:4px;color:#ffd27a"></div>';
     (document.body||document.documentElement).appendChild(p);
     var b=document.getElementById('legacy-hide');
     if(b)b.onclick=function(){p.style.display='none';};
@@ -1419,9 +1420,16 @@ var RADIO_CHANNELS = {
 };
 
 // ---------- ESTADO GLOBAL ----------
-var radioAudio = new Audio();
-radioAudio.preload = 'none';
-radioAudio.autoplay = false;
+function createPortalAudio(){
+  var a=new Audio();
+  a.preload='none';
+  a.autoplay=false;
+  try{ a.setAttribute('playsinline',''); a.setAttribute('webkit-playsinline',''); }catch(_){}
+  try{ a.playsInline=true; }catch(_){}
+  // Nunca definir crossOrigin em streams de rádio — quebra Icecast/Shoutcast antigos.
+  return a;
+}
+var radioAudio = createPortalAudio();
 var hlsInstance = null;
 var radioPlaying = false;
 var radioVolume = 0.5;
@@ -1836,18 +1844,64 @@ function updateMiniPlayer(title,isPaused){
 function setStatus(id,text){ var el=document.getElementById(id.indexOf('status-')===0?id:'status-'+id); if(el)el.textContent=text; }
 
 var hlsJsLoadPromise=null;
-function isLegacyIOSWebKit(){ var ua=navigator.userAgent||''; return /iPad|iPhone|iPod/i.test(ua)&&/OS 9_[0-9_]+/i.test(ua)&&/AppleWebKit/i.test(ua); }
-function isLegacyIPad3(){ var ua=navigator.userAgent||''; return /iPad/i.test(ua)&&/OS 9_[0-9_]+/i.test(ua); }
-function legacyMediaNote(msg){ if(window.__portalLegacyShow&&isLegacyIPad3())window.__portalLegacyShow('MÍDIA LEGACY',msg||''); }
+function isLegacyIOSWebKit(){
+  var ua=navigator.userAgent||'';
+  // iOS 9.x (iPad 3 / Safari 9) e também iOS 10 em WebKit antigo
+  return /iPad|iPhone|iPod/i.test(ua)&&/OS (9|10)_[0-9_]+/i.test(ua)&&/AppleWebKit/i.test(ua);
+}
+function isLegacyIPad3(){
+  var ua=navigator.userAgent||'';
+  return /iPad/i.test(ua)&&/OS 9[_\.]/i.test(ua);
+}
+function isLegacyAndroidMedia(){
+  var ua=navigator.userAgent||'';
+  var m=ua.match(/Android\s([0-9.]+)/i);
+  if(!m)return false;
+  var v=parseFloat(m[1]);
+  return isFinite(v)&&v<=7;
+}
+function isLegacyMediaDevice(){
+  return isLegacyIOSWebKit()||isLegacyAndroidMedia()||!!window.__PORTAL_LEGACY_IPAD3;
+}
+function legacyMediaNote(msg){
+  if(window.__portalLegacyShow&&isLegacyIPad3())window.__portalLegacyShow('MÍDIA LEGACY',msg||'');
+}
 
-function preferNativeHlsOnLegacy(urls){ if(!isLegacyIOSWebKit()||!urls||urls.length<2)return urls; var h=[],o=[]; for(var i=0;i<urls.length;i++){ if(urlNeedsHls(urls[i]))h.push(urls[i]); else o.push(urls[i]); } return h.concat(o); }
-function urlNeedsHls(url){ return typeof url==='string'&&(/\.m3u8(?:$|[?#])/i.test(url)||/mpegurl/i.test(url)); }
-function canUseNativeHls(a){ return !!a&&typeof a.canPlayType==='function'&&!!a.canPlayType('application/vnd.apple.mpegurl'); }
+/**
+ * Ordena URLs para o caminho de mídia legado:
+ * - Safari iOS 9/10: HLS nativo primeiro (único caminho confiável para .m3u8).
+ * - Android ≤7: progressive (mp3/aac) primeiro — HLS.js é pesado e nativo quase nunca existe.
+ * - Modernos: ordem original.
+ */
+function orderUrlsForDevice(urls){
+  if(!urls||!urls.length)return [];
+  var list=urls.slice?urls.slice(0):[].concat(urls);
+  if(list.length<2)return list;
+  var h=[],o=[];
+  for(var i=0;i<list.length;i++){
+    if(urlNeedsHls(list[i]))h.push(list[i]); else o.push(list[i]);
+  }
+  if(isLegacyIOSWebKit())return h.concat(o);
+  if(isLegacyAndroidMedia())return o.concat(h);
+  return list;
+}
+function urlNeedsHls(url){
+  return typeof url==='string'&&(/\.m3u8(?:$|[?#])/i.test(url)||/mpegurl/i.test(url)||/livestream-redirect/i.test(url)&&/\.m3u8/i.test(url));
+}
+function canUseNativeHls(a){
+  if(!a||typeof a.canPlayType!=='function')return false;
+  try{
+    var t=a.canPlayType('application/vnd.apple.mpegurl')||a.canPlayType('application/x-mpegURL')||'';
+    return t==='probably'||t==='maybe'||t.length>0;
+  }catch(_){ return false; }
+}
 function loadHlsJs(){
   if(typeof Hls!=='undefined')return Promise.resolve(Hls);
   if(hlsJsLoadPromise)return hlsJsLoadPromise;
   hlsJsLoadPromise=new Promise(function(res,rej){
-    var s=document.createElement('script'); s.src='https://cdn.jsdelivr.net/npm/hls.js@1.4.14/dist/hls.min.js'; s.async=true;
+    var s=document.createElement('script');
+    s.src='https://cdn.jsdelivr.net/npm/hls.js@1.4.14/dist/hls.min.js';
+    s.async=true;
     s.onload=function(){ if(typeof Hls!=='undefined')res(Hls); else { hlsJsLoadPromise=null; rej(new Error('Hls n/d')); } };
     s.onerror=function(){ hlsJsLoadPromise=null; rej(new Error('Falha HLS.js')); };
     document.head.appendChild(s);
@@ -1856,42 +1910,92 @@ function loadHlsJs(){
 }
 
 var radioController = { state:'IDLE', token:0, timeoutId:0, channelId:'', audio:null, hls:null };
+
 function safeStopAudio(a){
   if(!a)return;
-  try{a.pause();}catch(_){}
-  try{a.removeAttribute('src');}catch(_){}
-  if(!isLegacyIOSWebKit()){ try{a.load();}catch(_){} }
+  try{ a.pause(); }catch(_){}
+  try{ a.removeAttribute('src'); }catch(_){}
+  try{ a.src=''; }catch(_){}
+  // Safari 9: load() após remover src interfere no próximo play ligado a gesto.
+  // Modernos: load() reseta o elemento de forma limpa.
+  if(!isLegacyIOSWebKit()){
+    try{ a.load(); }catch(_){}
+  }
 }
-function clearRadioTimeout(){ if(radioController.timeoutId){ clearTimeout(radioController.timeoutId); radioController.timeoutId=0; } }
-function destroyHls(){ if(!hlsInstance)return; try{hlsInstance.stopLoad();}catch(_){} try{hlsInstance.detachMedia();}catch(_){} try{hlsInstance.destroy();}catch(_){} hlsInstance=null; radioController.hls=null; }
+
+function clearRadioTimeout(){
+  if(radioController.timeoutId){ clearTimeout(radioController.timeoutId); radioController.timeoutId=0; }
+}
+function destroyHls(){
+  if(!hlsInstance)return;
+  try{ hlsInstance.stopLoad(); }catch(_){}
+  try{ hlsInstance.detachMedia(); }catch(_){}
+  try{ hlsInstance.destroy(); }catch(_){}
+  hlsInstance=null;
+  radioController.hls=null;
+}
 function cleanupRadio(){
-  clearRadioTimeout(); destroyHls();
+  clearRadioTimeout();
+  destroyHls();
   if(radioAudio)safeStopAudio(radioAudio);
-  radioAudio.preload='none'; radioAudio.autoplay=false; radioAudio.volume=radioVolume;
-  radioController.audio=null; radioController.state='IDLE'; radioPlaying=false;
+  // Em legado, o elemento Audio fica "sujo" após erro — recria sempre no próximo play.
+  if(isLegacyMediaDevice()){
+    try{ radioAudio=createPortalAudio(); }catch(_){}
+  } else {
+    radioAudio.preload='none';
+    radioAudio.autoplay=false;
+  }
+  try{ radioAudio.volume=radioVolume; }catch(_){}
+  radioController.audio=null;
+  radioController.state='IDLE';
+  radioPlaying=false;
 }
 
 function scheduleRetry(reason){
-  if(intentionalPause||backoffTimer||!navigator.onLine)return;
+  if(intentionalPause||backoffTimer)return;
+  var online=true;
+  try{ online=navigator.onLine!==false; }catch(_){}
+  if(!online)return;
   backoffCount++;
   var delay=Math.min(30000,3000*Math.pow(2,Math.min(backoffCount-1,3)));
   setStatusBar('retry','RECONEXÃO','Tentando em '+Math.round(delay/1000)+'s');
   clearTimeout(backoffTimer);
   backoffTimer=setTimeout(function(){
     backoffTimer=null;
-    if(!intentionalPause&&navigator.onLine&&currentChannelId){
+    if(!intentionalPause&&currentChannelId){
+      try{ if(navigator.onLine===false)return; }catch(_){}
       playChannel(currentChannelId,null,null,true);
     }
   },delay);
 }
 function resetBackoff(){ if(backoffTimer){ clearTimeout(backoffTimer); backoffTimer=null; } backoffCount=0; }
 
+/**
+ * Atribui src e inicia play de forma compatível com Safari 9 / Android antigo.
+ * - Não usa Promise.catch em caminhos onde Promise pode ser polyfill frágil.
+ * - Em legado, evita load() desnecessário após atribuir src (Safari 9 já inicia o fetch no .src=).
+ */
+function assignAndPlay(audio,url,onBlocked){
+  try{
+    audio.src=url;
+    if(!isLegacyIOSWebKit()){
+      try{ audio.load(); }catch(_){}
+    }
+    var p=audio.play();
+    if(p&&typeof p.then==='function'){
+      p.then(function(){},function(){ if(typeof onBlocked==='function')onBlocked(); });
+    }
+  }catch(_){
+    if(typeof onBlocked==='function')onBlocked();
+  }
+}
+
 function playChannel(channelId,btnEl,statusIdOverride,isAutoRetry){
   var channel=RADIO_CHANNELS[channelId];
   var statusId=statusIdOverride||channelId;
   if(!channel){ setStatus(statusId,'Canal indisponível'); return; }
-  if(!isAutoRetry&&currentChannelId===channelId&&radioAudio&&radioAudio.src){
-    try{togglePlayPause();}catch(_){}
+  if(!isAutoRetry&&currentChannelId===channelId&&radioAudio&&radioAudio.src&&!radioAudio.error){
+    try{ togglePlayPause(); }catch(_){}
     return;
   }
   var retryBackoff=isAutoRetry?backoffCount:0;
@@ -1908,7 +2012,8 @@ function playChannel(channelId,btnEl,statusIdOverride,isAutoRetry){
   trackInfo={artist:'',title:'',year:'',genre:'',album:'',artwork:''};
   lastTrackTitle='';
   var urlIndex=0;
-  var urls=preferNativeHlsOnLegacy(channel.urls.slice?channel.urls.slice(0):channel.urls);
+  var urls=orderUrlsForDevice(channel.urls.slice?channel.urls.slice(0):channel.urls);
+  var totalUrls=urls.length;
   setRadioMediaSession(channel);
   clearRadioUi();
   if(btnEl){
@@ -1922,18 +2027,27 @@ function playChannel(channelId,btnEl,statusIdOverride,isAutoRetry){
   setStatusBar('retry','CONECTANDO',channel.label);
   updateMiniPlayer(channel.label,true);
 
-  function stillCurrent(a){ return token===radioController.token && currentChannelId===channelId && radioAudio===a; }
+  function stillCurrent(a){
+    return token===radioController.token && currentChannelId===channelId && radioAudio===a;
+  }
   function failAttempt(msg){
     radioRetryCount++; radioLastError=msg||'Erro';
     if(token!==radioController.token)return;
-    clearRadioTimeout(); destroyHls();
+    clearRadioTimeout();
+    destroyHls();
     if(radioAudio)safeStopAudio(radioAudio);
-    radioController.audio=null; radioPlaying=false;
+    radioController.audio=null;
+    radioPlaying=false;
     urlIndex++;
-    if(urlIndex<channel.urls.length){
+    // BUGFIX v6.9.1: usar totalUrls (lista ordenada), NÃO channel.urls.length
+    if(urlIndex<totalUrls){
       radioController.state='RADIO_LOADING';
-      setStatus(statusId,'Tentando '+(urlIndex+1)+'/'+channel.urls.length+'…');
-      setTimeout(function(){ if(token===radioController.token)tryNextUrl(); },180);
+      setStatus(statusId,'Tentando '+(urlIndex+1)+'/'+totalUrls+'…');
+      // Em legado, recria o elemento Audio antes da próxima tentativa
+      if(isLegacyMediaDevice()){
+        try{ radioAudio=createPortalAudio(); radioAudio.volume=radioVolume; }catch(_){}
+      }
+      setTimeout(function(){ if(token===radioController.token)tryNextUrl(); }, isLegacyMediaDevice()?320:180);
       return;
     }
     currentRadioUrl='';
@@ -1945,8 +2059,10 @@ function playChannel(channelId,btnEl,statusIdOverride,isAutoRetry){
   }
   function markPlaying(a){
     if(!stillCurrent(a))return;
-    clearRadioTimeout(); resetBackoff();
-    radioController.state='RADIO_PLAYING'; radioPlaying=true;
+    clearRadioTimeout();
+    resetBackoff();
+    radioController.state='RADIO_PLAYING';
+    radioPlaying=true;
     radioStartedAt=radioStartedAt||new Date().getTime();
     radioRetryCount=0; radioLastError='';
     if(channelId==='total_hits')startNowPlayingPolling();
@@ -1961,48 +2077,96 @@ function playChannel(channelId,btnEl,statusIdOverride,isAutoRetry){
     try{ renderHub(); }catch(_){}
     currentRadioUrl=a.__portalUrl||'';
   }
-  function armTimeout(ms,msg){ clearRadioTimeout(); radioController.timeoutId=setTimeout(function(){ if(token===radioController.token&&!radioPlaying)failAttempt(msg||'Tempo esgotado'); },ms); }
+  function armTimeout(ms,msg){
+    clearRadioTimeout();
+    // Dispositivos antigos têm rede e decode mais lentos
+    var extra=isLegacyMediaDevice()?Math.round(ms*0.6):0;
+    radioController.timeoutId=setTimeout(function(){
+      if(token===radioController.token&&!radioPlaying)failAttempt(msg||'Tempo esgotado');
+    },ms+extra);
+  }
   function tryNextUrl(){
     if(token!==radioController.token)return;
-    if(urlIndex>=urls.length){ currentRadioUrl=''; failAttempt('Indisponível'); return; }
-    var url=urls[urlIndex]; currentRadioUrl=url;
+    if(urlIndex>=totalUrls){ currentRadioUrl=''; failAttempt('Indisponível'); return; }
+    var url=urls[urlIndex];
+    currentRadioUrl=url;
     var needsHls=urlNeedsHls(url);
-    if(isLegacyIPad3())legacyMediaNote((needsHls?'HLS nativo: ':'Áudio direto: ')+channel.label);
-    setStatus(statusId,'Tentando '+(urlIndex+1)+'/'+channel.urls.length+'…');
+    if(isLegacyIPad3())legacyMediaNote((needsHls?'HLS nativo: ':'Áudio direto: ')+channel.label+' ['+(urlIndex+1)+'/'+totalUrls+']');
+    setStatus(statusId,'Tentando '+(urlIndex+1)+'/'+totalUrls+'…');
+
+    // Sempre usar o radioAudio atual (pode ter sido recriado)
     var audio=radioAudio;
+    try{ audio.volume=radioVolume; }catch(_){}
     audio.__portalUrl=url;
     radioController.audio=audio;
+
     addEventListenerOnce(audio,'playing',function(){ markPlaying(audio); });
-    addEventListenerOnce(audio,'error',function(){ if(stillCurrent(audio))failAttempt('Erro no stream'); });
-    addEventListenerOnce(audio,'stalled',function(){ if(stillCurrent(audio))scheduleRetry('stalled'); });
+    addEventListenerOnce(audio,'canplay',function(){
+      // Alguns Safari antigos disparam canplay mas precisam de play() extra
+      if(stillCurrent(audio)&&audio.paused&&!radioPlaying){
+        try{ var pp=audio.play(); if(pp&&typeof pp.then==='function')pp.then(function(){},function(){}); }catch(_){}
+      }
+    });
+    addEventListenerOnce(audio,'error',function(){
+      if(!stillCurrent(audio))return;
+      var code=(audio.error&&audio.error.code)?audio.error.code:'?';
+      failAttempt('Erro no stream (c'+code+')');
+    });
+    addEventListenerOnce(audio,'stalled',function(){
+      if(stillCurrent(audio)&&radioPlaying)scheduleRetry('stalled');
+    });
+
     if(needsHls){
       if(canUseNativeHls(audio)){
-        armTimeout(10000,'Tempo esgotado');
-        try{ audio.src=url; audio.load(); var p=audio.play(); if(p&&typeof p.catch==='function')p.catch(function(){ if(stillCurrent(audio))failAttempt('Reprodução bloqueada'); }); }
-        catch(_){ failAttempt('Erro no stream'); }
+        armTimeout(14000,'Tempo esgotado (HLS)');
+        assignAndPlay(audio,url,function(){ if(stillCurrent(audio))failAttempt('Reprodução bloqueada'); });
         return;
       }
-      if(isLegacyIOSWebKit()){ legacyMediaNote('Safari 9 não aceitou o HLS desta rádio.'); failAttempt('HLS incompatível no Safari 9'); return; }
-      armTimeout(12000,'Tempo esgotado');
+      // Safari 9 sem canPlayType positivo: tenta mesmo assim (alguns builds reportam vazio)
+      if(isLegacyIOSWebKit()){
+        legacyMediaNote('Tentativa HLS forçada no Safari legado');
+        armTimeout(16000,'Tempo esgotado (HLS legado)');
+        assignAndPlay(audio,url,function(){ if(stillCurrent(audio))failAttempt('HLS incompatível no Safari 9'); });
+        return;
+      }
+      // Moderno / Android: HLS.js
+      armTimeout(14000,'Tempo esgotado');
       loadHlsJs().then(function(HL){
         if(!stillCurrent(audio))return;
         if(!HL||!HL.isSupported()){ failAttempt('HLS não suportado'); return; }
         var lite=document.documentElement.classList.contains('lite-mode');
-        hlsInstance=new HL({ enableWorker:!lite, maxBufferLength:lite?8:18, maxMaxBufferLength:lite?16:36, lowLatencyMode:false, backBufferLength:0 });
+        hlsInstance=new HL({
+          enableWorker:!lite&&!isLegacyAndroidMedia(),
+          maxBufferLength:lite||isLegacyAndroidMedia()?6:18,
+          maxMaxBufferLength:lite||isLegacyAndroidMedia()?12:36,
+          lowLatencyMode:false,
+          backBufferLength:0
+        });
         radioController.hls=hlsInstance;
-        hlsInstance.loadSource(url); hlsInstance.attachMedia(audio);
+        hlsInstance.loadSource(url);
+        hlsInstance.attachMedia(audio);
         hlsInstance.on(HL.Events.MANIFEST_PARSED,function(){
           if(!stillCurrent(audio))return;
-          try{ var p=audio.play(); if(p&&typeof p.then==='function'){ p.then(function(){markPlaying(audio);}).catch(function(){ if(stillCurrent(audio))failAttempt('Reprodução bloqueada'); }); } }
-          catch(_){ failAttempt('Erro HLS'); }
+          try{
+            var p=audio.play();
+            if(p&&typeof p.then==='function'){
+              p.then(function(){ markPlaying(audio); }).catch(function(){ if(stillCurrent(audio))failAttempt('Reprodução bloqueada'); });
+            } else {
+              markPlaying(audio);
+            }
+          }catch(_){ failAttempt('Erro HLS'); }
         });
-        hlsInstance.on(HL.Events.ERROR,function(_e,d){ if(!stillCurrent(audio)||!d||!d.fatal)return; failAttempt('Erro HLS'); });
+        hlsInstance.on(HL.Events.ERROR,function(_e,d){
+          if(!stillCurrent(audio)||!d||!d.fatal)return;
+          failAttempt('Erro HLS');
+        });
       }).catch(function(){ if(stillCurrent(audio))failAttempt('Falha ao carregar HLS'); });
       return;
     }
-    armTimeout(10000,'Tempo esgotado');
-    try{ audio.src=url; audio.load(); var p2=audio.play(); if(p2&&typeof p2.catch==='function')p2.catch(function(){ if(stillCurrent(audio))failAttempt('Reprodução bloqueada'); }); }
-    catch(_){ failAttempt('Erro no stream'); }
+
+    // Progressive (mp3/aac/icecast)
+    armTimeout(isLegacyMediaDevice()?16000:12000,'Tempo esgotado');
+    assignAndPlay(audio,url,function(){ if(stillCurrent(audio))failAttempt('Reprodução bloqueada'); });
   }
   tryNextUrl();
 }
@@ -2031,16 +2195,36 @@ function togglePlayPause(){
     return;
   }
   var a=radioAudio;
-  if(!a||!currentChannelId||!a.src)return;
+  if(!a||!currentChannelId)return;
+  // Se o elemento perdeu o src (comum após safeStop em legado), reabre o canal
+  if(!a.src||a.src===window.location.href||a.src===''){
+    if(currentChannelId)playChannel(currentChannelId,null,null,true);
+    return;
+  }
   if(a.paused){
+    intentionalPause=false;
     radioController.state='RADIO_LOADING';
     var s=false;
-    addEventListenerOnce(a,'playing',function(){ if(s)return; s=true; if(a!==radioAudio)return; radioController.state='RADIO_PLAYING'; radioPlaying=true; updateMiniPlayer(currentChannelLabel,false); setStatusBar('live','AO VIVO',currentChannelLabel); });
-    try{ var p=a.play(); if(p&&typeof p.then==='function'){ p.then(function(){},function(){ if(a===radioAudio)updateMiniPlayer(currentChannelLabel,true); }); } }
-    catch(_){}
+    addEventListenerOnce(a,'playing',function(){
+      if(s)return; s=true;
+      if(a!==radioAudio)return;
+      radioController.state='RADIO_PLAYING'; radioPlaying=true;
+      updateMiniPlayer(currentChannelLabel,false);
+      setStatusBar('live','AO VIVO',currentChannelLabel);
+    });
+    try{
+      var p=a.play();
+      if(p&&typeof p.then==='function'){
+        p.then(function(){},function(){ if(a===radioAudio)updateMiniPlayer(currentChannelLabel,true); });
+      }
+    }catch(_){}
   } else {
-    a.pause(); intentionalPause=true; radioController.state='RADIO_PAUSED'; radioPlaying=false;
-    updateMiniPlayer(currentChannelLabel,true); setStatusBar('idle','PAUSADO',currentChannelLabel);
+    try{ a.pause(); }catch(_){}
+    intentionalPause=true;
+    radioController.state='RADIO_PAUSED';
+    radioPlaying=false;
+    updateMiniPlayer(currentChannelLabel,true);
+    setStatusBar('idle','PAUSADO',currentChannelLabel);
   }
 }
 function stopRadio(){
