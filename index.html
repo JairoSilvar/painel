@@ -46,7 +46,8 @@ background: var(--bg);
 background-image:
 radial-gradient(ellipse at top left, rgba(99,102,241,.10) 0%, transparent 50%),
 radial-gradient(ellipse at bottom right, rgba(236,72,153,.08) 0%, transparent 50%);
-background-attachment: fixed;
+/* fixed no body quebra position:fixed do mini-player no Chrome Android */
+background-attachment: scroll;
 color: var(--text);
 overflow-x: hidden;
 overflow-y: auto;
@@ -401,21 +402,30 @@ color: #fff; border-radius: 10px; padding: 8px 12px; font: 700 .8rem inherit; cu
 .sw-note { font-size: .7em; color: var(--faint); text-align: center; margin-top: 8px; }
 /* ---------- MINI-PLAYER FIXO NA BASE (estilo Total Hits) ---------- */
 .mini-player {
-position: fixed;
-left: 0; right: 0;
-bottom: 0;
+position: fixed !important;
+left: 0 !important; right: 0 !important;
+bottom: 0 !important;
+top: auto !important;
 width: 100%; max-width: 100%; margin: 0;
 background: rgba(15,23,42,.98);
-backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
 border: none;
 border-top: 1px solid rgba(255,255,255,.12);
 border-radius: 0;
-padding: 10px 14px calc(10px + var(--safe-bottom));
-z-index: 20;
+padding: 10px 14px calc(10px + env(safe-area-inset-bottom, 0px));
+z-index: 9990;
 box-shadow: 0 -8px 24px -8px rgba(0,0,0,.55);
 display: none;
+/* Camada própria: evita que a barra “role” com o chrome do Android */
+-webkit-transform: translate3d(0,0,0);
+transform: translate3d(0,0,0);
+-webkit-backface-visibility: hidden;
+backface-visibility: hidden;
+will-change: transform;
 }
-.mini-player.visible { display: block; }
+@supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  .mini-player { backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+}
+.mini-player.visible { display: block !important; }
 .mini-inner { display: flex; align-items: center; gap: 12px; }
 .mini-cover-wrap {
 width: 48px; height: 48px; border-radius: 12px; flex: 0 0 auto;
@@ -594,7 +604,7 @@ html.lite-mode .media-item { background: var(--surface-2); }
 </div>
 <div class="brand-copy" role="button" tabindex="0" title="Voltar ao início" onclick="goHome()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goHome();}">
 <h1>Painel Mídia — Total Hits</h1>
-<span class="version-tag">v6.9.1 • Legacy Radio Hardening</span>
+<span class="version-tag">v6.9.3 • Mini fixo + scroll YT</span>
 </div>
 <div class="header-actions">
 <button class="header-action" id="theme-menu-btn" type="button" onclick="toggleAppearancePanel()" aria-expanded="false" aria-controls="appearance-panel" title="Aparência">
@@ -1211,6 +1221,8 @@ html.lite-mode .media-item { background: var(--surface-2); }
 <div class="stat-pill"><b id="stat-tracks">0</b><span>faixas salvas</span></div>
 </div>
 <ul class="changelog" style="margin-top:14px;">
+<li><strong>v6.9.3</strong> — Android moderno: mini-player realmente fixo na base (sem rolar com a página); ao tocar um vídeo YouTube a tela rola até o visualizador.</li>
+<li><strong>v6.9.2</strong> — Correção crítica: playChannel não chama mais stopAllMedia (que zerava o token e o src e impedia rádio/YouTube); detecção correta de src ativo; re-play após falha.</li>
 <li><strong>v6.9.1</strong> — Motor de rádio endurecido para dispositivos antigos: Audio fresco a cada tentativa, correção do fallback de URLs, timeouts maiores, progressive preferido no Android antigo, HLS nativo no Safari 9 sem load() agressivo.</li>
 <li><strong>v6.9.0</strong> — Safari/iPad 3: caminho de áudio legado e fallback direto de YouTube; modernos: Cast remoto para rádios e Media Session/artwork aprimorados.</li>
 <li><strong>v6.8.1</strong> — Adiciona 5 presets YouTube de treino longo (~2h), preservando todos os presets existentes e a exclusividade de mídia.</li>
@@ -1990,16 +2002,46 @@ function assignAndPlay(audio,url,onBlocked){
   }
 }
 
+function audioHasActiveSrc(a){
+  if(!a)return false;
+  var s='';
+  try{ s=String(a.getAttribute('src')||''); }catch(_){ s=''; }
+  if(!s){
+    try{ s=String(a.src||''); }catch(_){ s=''; }
+  }
+  if(!s)return false;
+  // Navegadores devolvem a URL da página quando src está vazio
+  try{
+    var loc=String(window.location.href||'');
+    if(s===loc||s===loc+'/')return false;
+    if(window.location.origin&&s.indexOf(window.location.origin)===0&&s.indexOf('/stream')<0&&!/\.(m3u8|mp3|aac|ogg|ice)(\?|$)/i.test(s)&&s.indexOf('icecast')<0&&s.indexOf('fastcast')<0&&s.indexOf('laut.fm')<0&&s.indexOf('stream')<0){
+      // src aponta para o próprio site sem ser stream → inválido
+      if(s.replace(/\/$/,'')===String(window.location.origin+window.location.pathname).replace(/\/$/,''))return false;
+    }
+  }catch(_){}
+  return true;
+}
+
 function playChannel(channelId,btnEl,statusIdOverride,isAutoRetry){
   var channel=RADIO_CHANNELS[channelId];
   var statusId=statusIdOverride||channelId;
   if(!channel){ setStatus(statusId,'Canal indisponível'); return; }
-  if(!isAutoRetry&&currentChannelId===channelId&&radioAudio&&radioAudio.src&&!radioAudio.error){
+  // Só alterna play/pause se já está tocando ESTE canal de verdade
+  if(!isAutoRetry&&currentChannelId===channelId&&radioPlaying&&radioAudio&&audioHasActiveSrc(radioAudio)&&!radioAudio.error){
     try{ togglePlayPause(); }catch(_){}
     return;
   }
   var retryBackoff=isAutoRetry?backoffCount:0;
-  stopAllMedia();
+  // Para rádio, não usar stopAllMedia completo (incrementa token 2x e destrói YT desnecessariamente no meio).
+  // Para a exclusão Rádio↔YouTube, paramos o YT e a biblioteca de forma direta.
+  try{ stopNowPlayingPolling(); }catch(_){}
+  try{
+    ytLoadToken++;
+    if(ytPlayer&&typeof ytPlayer.stopVideo==='function'){ try{ ytPlayer.stopVideo(); }catch(_){} }
+    if(ytPlayer&&typeof ytPlayer.destroy==='function'){ try{ ytPlayer.destroy(); }catch(_){} }
+    ytPlayer=null; ytCurrentId='';
+  }catch(_){}
+  try{ stopLibrary(false); }catch(_){}
   if(isAutoRetry)backoffCount=retryBackoff; else resetBackoff();
   intentionalPause=false;
   radioController.token++;
@@ -2012,23 +2054,27 @@ function playChannel(channelId,btnEl,statusIdOverride,isAutoRetry){
   trackInfo={artist:'',title:'',year:'',genre:'',album:'',artwork:''};
   lastTrackTitle='';
   var urlIndex=0;
-  var urls=orderUrlsForDevice(channel.urls.slice?channel.urls.slice(0):channel.urls);
+  var rawUrls=channel.urls?channel.urls:[];
+  var urls=orderUrlsForDevice(rawUrls.slice?rawUrls.slice(0):[].concat(rawUrls));
   var totalUrls=urls.length;
-  setRadioMediaSession(channel);
+  if(!totalUrls){ setStatus(statusId,'Sem URL'); setStatusBar('offline','SEM URL',channel.label); return; }
+  try{ setRadioMediaSession(channel); }catch(_){}
   clearRadioUi();
   if(btnEl){
     btnEl.classList.add('playing');
     var p=btnEl.parentNode;
     if(p&&p.classList.contains('media-item'))p.classList.add('playing');
   }
-  var card=document.querySelector('.media-item .radio-btn[onclick*="'+channelId+'"]');
-  if(card){ var cp=card.parentNode; if(cp&&cp.classList.contains('media-item'))cp.classList.add('playing'); }
+  try{
+    var card=document.querySelector('.media-item .radio-btn[onclick*="'+channelId+'"]');
+    if(card){ var cp=card.parentNode; if(cp&&cp.classList.contains('media-item'))cp.classList.add('playing'); }
+  }catch(_){}
   setStatus(statusId,'Conectando…');
   setStatusBar('retry','CONECTANDO',channel.label);
   updateMiniPlayer(channel.label,true);
 
   function stillCurrent(a){
-    return token===radioController.token && currentChannelId===channelId && radioAudio===a;
+    return token===radioController.token && currentChannelId===channelId && (!a||radioAudio===a);
   }
   function failAttempt(msg){
     radioRetryCount++; radioLastError=msg||'Erro';
@@ -2196,9 +2242,9 @@ function togglePlayPause(){
   }
   var a=radioAudio;
   if(!a||!currentChannelId)return;
-  // Se o elemento perdeu o src (comum após safeStop em legado), reabre o canal
-  if(!a.src||a.src===window.location.href||a.src===''){
-    if(currentChannelId)playChannel(currentChannelId,null,null,true);
+  // Se o elemento perdeu o src real (comum após stop em legado), reabre o canal
+  if(typeof audioHasActiveSrc==='function'?!audioHasActiveSrc(a):(!a.src||a.src===window.location.href||a.src==='')){
+    playChannel(currentChannelId,null,null,true);
     return;
   }
   if(a.paused){
@@ -2567,7 +2613,7 @@ function createYouTubePlayer(id,autoPlay){
       videoId:id, host:'https://www.youtube.com',
       playerVars:{autoplay:autoPlay?1:0,controls:1,playsinline:1,rel:0,origin:portalOrigin(),enablejsapi:1,modestbranding:1},
       events:{
-        onReady:function(e){ if(token!==ytLoadToken)return; setYTDiag('api','pronta'); setYTDiag('state','pronto'); setYouTubeStatus(autoPlay?'Tentando reproduzir…':'Pronto.','ready'); if(autoPlay){ try{e.target.playVideo();}catch(_){} } },
+        onReady:function(e){ if(token!==ytLoadToken)return; setYTDiag('api','pronta'); setYTDiag('state','pronto'); setYouTubeStatus(autoPlay?'Tentando reproduzir…':'Pronto.','ready'); if(autoPlay){ try{e.target.playVideo();}catch(_){} } scrollToYouTubeViewer(); },
         onStateChange:function(e){
           if(token!==ytLoadToken)return;
           var st={'-1':'não iniciado','0':'encerrado','1':'reproduzindo','2':'pausado','3':'bufferizando','5':'em fila'};
@@ -2593,6 +2639,43 @@ function createYouTubePlayer(id,autoPlay){
     setYouTubeStatus('❌ '+err.message,'error');
   });
 }
+/** Rola a tela até o visualizador do YouTube (Android moderno / mobile). */
+function scrollToYouTubeViewer(){
+  try{
+    var targets=['yt-video-container','yt-player','section-youtube'];
+    var el=null;
+    for(var i=0;i<targets.length;i++){
+      el=document.getElementById(targets[i]);
+      if(el&&!el.hidden)break;
+      el=null;
+    }
+    if(!el)el=document.getElementById('section-youtube');
+    if(!el)return;
+    // Garante que a seção/player está visível antes de medir
+    try{
+      var sec=document.getElementById('section-youtube');
+      if(sec)sec.scrollIntoView({behavior:'smooth',block:'start'});
+    }catch(_){
+      try{ el.scrollIntoView(true); }catch(__){}
+    }
+    // Segunda passada após layout (player pode ter altura 0 enquanto hidden)
+    setTimeout(function(){
+      try{
+        var v=document.getElementById('yt-video-container')||document.getElementById('yt-player')||document.getElementById('section-youtube');
+        if(!v)return;
+        var rect=v.getBoundingClientRect();
+        var header=document.querySelector('header');
+        var headerH=header?header.offsetHeight:0;
+        var y=window.pageYOffset+rect.top-headerH-8;
+        if(y<0)y=0;
+        if(window.scrollTo){
+          try{ window.scrollTo({top:y,behavior:'smooth'}); }
+          catch(__){ window.scrollTo(0,y); }
+        }
+      }catch(__){}
+    },120);
+  }catch(_){}
+}
 function loadYouTubeId(id,btnEl,autoPlay){
   if(typeof btnEl==='undefined')btnEl=null;
   if(typeof autoPlay==='undefined')autoPlay=false;
@@ -2602,6 +2685,7 @@ function loadYouTubeId(id,btnEl,autoPlay){
   stopAllMedia();
   document.querySelectorAll('.yt-presets .media-item').forEach(function(b){ b.classList.remove('playing'); });
   if(btnEl){ var p=btnEl.parentNode; if(p&&p.classList.contains('media-item'))p.classList.add('playing'); }
+  scrollToYouTubeViewer();
   if(isLegacyIPad3()){ loadYouTubeLegacyIframe(v,false); return; }
   createYouTubePlayer(v,autoPlay);
 }
@@ -2613,6 +2697,7 @@ function loadYouTubePlaylist(listId,videoId,btnEl,autoPlay){
   if(btnEl){ var p=btnEl.parentNode; if(p&&p.classList.contains('media-item'))p.classList.add('playing'); }
   var id=videoId||'';
   ytCurrentId=id;
+  scrollToYouTubeViewer();
   if(isLegacyIPad3()&&id){ loadYouTubeLegacyIframe(id,false); return; }
   setYTDiag('id',(id||'(playlist)')+(listId?' · list='+listId:''));
   setYouTubeStatus('Carregando playlist…','loading');
@@ -2624,7 +2709,7 @@ function loadYouTubePlaylist(listId,videoId,btnEl,autoPlay){
     if(token!==ytLoadToken)return;
     var cfg={ host:'https://www.youtube.com', playerVars:{autoplay:autoPlay?1:0,controls:1,playsinline:1,rel:0,origin:portalOrigin(),enablejsapi:1,modestbranding:1},
       events:{
-        onReady:function(e){ if(token!==ytLoadToken)return; setYTDiag('api','pronta'); setYTDiag('state','playlist pronta'); setYouTubeStatus('Playlist pronta','ready'); try{ if(listId&&e.target.loadPlaylist)e.target.loadPlaylist({list:listId,listType:'playlist',index:0}); else if(id)e.target.loadVideoById(id); if(autoPlay)e.target.playVideo(); }catch(_){} },
+        onReady:function(e){ if(token!==ytLoadToken)return; setYTDiag('api','pronta'); setYTDiag('state','playlist pronta'); setYouTubeStatus('Playlist pronta','ready'); try{ if(listId&&e.target.loadPlaylist)e.target.loadPlaylist({list:listId,listType:'playlist',index:0}); else if(id)e.target.loadVideoById(id); if(autoPlay)e.target.playVideo(); }catch(_){} scrollToYouTubeViewer(); },
         onStateChange:function(e){ if(token!==ytLoadToken)return; if(e.data===1){ stopRadio(); setYouTubeStatus('✅ Reproduzindo playlist','ok'); } },
         onError:function(e){ if(token!==ytLoadToken)return; setYouTubeStatus('❌ Erro na playlist ('+e.data+').','error'); if(id)loadYouTubeId(id,btnEl,autoPlay); }
       }};
@@ -2635,6 +2720,7 @@ function loadYouTubePlaylist(listId,videoId,btnEl,autoPlay){
 function showYouTubeUi(activated){
   var w=document.getElementById('yt-activate-wrap'), c=document.getElementById('yt-video-container'), d=document.querySelector('.yt-diagnostics');
   if(w)w.hidden=!!activated; if(c)c.hidden=!activated; if(d)d.hidden=!activated;
+  if(activated)scrollToYouTubeViewer();
 }
 function ativarYouTubePlayer(autoLoad){
   if(typeof autoLoad==='undefined')autoLoad=true;
