@@ -517,19 +517,20 @@ background: linear-gradient(135deg, #8b5cf6, #ec4899); border-radius: 50%; borde
 }
 footer { text-align: center; padding: 24px 16px 12px; margin-bottom: 12px;
 font-size: .78em; color: var(--faint); letter-spacing: .05em; text-transform: uppercase; }
+/* Light mode: variáveis SEM !important para permitir theme-* no claro */
 html.light-mode {
---bg: #f4f7fb !important;
---surface: #ffffff !important;
---surface-2: #f1f5f9 !important;
---surface-3: #e2e8f0 !important;
---text: #0f172a !important;
---muted: #334155 !important;
---faint: #475569 !important;
---line: rgba(15,23,42,.12) !important;
---accent: #6d28d9 !important;
---accent-2: #db2777 !important;
---accent-soft: rgba(109,40,217,.12) !important;
---good: #15803d !important;
+--bg: #f4f7fb;
+--surface: #ffffff;
+--surface-2: #f1f5f9;
+--surface-3: #e2e8f0;
+--text: #0f172a;
+--muted: #334155;
+--faint: #475569;
+--line: rgba(15,23,42,.12);
+--accent: #6d28d9;
+--accent-2: #db2777;
+--accent-soft: rgba(109,40,217,.12);
+--good: #15803d;
 }
 html.light-mode body { background-color: #f4f7fb !important;
 background-image:
@@ -582,39 +583,47 @@ html.theme-neon { --bg: #050a08; --surface: #0a1210; --surface-2: #0f1a17; --sur
 --text: #e7fff6; --muted: #6ee7c8; --faint: #047857; --line: rgba(0,255,166,.16);
 --accent: #00ffa6; --accent-2: #7c3aed; --accent-soft: rgba(0,255,166,.14); --good: #00ffa6; }
 html.light-mode.theme-rose {
-  --accent: #e11d48; --accent-2: #f43f5e; --accent-soft: rgba(225,29,72,.12);
-  --surface: #fff5f7; --surface-2: #ffe4e9; --surface-3: #fecdd3;
-  --text: #4c0519; --muted: #9f1239; --faint: #fb7185; --line: rgba(225,29,72,.14);
+  --accent: #e11d48 !important; --accent-2: #f43f5e !important; --accent-soft: rgba(225,29,72,.14) !important;
+  --bg: #fff5f7 !important; --surface: #ffffff !important; --surface-2: #ffe4e9 !important; --surface-3: #fecdd3 !important;
+  --text: #4c0519 !important; --muted: #9f1239 !important; --faint: #be123c !important; --line: rgba(225,29,72,.16) !important;
 }
 html.light-mode.theme-emerald {
-  --accent: #059669; --accent-2: #10b981; --accent-soft: rgba(5,150,105,.12);
-  --surface: #f0fdf6; --surface-2: #d1fae5; --surface-3: #a7f3d0;
-  --text: #064e3b; --muted: #047857; --faint: #34d399; --line: rgba(5,150,105,.14);
+  --accent: #059669 !important; --accent-2: #10b981 !important; --accent-soft: rgba(5,150,105,.14) !important;
+  --bg: #f0fdf6 !important; --surface: #ffffff !important; --surface-2: #d1fae5 !important; --surface-3: #a7f3d0 !important;
+  --text: #064e3b !important; --muted: #047857 !important; --faint: #059669 !important; --line: rgba(5,150,105,.16) !important;
 }
 html.light-mode.theme-ocean {
-  --accent: #0284c7; --accent-2: #0ea5e9; --accent-soft: rgba(2,132,199,.12);
-  --surface: #f0f9ff; --surface-2: #e0f2fe; --surface-3: #bae6fd;
-  --text: #0c4a6e; --muted: #0369a1; --faint: #38bdf8; --line: rgba(2,132,199,.14);
+  --accent: #0284c7 !important; --accent-2: #0ea5e9 !important; --accent-soft: rgba(2,132,199,.14) !important;
+  --bg: #f0f9ff !important; --surface: #ffffff !important; --surface-2: #e0f2fe !important; --surface-3: #bae6fd !important;
+  --text: #0c4a6e !important; --muted: #0369a1 !important; --faint: #0284c7 !important; --line: rgba(2,132,199,.16) !important;
 }
 html.light-mode.theme-amber {
-  --accent: #d97706; --accent-2: #f59e0b; --accent-soft: rgba(217,119,6,.12);
-  --surface: #fffbeb; --surface-2: #fef3c7; --surface-3: #fde68a;
-  --text: #78350f; --muted: #b45309; --faint: #fbbf24; --line: rgba(217,119,6,.14);
+  --accent: #d97706 !important; --accent-2: #f59e0b !important; --accent-soft: rgba(217,119,6,.14) !important;
+  --bg: #fffbeb !important; --surface: #ffffff !important; --surface-2: #fef3c7 !important; --surface-3: #fde68a !important;
+  --text: #78350f !important; --muted: #b45309 !important; --faint: #d97706 !important; --line: rgba(217,119,6,.16) !important;
 }
 html.light-mode.theme-slate {
-  --accent: #475569; --accent-2: #64748b; --accent-soft: rgba(71,85,105,.12);
-  --surface: #f8fafc; --surface-2: #f1f5f9; --surface-3: #e2e8f0;
-  --text: #0f172a; --muted: #475569; --faint: #94a3b8; --line: rgba(71,85,105,.14);
+  --accent: #475569 !important; --accent-2: #64748b !important; --accent-soft: rgba(71,85,105,.14) !important;
+  --bg: #f8fafc !important; --surface: #ffffff !important; --surface-2: #f1f5f9 !important; --surface-3: #e2e8f0 !important;
+  --text: #0f172a !important; --muted: #475569 !important; --faint: #64748b !important; --line: rgba(71,85,105,.16) !important;
 }
 html.light-mode.theme-neon {
-  --accent: #059669; --accent-2: #7c3aed; --accent-soft: rgba(5,150,105,.12);
-  --surface: #ecfdf5; --surface-2: #d1fae5; --surface-3: #a7f3d0;
-  --text: #064e3b; --muted: #047857; --faint: #10b981; --line: rgba(5,150,105,.14);
+  --accent: #059669 !important; --accent-2: #7c3aed !important; --accent-soft: rgba(5,150,105,.14) !important;
+  --bg: #ecfdf5 !important; --surface: #ffffff !important; --surface-2: #d1fae5 !important; --surface-3: #a7f3d0 !important;
+  --text: #064e3b !important; --muted: #047857 !important; --faint: #059669 !important; --line: rgba(5,150,105,.16) !important;
 }
 html.light-mode.theme-oled {
-  --accent: #334155; --accent-2: #64748b; --accent-soft: rgba(51,65,85,.12);
-  --surface: #f1f5f9; --surface-2: #e2e8f0; --surface-3: #cbd5e1;
-  --text: #0f172a; --muted: #334155; --faint: #64748b; --line: rgba(51,65,85,.16);
+  --accent: #334155 !important; --accent-2: #64748b !important; --accent-soft: rgba(51,65,85,.14) !important;
+  --bg: #f1f5f9 !important; --surface: #ffffff !important; --surface-2: #e2e8f0 !important; --surface-3: #cbd5e1 !important;
+  --text: #0f172a !important; --muted: #334155 !important; --faint: #64748b !important; --line: rgba(51,65,85,.18) !important;
+}
+html.light-mode.theme-violet {
+  --accent: #6d28d9 !important; --accent-2: #db2777 !important; --accent-soft: rgba(109,40,217,.12) !important;
+}
+/* Aplicar fundo claro por tema */
+html.light-mode body {
+  background-color: var(--bg) !important;
+  color: var(--text) !important;
 }
 .appearance-row.theme-row button { flex: 1 1 30%; min-width: 88px; font-size: .72rem; }
 .swatch { display: inline-block; width: 10px; height: 10px; border-radius: 50%;
@@ -654,7 +663,7 @@ html.lite-mode .media-item { background: var(--surface-2); }
 </div>
 <div class="brand-copy" role="button" tabindex="0" title="Voltar ao início" onclick="goHome()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goHome();}">
 <h1>Painel Mídia</h1>
-<span class="version-tag">v6.10.0 • Revisão completa</span>
+<span class="version-tag">v6.10.1 • iPad streams + YT + claro</span>
 </div>
 <div class="header-actions">
 <button class="header-action" id="theme-menu-btn" type="button" onclick="toggleAppearancePanel()" aria-expanded="false" aria-controls="appearance-panel" title="Aparência">
@@ -1273,6 +1282,7 @@ html.lite-mode .media-item { background: var(--surface-2); }
 <div class="stat-pill"><b id="stat-tracks">0</b><span>faixas salvas</span></div>
 </div>
 <ul class="changelog" style="margin-top:14px;">
+<li><strong>v6.10.1</strong> — iPad: URLs laut.fm diretas (sem 302); Paradise MP3; tema claro com cores reais; YouTube legado com capa + Abrir (Safari 9 não embute player moderno).</li>
 <li><strong>v6.10.0</strong> — Revisão completa: rádio iPad (sem corrida unlock/stream, proxy /api/stream/totalhits, &lt;source type&gt;); YouTube legado mais claro; overflow mobile; título “Painel Mídia”; temas de cor no modo claro; densidade no painel Aparência.</li>
 <li><strong>v6.9.5</strong> — iPad/Safari: desbloqueio do áudio no mesmo gesto do toque; &lt;audio&gt; fixo no DOM; Total Hits com URLs alternativas; corrige “Áudio direto 1/1” sem tocar.</li>
 <li><strong>v6.9.4</strong> — Mini-player acompanha a visualViewport (barra URL do Chrome); YouTube legado no iPad via youtube-nocookie; orientação: no iPad use sempre o Safari.</li>
@@ -1344,7 +1354,7 @@ html.lite-mode .media-item { background: var(--surface-2); }
     p=document.createElement('div');
     p.id='legacy-diag';
     p.style.cssText='position:fixed;left:6px;right:6px;bottom:6px;z-index:2147483647;background:#111;color:#fff;padding:8px 10px;border-radius:8px;font:12px/1.35 Arial,sans-serif;max-height:34%;overflow:auto;box-shadow:0 2px 12px rgba(0,0,0,.45)';
-    p.innerHTML='<b>iPad Legacy v6.9.1</b> — <span id="legacy-stage">BOOT OK</span> <button type="button" id="legacy-hide" style="float:right;font-size:12px">fechar</button><div id="legacy-error" style="margin-top:4px;color:#ffd27a"></div>';
+    p.innerHTML='<b>iPad Legacy v6.10.1</b> — <span id="legacy-stage">BOOT OK</span> <button type="button" id="legacy-hide" style="float:right;font-size:12px">fechar</button><div id="legacy-error" style="margin-top:4px;color:#ffd27a"></div>';
     (document.body||document.documentElement).appendChild(p);
     var b=document.getElementById('legacy-hide');
     if(b)b.onclick=function(){p.style.display='none';};
@@ -1465,8 +1475,14 @@ var RADIO_CHANNELS = {
   atlantida_poa: { label:'Atlântida FM 94.3', urls:['https://1852747t.ha.azioncdn.net/primary/atl_poa.sdp/playlist.m3u8','https://liverdatlpoa.rbsdirect.com.br/primary/atl_poa.sdp/playlist.m3u8'] },
   '1023_poa': { label:'Rádio 102.3 FM', urls:['https://1192747t.ha.azioncdn.net/primary/ita_poa.sdp/playlist.m3u8','https://liverd102fm.rbsdirect.com.br/primary/ita_poa.sdp/playlist.m3u8'] },
   antena1_poa: { label:'Antena 1', urls:['https://antenaone.crossradio.com.br/stream/1'] },
-  continental_poa: { label:'Continental FM 98.3', urls:['https://rrdns-continental.webnow.com.br/imprensafm64k.mp3'] },
-  salamanca_quarai: { label:'Salamanca FM 101.3', urls:['https://live.paineldj.com.br/proxy/salamancahd?mp=/stream'] },
+  continental_poa: { label:'Continental FM 98.3', urls:[
+    'https://rrdns-continental.webnow.com.br/imprensafm64k.mp3',
+    'https://rrdns-continental.webnow.com.br/imprensafm.mp3'
+  ] },
+  salamanca_quarai: { label:'Salamanca FM 101.3', urls:[
+    'https://live.paineldj.com.br/proxy/salamancahd?mp=/stream',
+    'https://live.paineldj.com.br/proxy/salamancahd?mp=/stream/;.mp3'
+  ] },
   cbn: { label:'CBN Rio', urls:['https://playerservices.streamtheworld.com/api/livestream-redirect/CBN_RJ_ADP.m3u8','https://playerservices.streamtheworld.com/api/livestream-redirect/CBN_RJ_ADP.mp3','https://playerservices.streamtheworld.com/api/livestream-redirect/CBN_RJ.mp3'] },
   bandnews: { label:'BandNews FM SP', urls:['https://playerservices.streamtheworld.com/api/livestream-redirect/BANDNEWSFM_SPAAC.m3u8','https://playerservices.streamtheworld.com/api/livestream-redirect/BANDNEWSFM_SPAAC.aac','https://playerservices.streamtheworld.com/api/livestream-redirect/BANDNEWSFM_SPAAC.mp3'] },
   total_hits: { label:'Total Hits', urls:[
@@ -1474,20 +1490,21 @@ var RADIO_CHANNELS = {
     'https://eu8.fastcast4u.com/proxy/breaktroy?mp=/stream',
     'https://eu8.fastcast4u.com/proxy/breaktroy/;stream.mp3'
   ] },
-  progressive: { label:'Progressive House', urls:['https://stream.laut.fm/house'] },
-  trance: { label:'Trance', urls:['https://stream.laut.fm/main'] },
-  techno: { label:'Techno', urls:['https://stream.laut.fm/techno'] },
-  reiki: { label:'Reiki & Meditação', urls:['https://streaming.positivity.radio/pr/reiki/icecast.audio'] },
-  anos80: { label:'Hits Anos 80', urls:['https://stream.laut.fm/80er'] },
-  dance90: { label:"Dance 90's", urls:['https://stream.laut.fm/eurodance'] },
-  dance2000: { label:'Dance / Club Hits', urls:['https://stream.laut.fm/clubhits'] },
-  rock: { label:'Classic Rock', urls:['https://stream.laut.fm/classicrock'] },
-  pop: { label:'Pop Hits', urls:['https://stream.laut.fm/pop'] },
-  lofi: { label:'Lofi Beats', urls:['https://stream.laut.fm/lofi'] },
-  classical: { label:'Clássica / Foco', urls:['https://stream.laut.fm/klassik'] },
+  /* laut.fm: host direto (sem 302) — Safari 9 falha em redirects no <audio> */
+  progressive: { label:'Progressive House', urls:['https://house.stream.laut.fm/house','https://stream.laut.fm/house'] },
+  trance: { label:'Trance', urls:['https://main.stream.laut.fm/main','https://stream.laut.fm/main'] },
+  techno: { label:'Techno', urls:['https://techno.stream.laut.fm/techno','https://stream.laut.fm/techno'] },
+  reiki: { label:'Reiki & Meditação', urls:['https://streaming.positivity.radio/pr/reiki/icecast.audio','https://ice5.somafm.com/dronezone-128-mp3'] },
+  anos80: { label:'Hits Anos 80', urls:['https://80er.stream.laut.fm/80er','https://stream.laut.fm/80er'] },
+  dance90: { label:"Dance 90's", urls:['https://eurodance.stream.laut.fm/eurodance','https://stream.laut.fm/eurodance'] },
+  dance2000: { label:'Dance / Club Hits', urls:['https://clubhits.stream.laut.fm/clubhits','https://stream.laut.fm/clubhits'] },
+  rock: { label:'Classic Rock', urls:['https://classicrock.stream.laut.fm/classicrock','https://stream.laut.fm/classicrock'] },
+  pop: { label:'Pop Hits', urls:['https://pop.stream.laut.fm/pop','https://stream.laut.fm/pop'] },
+  lofi: { label:'Lofi Beats', urls:['https://lofi.stream.laut.fm/lofi','https://stream.laut.fm/lofi'] },
+  classical: { label:'Clássica / Foco', urls:['https://klassik.stream.laut.fm/klassik','https://stream.laut.fm/klassik'] },
   mpb: { label:'Chill / Groove', urls:['https://ice5.somafm.com/groovesalad-128-mp3'] },
   soundscapes: { label:'Soundscapes Ambient', urls:['https://ice5.somafm.com/dronezone-128-mp3'] },
-  paradise: { label:'Radio Paradise', urls:['https://stream.radioparadise.com/aac-128'] }
+  paradise: { label:'Radio Paradise', urls:['https://stream.radioparadise.com/mp3-128','https://stream.radioparadise.com/aac-128'] }
 };
 
 // ---------- ESTADO GLOBAL ----------
@@ -2738,40 +2755,65 @@ function extrairYouTubeId(v){
   return null;
 }
 
+/**
+ * YouTube no Safari iOS 9: o embed moderno costuma mostrar
+ * "Erro de configuração do player". Oferecemos cartão com capa + abrir no YouTube,
+ * e ainda tentamos o iframe antigo (html5) por baixo.
+ */
 function loadYouTubeLegacyIframe(id,autoPlay){
   var c=document.getElementById('yt-player'); if(!c)return;
   destroyYouTubePlayer(); clearElement(c);
   ytCurrentId=id;
   showYouTubeUi(true);
   setYTOverlay(false);
-  setYTDiag('id',id); setYTDiag('api','iframe legacy'); setYTDiag('state','aguardando toque'); setYTDiag('error','—');
-  setYouTubeStatus('Player embutido pronto — toque no vídeo para iniciar.','ready');
-  legacyMediaNote('YouTube iframe no portal; toque no vídeo para play.');
-  var f=document.createElement('iframe');
-  f.setAttribute('title','YouTube');
-  f.setAttribute('frameborder','0');
-  f.setAttribute('allowfullscreen','allowfullscreen');
-  f.setAttribute('webkitallowfullscreen','webkitallowfullscreen');
-  f.setAttribute('mozallowfullscreen','mozallowfullscreen');
-  f.setAttribute('playsinline','1');
-  f.setAttribute('allow','accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen');
-  f.setAttribute('referrerpolicy','strict-origin-when-cross-origin');
-  f.style.cssText='width:100%;height:100%;min-height:240px;border:0;display:block;';
-  // Embed clássico (sem enablejsapi). Se o vídeo bloquear embed, o usuário vê o player YouTube
-  // e pode usar o link de fallback abaixo — sem “erro de configuração” confuso.
-  f.src='https://www.youtube.com/embed/'+encodeURIComponent(id)+'?playsinline=1&rel=0&fs=1&modestbranding=1&controls=1';
-  c.appendChild(f);
-  // Fallback explícito se o embed for bloqueado pelo dono do vídeo
+  setYTDiag('id',id); setYTDiag('api','iframe legacy'); setYTDiag('state','capa+fallback'); setYTDiag('error','—');
+  setYouTubeStatus('iPad antigo: toque em Abrir no YouTube (embed limitado no Safari 9).','ready');
+  legacyMediaNote('YouTube: Safari 9 limita embed — use o botão Abrir.');
+
+  var watchUrl='https://www.youtube.com/watch?v='+encodeURIComponent(id);
+  var thumb='https://img.youtube.com/vi/'+encodeURIComponent(id)+'/hqdefault.jpg';
+
+  var wrap=document.createElement('div');
+  wrap.style.cssText='position:relative;width:100%;min-height:240px;background:#0f172a;border-radius:12px;overflow:hidden;text-align:center;';
+  var img=document.createElement('img');
+  img.src=thumb; img.alt='Capa do vídeo';
+  img.style.cssText='width:100%;max-height:280px;object-fit:cover;display:block;opacity:.85;';
+  img.onerror=function(){ img.style.display='none'; };
+  wrap.appendChild(img);
+
+  var actions=document.createElement('div');
+  actions.style.cssText='position:absolute;left:0;right:0;bottom:0;padding:16px;background:linear-gradient(transparent,rgba(0,0,0,.85));';
+  var btn=document.createElement('a');
+  btn.href=watchUrl;
+  btn.target='_blank';
+  btn.rel='noopener noreferrer';
+  btn.textContent='▶ Abrir no YouTube';
+  btn.style.cssText='display:inline-block;padding:12px 20px;border-radius:999px;background:#ff0000;color:#fff;font-weight:700;text-decoration:none;font-size:15px;';
+  actions.appendChild(btn);
+  var note=document.createElement('p');
+  note.style.cssText='margin:10px 0 0;color:#cbd5e1;font-size:12px;line-height:1.4;';
+  note.textContent='O Safari deste iPad não roda o player embutido do YouTube. O vídeo abre no app/site oficial.';
+  actions.appendChild(note);
+  wrap.appendChild(actions);
+  c.appendChild(wrap);
+
+  // Tentativa secundária de iframe (alguns vídeos ainda carregam)
   try{
-    var hint=document.createElement('p');
-    hint.style.cssText='margin:8px 0 0;font-size:.8em;color:var(--muted);text-align:center;';
-    hint.innerHTML='Se o vídeo não carregar aqui, <a href="https://www.youtube.com/watch?v='+encodeURIComponent(id)+'" target="_blank" rel="noopener" style="color:var(--accent)">abrir no YouTube</a>.';
-    if(c.parentNode)c.parentNode.appendChild(hint);
-    setTimeout(function(){ try{ if(hint&&hint.parentNode)hint.parentNode.removeChild(hint); }catch(_){} },120000);
+    var f=document.createElement('iframe');
+    f.setAttribute('title','YouTube');
+    f.setAttribute('frameborder','0');
+    f.setAttribute('allowfullscreen','allowfullscreen');
+    f.setAttribute('webkitallowfullscreen','webkitallowfullscreen');
+    f.style.cssText='width:1px;height:1px;opacity:0;position:absolute;left:-9999px;';
+    f.src='https://www.youtube.com/embed/'+encodeURIComponent(id)+'?html5=1&playsinline=1&rel=0&controls=1';
+    c.appendChild(f);
   }catch(_){}
-  trackInfo={artist:'YouTube',title:'Vídeo '+id,year:'',genre:'',album:'',artwork:'https://img.youtube.com/vi/'+id+'/hqdefault.jpg'};
+
+  trackInfo={artist:'YouTube',title:'Vídeo '+id,year:'',genre:'',album:'',artwork:thumb};
   lastTrackTitle=trackInfo.title; renderTrackInfo();
   scrollToYouTubeViewer();
+  setTimeout(scrollToYouTubeViewer,200);
+  setTimeout(scrollToYouTubeViewer,600);
 }
 
 function loadYouTubeApi(){
