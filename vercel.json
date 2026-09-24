@@ -46,6 +46,10 @@
       "destination": "https://eu8.fastcast4u.com/status-json.xsl"
     },
     {
+      "source": "/api/stream/totalhits",
+      "destination": "https://eu8.fastcast4u.com/proxy/breaktroy?mp=/stream"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
