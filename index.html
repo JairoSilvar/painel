@@ -663,7 +663,7 @@ html.lite-mode .media-item { background: var(--surface-2); }
 </div>
 <div class="brand-copy" role="button" tabindex="0" title="Voltar ao início" onclick="goHome()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goHome();}">
 <h1>Painel Mídia</h1>
-<span class="version-tag">v6.10.1 • iPad streams + YT + claro</span>
+<span class="version-tag">v6.11.0 • Treino + 2º plano</span>
 </div>
 <div class="header-actions">
 <button class="header-action" id="theme-menu-btn" type="button" onclick="toggleAppearancePanel()" aria-expanded="false" aria-controls="appearance-panel" title="Aparência">
@@ -739,6 +739,7 @@ html.lite-mode .media-item { background: var(--surface-2); }
 <a href="#section-hub"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l9-9 9 9v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Início</a>
 <a href="#section-portoalegre"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"/></svg>Rádios</a>
 <a href="#section-eletronica"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/></svg>Eletrônica</a>
+<a href="#section-treino"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5h11v11h-11z"/><path d="M4 12h2M18 12h2M12 4v2M12 18v2"/></svg>Treino</a>
 <a href="#section-foco"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 0 1 10 10c0 5.52-4.48 10-10 10S2 17.52 2 12 6.48 2 12 2z"/><path d="M12 6v6l4 2"/></svg>Relaxar</a>
 <a href="#section-dance"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>Dance</a>
 <a href="#section-library"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>Minhas</a>
@@ -1087,6 +1088,93 @@ html.lite-mode .media-item { background: var(--surface-2); }
 </div>
 </div>
 
+<div class="section" data-section="treino" id="section-treino">
+<h2 class="section-title"><div class="left-group"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5h11v11h-11z"/><path d="M4 12h2M18 12h2M12 4v2M12 18v2"/></svg></span><span class="title-text">Academia &amp; Treino</span></div></h2>
+<p style="margin:0 4px 12px;font-size:.85rem;color:var(--muted);line-height:1.45;">Rádios de alta energia para malhar com a <strong>tela bloqueada</strong> (áudio em segundo plano no celular moderno).</p>
+<div class="card-grid">
+<div class="media-item" data-nome="workout academia gym fitness treino malhação">
+<button class="radio-btn" onclick="playChannel('workout', this)">
+<span class="icon"><span class="emoji">🏋️</span></span>
+<span class="label"><span class="name">Workout Radio</span><small>BPM alto · Academia</small><span class="status" id="status-workout"></span></span>
+</button>
+<div class="card-actions">
+<button class="action-play" onclick="event.stopPropagation();playChannel('workout')"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"/></svg>Tocar</button>
+<button class="fav-btn" onclick="toggleFav(this, 'workout')" aria-label="Favoritar">☆</button>
+</div>
+</div>
+<div class="media-item" data-nome="hardstyle gym festival energy">
+<button class="radio-btn" onclick="playChannel('hardstyle', this)">
+<span class="icon"><span class="emoji">💥</span></span>
+<span class="label"><span class="name">Hardstyle Gym</span><small>Impacto &amp; energia</small><span class="status" id="status-hardstyle"></span></span>
+</button>
+<div class="card-actions">
+<button class="action-play" onclick="event.stopPropagation();playChannel('hardstyle')"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"/></svg>Tocar</button>
+<button class="fav-btn" onclick="toggleFav(this, 'hardstyle')" aria-label="Favoritar">☆</button>
+</div>
+</div>
+<div class="media-item" data-nome="edm sessions electronic dance gym">
+<button class="radio-btn" onclick="playChannel('edm_gym', this)">
+<span class="icon"><span class="emoji">⚡</span></span>
+<span class="label"><span class="name">EDM Sessions</span><small>Eletrônica contínua</small><span class="status" id="status-edm_gym"></span></span>
+</button>
+<div class="card-actions">
+<button class="action-play" onclick="event.stopPropagation();playChannel('edm_gym')"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"/></svg>Tocar</button>
+<button class="fav-btn" onclick="toggleFav(this, 'edm_gym')" aria-label="Favoritar">☆</button>
+</div>
+</div>
+<div class="media-item" data-nome="dance energy club hits treino">
+<button class="radio-btn" onclick="playChannel('dance_gym', this)">
+<span class="icon"><span class="emoji">🕺</span></span>
+<span class="label"><span class="name">Dance Energy</span><small>Dance floor</small><span class="status" id="status-dance_gym"></span></span>
+</button>
+<div class="card-actions">
+<button class="action-play" onclick="event.stopPropagation();playChannel('dance_gym')"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"/></svg>Tocar</button>
+<button class="fav-btn" onclick="toggleFav(this, 'dance_gym')" aria-label="Favoritar">☆</button>
+</div>
+</div>
+<div class="media-item" data-nome="beat blender somafm electronic">
+<button class="radio-btn" onclick="playChannel('beatblender', this)">
+<span class="icon"><span class="emoji">🎧</span></span>
+<span class="label"><span class="name">Beat Blender</span><small>SomaFM · Groove</small><span class="status" id="status-beatblender"></span></span>
+</button>
+<div class="card-actions">
+<button class="action-play" onclick="event.stopPropagation();playChannel('beatblender')"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"/></svg>Tocar</button>
+<button class="fav-btn" onclick="toggleFav(this, 'beatblender')" aria-label="Favoritar">☆</button>
+</div>
+</div>
+<div class="media-item" data-nome="dubstep bass heavy gym">
+<button class="radio-btn" onclick="playChannel('dubstep', this)">
+<span class="icon"><span class="emoji">🔈</span></span>
+<span class="label"><span class="name">Dubstep</span><small>Bass pesado</small><span class="status" id="status-dubstep"></span></span>
+</button>
+<div class="card-actions">
+<button class="action-play" onclick="event.stopPropagation();playChannel('dubstep')"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"/></svg>Tocar</button>
+<button class="fav-btn" onclick="toggleFav(this, 'dubstep')" aria-label="Favoritar">☆</button>
+</div>
+</div>
+<div class="media-item" data-nome="radio bob workout fitness">
+<button class="radio-btn" onclick="playChannel('bob_workout', this)">
+<span class="icon"><span class="emoji">💪</span></span>
+<span class="label"><span class="name">Radio BOB Workout</span><small>Rock &amp; energia</small><span class="status" id="status-bob_workout"></span></span>
+</button>
+<div class="card-actions">
+<button class="action-play" onclick="event.stopPropagation();playChannel('bob_workout')"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"/></svg>Tocar</button>
+<button class="fav-btn" onclick="toggleFav(this, 'bob_workout')" aria-label="Favoritar">☆</button>
+</div>
+</div>
+<div class="media-item" data-nome="radio bob party dance">
+<button class="radio-btn" onclick="playChannel('bob_party', this)">
+<span class="icon"><span class="emoji">🎉</span></span>
+<span class="label"><span class="name">Radio BOB Party</span><small>Festa / cardio</small><span class="status" id="status-bob_party"></span></span>
+</button>
+<div class="card-actions">
+<button class="action-play" onclick="event.stopPropagation();playChannel('bob_party')"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"/></svg>Tocar</button>
+<button class="fav-btn" onclick="toggleFav(this, 'bob_party')" aria-label="Favoritar">☆</button>
+</div>
+</div>
+</div>
+</div>
+
 <div class="section" data-section="foco" id="section-foco">
 <h2 class="section-title"><div class="left-group"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 0 1 10 10c0 5.52-4.48 10-10 10S2 17.52 2 12 6.48 2 12 2z"/><path d="M12 6v6l4 2"/></svg></span><span class="title-text">Meditação, Reiki &amp; Foco</span></div></h2>
 <div class="card-grid">
@@ -1265,12 +1353,12 @@ html.lite-mode .media-item { background: var(--surface-2); }
 <div class="section" data-section="help" id="section-help">
 <h2 class="section-title"><div class="left-group"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12" y2="17"/></svg></span><span class="title-text">Ajuda</span></div></h2>
 <div class="help-grid">
-<div class="help-card"><strong>Rádios</strong>Toque num card para tocar. Favoritos com a ☆. Trocar de rádio para a anterior automaticamente.</div>
-<div class="help-card"><strong>YouTube</strong>Tudo roda embutido aqui. Ative o player e use presets ou salve links. Se o embed for bloqueado, escolha outro vídeo.</div>
+<div class="help-card"><strong>Rádios</strong>Toque num card para tocar. Favoritos com a ☆. No celular moderno a rádio continua com a <strong>tela bloqueada</strong> (Media Session + áudio em 2º plano).</div>
+<div class="help-card"><strong>Academia &amp; Treino</strong>Use a aba <strong>Treino</strong>: Workout, Hardstyle, EDM, Dance Energy, Beat Blender, Dubstep, BOB Workout/Party — ideais para malhar sem olhar a tela.</div>
+<div class="help-card"><strong>YouTube</strong>Embutido no portal em aparelhos modernos. Com tela bloqueada o SO costuma pausar vídeo embutido (limitação do navegador/YouTube). Para ouvir treino contínuo, prefira as rádios de Academia.</div>
 <div class="help-card"><strong>Minhas músicas</strong>URLs HTTPS de MP3/AAC ou <code>playlist.json</code> na raiz do site. Google Drive não serve como stream.</div>
-<div class="help-card"><strong>Atalhos &amp; aparência</strong>Espaço play/pause · N/P na biblioteca · S parar. No ◐: 8 cores, visual e desempenho.</div>
-<div class="help-card"><strong>Backup</strong>Exporte JSON antes de limpar o navegador. Reimporte no mesmo ou em outro aparelho.</div>
-<div class="help-card"><strong>App / PWA</strong>Em celulares compatíveis, use "Instalar" ou Adicionar à Tela de Início. Offline só a interface; áudio precisa de rede.</div>
+<div class="help-card"><strong>Atalhos &amp; aparência</strong>Espaço play/pause · N/P na biblioteca · S parar. No ◐: cores (também no claro), visual e densidade.</div>
+<div class="help-card"><strong>App / PWA</strong>Adicione à Tela de Início. Assim o áudio de rádio fica mais estável em segundo plano. Offline só a interface; stream precisa de rede.</div>
 </div>
 </div>
 
@@ -1282,6 +1370,7 @@ html.lite-mode .media-item { background: var(--surface-2); }
 <div class="stat-pill"><b id="stat-tracks">0</b><span>faixas salvas</span></div>
 </div>
 <ul class="changelog" style="margin-top:14px;">
+<li><strong>v6.11.0</strong> — Seção Academia &amp; Treino (8 rádios gym); Media Session reforçada; áudio de rádio continua com tela bloqueada no celular moderno. YouTube embed ainda depende do SO (limitação do navegador).</li>
 <li><strong>v6.10.1</strong> — iPad: URLs laut.fm diretas (sem 302); Paradise MP3; tema claro com cores reais; YouTube legado com capa + Abrir (Safari 9 não embute player moderno).</li>
 <li><strong>v6.10.0</strong> — Revisão completa: rádio iPad (sem corrida unlock/stream, proxy /api/stream/totalhits, &lt;source type&gt;); YouTube legado mais claro; overflow mobile; título “Painel Mídia”; temas de cor no modo claro; densidade no painel Aparência.</li>
 <li><strong>v6.9.5</strong> — iPad/Safari: desbloqueio do áudio no mesmo gesto do toque; &lt;audio&gt; fixo no DOM; Total Hits com URLs alternativas; corrige “Áudio direto 1/1” sem tocar.</li>
@@ -1494,6 +1583,15 @@ var RADIO_CHANNELS = {
   progressive: { label:'Progressive House', urls:['https://house.stream.laut.fm/house','https://stream.laut.fm/house'] },
   trance: { label:'Trance', urls:['https://main.stream.laut.fm/main','https://stream.laut.fm/main'] },
   techno: { label:'Techno', urls:['https://techno.stream.laut.fm/techno','https://stream.laut.fm/techno'] },
+  /* --- Academia / Treino (prioridade: tela bloqueada) --- */
+  workout: { label:'Workout Radio', urls:['https://workout.stream.laut.fm/workout','https://stream.laut.fm/workout'] },
+  hardstyle: { label:'Hardstyle Gym', urls:['https://hardstyle.stream.laut.fm/hardstyle','https://stream.laut.fm/hardstyle'] },
+  edm_gym: { label:'EDM Sessions', urls:['https://edm.stream.laut.fm/edm','https://stream.laut.fm/edm'] },
+  dance_gym: { label:'Dance Energy', urls:['https://dance.stream.laut.fm/dance','https://stream.laut.fm/dance'] },
+  beatblender: { label:'Beat Blender', urls:['https://ice5.somafm.com/beatblender-128-mp3','https://ice1.somafm.com/beatblender-128-mp3'] },
+  dubstep: { label:'Dubstep', urls:['https://ice5.somafm.com/dubstep-128-mp3','https://ice1.somafm.com/dubstep-128-mp3'] },
+  bob_workout: { label:'Radio BOB Workout', urls:['https://streams.radiobob.de/bob-workout/mp3-192/mediaplayer'] },
+  bob_party: { label:'Radio BOB Party', urls:['https://streams.radiobob.de/bob-party/mp3-192/mediaplayer'] },
   reiki: { label:'Reiki & Meditação', urls:['https://streaming.positivity.radio/pr/reiki/icecast.audio','https://ice5.somafm.com/dronezone-128-mp3'] },
   anos80: { label:'Hits Anos 80', urls:['https://80er.stream.laut.fm/80er','https://stream.laut.fm/80er'] },
   dance90: { label:"Dance 90's", urls:['https://eurodance.stream.laut.fm/eurodance','https://stream.laut.fm/eurodance'] },
@@ -1892,10 +1990,10 @@ function updateMediaSession(playing){
   try{
     if('MediaMetadata' in window){
       var art=trackInfo.artwork||'/total-hits-logo.svg';
-      var alb=[trackInfo.album,trackInfo.year,trackInfo.genre].filter(Boolean).join(' • ')||currentChannelLabel||'Total Hits';
+      var alb=[trackInfo.album,trackInfo.year,trackInfo.genre].filter(Boolean).join(' • ')||currentChannelLabel||'Painel Mídia';
       navigator.mediaSession.metadata=new MediaMetadata({
-        title:trackInfo.title||lastTrackTitle||currentChannelLabel||'Total Hits',
-        artist:trackInfo.artist||'DJ Break Troy',
+        title:trackInfo.title||lastTrackTitle||currentChannelLabel||'Painel Mídia',
+        artist:trackInfo.artist||currentChannelLabel||'Painel Mídia',
         album:alb,
         artwork:mediaArtwork(art)
       });
@@ -1905,8 +2003,38 @@ function updateMediaSession(playing){
 }
 function setupMediaSession(){
   if(!('mediaSession' in navigator))return;
-  var handlers={play:function(){togglePlayPause();},pause:function(){togglePlayPause();},stop:function(){stopAllMedia();}};
+  var handlers={
+    play:function(){
+      try{
+        if(ytPlayer&&typeof ytPlayer.playVideo==='function'&&ytCurrentId){ ytPlayer.playVideo(); updateMediaSession(true); return; }
+      }catch(_){}
+      togglePlayPause();
+    },
+    pause:function(){
+      try{
+        if(ytPlayer&&typeof ytPlayer.pauseVideo==='function'&&ytCurrentId){ ytPlayer.pauseVideo(); updateMediaSession(false); return; }
+      }catch(_){}
+      togglePlayPause();
+    },
+    stop:function(){ stopAllMedia(); }
+  };
   Object.keys(handlers).forEach(function(a){ try{ navigator.mediaSession.setActionHandler(a,handlers[a]); }catch(_){} });
+}
+/**
+ * Mantém áudio de rádio vivo com tela bloqueada (celulares modernos).
+ * YouTube embutido costuma ser pausado pelo SO — para treino use as rádios de academia.
+ */
+function setupBackgroundPlaybackGuards(){
+  document.addEventListener('visibilitychange',function(){
+    if(document.visibilityState!=='visible')return;
+    try{ if(radioPlaying&&radioAudio&&radioAudio.paused){ var p=radioAudio.play(); if(p&&p.then)p.then(function(){},function(){}); } }catch(_){}
+    try{ requestWakeLock(); }catch(_){}
+    try{ updateMediaSession(!!(radioPlaying||(ytPlayer&&ytCurrentId))); }catch(_){}
+  },false);
+  window.addEventListener('pageshow',function(){
+    try{ if(radioPlaying&&radioAudio&&radioAudio.paused)radioAudio.play(); }catch(_){}
+  },false);
+  // Não pausar rádio ao esconder a aba — só o SO/bateria pode interromper
 }
 
 function setupFastcastBridge(){
@@ -3484,6 +3612,7 @@ window.addEventListener('DOMContentLoaded',function(){
   setupDebug();
   setupNetworkAndWake();
   setupMediaSession();
+  try{ setupBackgroundPlaybackGuards(); }catch(_){}
   setupFastcastBridge();
   setupMiniPlayerViewportPin();
   updateStatsUi();
