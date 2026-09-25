@@ -50,6 +50,62 @@
       "destination": "https://eu8.fastcast4u.com/proxy/breaktroy?mp=/stream"
     },
     {
+      "source": "/api/stream/80er",
+      "destination": "https://80er.stream.laut.fm/80er"
+    },
+    {
+      "source": "/api/stream/eurodance",
+      "destination": "https://eurodance.stream.laut.fm/eurodance"
+    },
+    {
+      "source": "/api/stream/clubhits",
+      "destination": "https://clubhits.stream.laut.fm/clubhits"
+    },
+    {
+      "source": "/api/stream/house",
+      "destination": "https://house.stream.laut.fm/house"
+    },
+    {
+      "source": "/api/stream/main",
+      "destination": "https://main.stream.laut.fm/main"
+    },
+    {
+      "source": "/api/stream/techno",
+      "destination": "https://techno.stream.laut.fm/techno"
+    },
+    {
+      "source": "/api/stream/workout",
+      "destination": "https://workout.stream.laut.fm/workout"
+    },
+    {
+      "source": "/api/stream/hardstyle",
+      "destination": "https://hardstyle.stream.laut.fm/hardstyle"
+    },
+    {
+      "source": "/api/stream/edm",
+      "destination": "https://edm.stream.laut.fm/edm"
+    },
+    {
+      "source": "/api/stream/dance",
+      "destination": "https://dance.stream.laut.fm/dance"
+    },
+    {
+      "source": "/api/stream/classicrock",
+      "destination": "https://classicrock.stream.laut.fm/classicrock"
+    },
+    {
+      "source": "/api/stream/pop",
+      "destination": "https://pop.stream.laut.fm/pop"
+    },
+    {
+      "source": "/api/stream/lofi",
+      "destination": "https://lofi.stream.laut.fm/lofi"
+    },
+    {
+      "source": "/api/stream/klassik",
+      "destination": "https://klassik.stream.laut.fm/klassik"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }

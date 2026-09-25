@@ -649,6 +649,51 @@ html.lite-mode .media-item { background: var(--surface-2); }
   .radio-btn .icon svg { width: 32px; height: 32px; }
   .radio-btn .icon .emoji { font-size: 32px; }
 }
+
+/* ===== v6.13 visual + catálogo ===== */
+.badge-row { display:flex; flex-wrap:wrap; gap:4px; margin-top:6px; }
+.badge {
+  font-size:.62rem; font-weight:700; letter-spacing:.04em; text-transform:uppercase;
+  padding:2px 7px; border-radius:999px; border:1px solid var(--line);
+  color:var(--muted); background:rgba(148,163,184,.12);
+}
+.badge-ipad { color:#67e8f9; border-color:rgba(34,211,238,.35); background:rgba(34,211,238,.12); }
+.badge-ads { color:#86efac; border-color:rgba(74,222,128,.35); background:rgba(74,222,128,.12); }
+.badge-gym { color:#fda4af; border-color:rgba(251,113,133,.35); background:rgba(251,113,133,.12); }
+.media-item.is-playing {
+  box-shadow:0 0 0 2px var(--accent), 0 12px 28px rgba(0,0,0,.25);
+  transform:translateY(-1px);
+}
+.media-item.is-playing .radio-btn .name { color:var(--accent); }
+.media-item.is-playing .status { color:var(--good); font-weight:700; }
+.radio-btn .icon {
+  background:linear-gradient(145deg, rgba(167,139,250,.22), rgba(56,189,248,.08));
+  border-radius:14px;
+}
+.media-item[data-genre="treino"] .radio-btn .icon { background:linear-gradient(145deg,rgba(251,113,133,.28),rgba(251,146,60,.1)); }
+.media-item[data-genre="adsfree"] .radio-btn .icon { background:linear-gradient(145deg,rgba(74,222,128,.25),rgba(34,211,238,.1)); }
+.media-item[data-genre="local"] .radio-btn .icon { background:linear-gradient(145deg,rgba(96,165,250,.28),rgba(167,139,250,.1)); }
+.media-item[data-genre="dance"] .radio-btn .icon { background:linear-gradient(145deg,rgba(232,121,249,.28),rgba(251,113,133,.1)); }
+.focus-treino-bar {
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  margin:0 0 12px; padding:10px 12px; border-radius:12px;
+  background:rgba(251,113,133,.1); border:1px solid rgba(251,113,133,.25);
+}
+.focus-treino-bar button {
+  border:1px solid rgba(251,113,133,.4); background:rgba(251,113,133,.18);
+  color:var(--text); border-radius:999px; padding:6px 12px; font-size:.78rem; font-weight:700; cursor:pointer;
+}
+html.focus-treino .section:not([data-section="treino"]):not([data-section="hub"]):not([data-section="timer"]) { display:none !important; }
+html.focus-treino .nav-chips a:not([href="#section-treino"]):not([href="#section-timer"]) { opacity:.35; }
+html.focus-treino #section-treino { order:-1; }
+.section-title .title-text { letter-spacing:.01em; }
+@keyframes card-pulse {
+  0%,100% { box-shadow:0 0 0 2px var(--accent); }
+  50% { box-shadow:0 0 0 4px rgba(167,139,250,.35); }
+}
+.media-item.is-playing { animation: card-pulse 2.4s ease-in-out infinite; }
+html.lite-mode .media-item.is-playing { animation:none; }
+
 </style>
 <meta content="dark" name="color-scheme"/>
 </head>
@@ -663,7 +708,7 @@ html.lite-mode .media-item { background: var(--surface-2); }
 </div>
 <div class="brand-copy" role="button" tabindex="0" title="Voltar ao início" onclick="goHome()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goHome();}">
 <h1>Painel Mídia</h1>
-<span class="version-tag">v6.11.0 • Treino + 2º plano</span>
+<span class="version-tag">v6.13.0</span>
 </div>
 <div class="header-actions">
 <button class="header-action" id="theme-menu-btn" type="button" onclick="toggleAppearancePanel()" aria-expanded="false" aria-controls="appearance-panel" title="Aparência">
@@ -740,6 +785,7 @@ html.lite-mode .media-item { background: var(--surface-2); }
 <a href="#section-portoalegre"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"/></svg>Rádios</a>
 <a href="#section-eletronica"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/></svg>Eletrônica</a>
 <a href="#section-treino"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5h11v11h-11z"/><path d="M4 12h2M18 12h2M12 4v2M12 18v2"/></svg>Treino</a>
+<a href="#section-adsfree"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>Sem ads</a>
 <a href="#section-foco"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 0 1 10 10c0 5.52-4.48 10-10 10S2 17.52 2 12 6.48 2 12 2z"/><path d="M12 6v6l4 2"/></svg>Relaxar</a>
 <a href="#section-dance"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>Dance</a>
 <a href="#section-library"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>Minhas</a>
@@ -776,182 +822,6 @@ html.lite-mode .media-item { background: var(--surface-2); }
 <div class="section" data-section="favoritos" id="section-favoritos" style="display:none;">
 <h2 class="section-title"><div class="left-group"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 7.4H22l-6 4.5 2.3 7.1L12 16.6 5.7 21l2.3-7.1-6-4.5h7.6z"/></svg></span><span class="title-text">Favoritos</span></div></h2>
 <div class="card-grid" id="favoritos-grid"><div class="empty-state">Toque na ☆ de uma rádio para adicionar aqui</div></div>
-</div>
-
-<div class="section" data-section="youtube" id="section-youtube">
-<h2 class="section-title"><div class="left-group"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><polygon points="10 9 15 12 10 15 10 9" fill="currentColor"/></svg></span><span class="title-text">YouTube Dinâmico</span></div></h2>
-<button aria-label="Enviar mídia para Chromecast" class="cast-action" id="cast-btn" onclick="castCurrentMedia()" type="button">📺 Enviar para Chromecast</button>
-<div class="cast-note" id="cast-note">Rádios: use este botão. YouTube: o Portal preserva o player oficial; quando o Cast não aparecer no iframe, use o Cast do app YouTube ou Transmitir guia/tela do navegador.</div>
-<div aria-label="Atalhos do YouTube" class="yt-presets">
-<div class="media-item card-wide" data-nome="miri soul">
-<button class="radio-btn" onclick="loadYouTubePlaylist('PLXL_qJWqUmyI','cbVjs8U2rdw', this, true)">
-<span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><polygon points="10 9 15 12 10 15 10 9" fill="currentColor"/></svg></span>
-<span class="label"><span class="name">💜 Miri Soul</span><small>Playlist</small><span class="status"></span></span>
-</button>
-</div>
-<!-- Treino — 2 Horas (v6.8.1) -->
-<div class="media-item card-wide" data-nome="treino 2 horas energy motivation academia">
-<button class="radio-btn" onclick="loadYouTubeId('xBer-B3Y3DA', this, true)">
-<span class="icon">🏋️</span>
-<span class="label"><span class="name">🏋️ Treino — Energy &amp; Motivation</span><small>~2h • Academia / cardio</small><span class="status"></span></span>
-</button>
-</div>
-<div class="media-item card-wide" data-nome="treino edm workout warrior 2 horas">
-<button class="radio-btn" onclick="loadYouTubeId('a1PAQFEQcl4', this, true)">
-<span class="icon">⚡</span>
-<span class="label"><span class="name">⚡ Treino — Workout Warrior EDM</span><small>2h+ • EDM / energia</small><span class="status"></span></span>
-</button>
-</div>
-<div class="media-item card-wide" data-nome="treino tunnel bass boosted edm 2 horas">
-<button class="radio-btn" onclick="loadYouTubeId('2Jhvun1qRPg', this, true)">
-<span class="icon">🔊</span>
-<span class="label"><span class="name">🔊 Treino — Tunnel Bass EDM</span><small>~2h • Bass / academia</small><span class="status"></span></span>
-</button>
-</div>
-<div class="media-item card-wide" data-nome="treino bass boosted edm 2 horas">
-<button class="radio-btn" onclick="loadYouTubeId('36OZNo7qN_M', this, true)">
-<span class="icon">🔥</span>
-<span class="label"><span class="name">🔥 Treino — Bass Boosted EDM</span><small>~2h • EDM / treino intenso</small><span class="status"></span></span>
-</button>
-</div>
-<div class="media-item card-wide" data-nome="treino turbo bass boosted 2 horas">
-<button class="radio-btn" onclick="loadYouTubeId('wyill7oxkaA', this, true)">
-<span class="icon">🚀</span>
-<span class="label"><span class="name">🚀 Treino — Turbo Bass</span><small>~2h • Bass / alta energia</small><span class="status"></span></span>
-</button>
-</div>
-<div class="media-item card-wide" data-nome="break troy">
-<button class="radio-btn" onclick="loadYouTubeId('PqVzpAz4U1c', this, true)">
-<span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><polygon points="10 9 15 12 10 15 10 9" fill="currentColor"/></svg></span>
-<span class="label"><span class="name">🎧 Break Troy</span><small>Vídeo</small><span class="status"></span></span>
-</button>
-</div>
-<div class="media-item card-wide" data-nome="eurodance 1 hora">
-<button class="radio-btn" onclick="loadYouTubeId('odouCACH9-w', this, true)">
-<span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><polygon points="10 9 15 12 10 15 10 9" fill="currentColor"/></svg></span>
-<span class="label"><span class="name">🪩 Eurodance — 1 hora</span><small>Nostalgia</small><span class="status"></span></span>
-</button>
-</div>
-<div class="media-item card-wide" data-nome="anos 80 1h">
-<button class="radio-btn" onclick="loadYouTubeId('S3QDHD635KE', this, true)">
-<span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><polygon points="10 9 15 12 10 15 10 9" fill="currentColor"/></svg></span>
-<span class="label"><span class="name">🎵 Anos 80 — 1h+</span><small>Retro / synthwave</small><span class="status"></span></span>
-</button>
-</div>
-<div class="media-item card-wide" data-nome="80 90 2000 1 hora">
-<button class="radio-btn" onclick="loadYouTubeId('XExeWpVldDo', this, true)">
-<span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><polygon points="10 9 15 12 10 15 10 9" fill="currentColor"/></svg></span>
-<span class="label"><span class="name">🔥 80/90/2000 — 1 hora</span><small>Dance e remixes</small><span class="status"></span></span>
-</button>
-</div>
-<div class="media-item card-wide" data-nome="best 80s love songs">
-<button class="radio-btn" onclick="loadYouTubeId('WF1ypdkbmv8', this, true)">
-<span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><polygon points="10 9 15 12 10 15 10 9" fill="currentColor"/></svg></span>
-<span class="label"><span class="name">✨ Best 80s Love Songs</span><small>Românticas</small><span class="status"></span></span>
-</button>
-</div>
-<div class="media-item card-wide" data-nome="reiki relaxamento 2 horas">
-<button class="radio-btn" onclick="loadYouTubeId('FN7hdDqJftQ', this, true)">
-<span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><polygon points="10 9 15 12 10 15 10 9" fill="currentColor"/></svg></span>
-<span class="label"><span class="name">🧘 Reiki &amp; Relaxamento — 2 horas</span><small>Meditação</small><span class="status"></span></span>
-</button>
-</div>
-<div class="media-item card-wide" data-nome="ambiente 80s 1 hora">
-<button class="radio-btn" onclick="loadYouTubeId('Gx-QTJ9cAko', this, true)">
-<span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><polygon points="10 9 15 12 10 15 10 9" fill="currentColor"/></svg></span>
-<span class="label"><span class="name">🌌 Ambiente 80s — 1 hora</span><small>Synthwave / foco</small><span class="status"></span></span>
-</button>
-</div>
-<div class="media-item card-wide" data-nome="reiki meditacao">
-<button class="radio-btn" onclick="loadYouTubeId('Leob7Fv1ibM', this, true)">
-<span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><polygon points="10 9 15 12 10 15 10 9" fill="currentColor"/></svg></span>
-<span class="label"><span class="name">✨ Reiki — Meditação</span><small>Relaxamento</small><span class="status"></span></span>
-</button>
-</div>
-<div class="media-item card-wide" data-nome="reiki 432hz 111hz">
-<button class="radio-btn" onclick="loadYouTubeId('4AGrxBGEo7o', this, true)">
-<span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><polygon points="10 9 15 12 10 15 10 9" fill="currentColor"/></svg></span>
-<span class="label"><span class="name">🌿 Reiki — 432Hz / 111Hz</span><small>Meditação profunda</small><span class="status"></span></span>
-</button>
-</div>
-<div class="media-item card-wide" data-nome="reiki natureza">
-<button class="radio-btn" onclick="loadYouTubeId('x7e2Dm5WdNg', this, true)">
-<span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><polygon points="10 9 15 12 10 15 10 9" fill="currentColor"/></svg></span>
-<span class="label"><span class="name">🌊 Reiki + Natureza</span><small>Sons da natureza</small><span class="status"></span></span>
-</button>
-</div>
-<div class="media-item card-wide" data-nome="reiki sono relaxamento">
-<button class="radio-btn" onclick="loadYouTubeId('nTnW0copqhI', this, true)">
-<span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><polygon points="10 9 15 12 10 15 10 9" fill="currentColor"/></svg></span>
-<span class="label"><span class="name">😴 Reiki — Sono &amp; Relaxamento</span><small>Dormir</small><span class="status"></span></span>
-</button>
-</div>
-<div class="media-item card-wide" data-nome="piano instrumental 1 hora">
-<button class="radio-btn" onclick="loadYouTubeId('2kegDq_YB7o', this, true)">
-<span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><polygon points="10 9 15 12 10 15 10 9" fill="currentColor"/></svg></span>
-<span class="label"><span class="name">🎹 Piano Instrumental — 1 hora</span><small>Meditação</small><span class="status"></span></span>
-</button>
-</div>
-<div class="media-item card-wide" data-nome="instrumental calmante 1 hora">
-<button class="radio-btn" onclick="loadYouTubeId('dOOJW-F7Sx0', this, true)">
-<span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><polygon points="10 9 15 12 10 15 10 9" fill="currentColor"/></svg></span>
-<span class="label"><span class="name">🎼 Instrumental Calmante — 1 hora</span><small>Acalmar</small><span class="status"></span></span>
-</button>
-</div>
-<div class="media-item card-wide" data-nome="piano healing 1 hora">
-<button class="radio-btn" onclick="loadYouTubeId('F0opURoKM6w', this, true)">
-<span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><polygon points="10 9 15 12 10 15 10 9" fill="currentColor"/></svg></span>
-<span class="label"><span class="name">🌙 Piano Healing — 1 hora</span><small>Relaxar</small><span class="status"></span></span>
-</button>
-</div>
-</div>
-<details class="yt-add-panel">
-<summary>＋ Adicionar vídeo do YouTube</summary>
-<div class="custom-url-wrap" style="flex-direction: column; gap: 8px; margin-bottom: 15px; margin-top: 10px;">
-<div style="display: flex; gap: 8px; flex-wrap: wrap;">
-<input aria-label="Nome do conteúdo YouTube" class="custom-url-input" id="yt-nome" placeholder="Nome do conteúdo" style="flex: 0.6; min-width: 150px;" type="text"/>
-<select aria-label="Categoria do conteúdo YouTube" class="custom-url-input" id="yt-categoria" style="flex: 0.45; min-width: 150px;">
-<option value="dance80-2000">🪩 Dance 80/90/2000</option>
-<option value="ambiente">🌌 Ambiente</option>
-<option value="meditacao">🧘 Meditação</option>
-<option value="reiki">✨ Reiki / Relaxamento</option>
-<option value="instrumental">🎹 Instrumental / Acalmar</option>
-<option value="lofi">☕ Lofi / Foco</option>
-<option value="outros">⭐ Outros</option>
-</select>
-<input aria-label="Link ou ID do YouTube" autocomplete="off" class="custom-url-input" id="yt-input" placeholder="Cole o link do YouTube ou ID de 11 caracteres..." type="text"/>
-</div>
-<div style="display:flex; gap:8px; flex-wrap:wrap;">
-<button class="custom-url-btn" onclick="adicionarYouTubeSalvo()" style="flex:1; min-width:180px;" type="button">💾 Salvar &amp; Testar</button>
-</div>
-</div>
-</details>
-<div id="yt-salvos-title" style="display:none; margin:4px 0 8px; color:#cbd5e1; font-size:.82em; font-weight:700;">⭐ Meus YouTube salvos</div>
-<div class="card-grid" id="yt-salvos-grid" style="margin-bottom: 15px; display: none;"></div>
-<div class="yt-activate-wrap" id="yt-activate-wrap">
-<p>O player do YouTube só carrega quando você quiser — mais leve em aparelhos antigos e redes lentas.</p>
-<button class="yt-activate-btn" type="button" onclick="ativarYouTubePlayer()">▶ Ativar player do YouTube</button>
-</div>
-<div class="video-container" id="yt-video-container" hidden>
-<div aria-label="Player do YouTube" id="yt-player"></div>
-<div class="yt-overlay" hidden id="yt-overlay">
-<div class="yt-overlay-icon">▶</div>
-<strong id="yt-overlay-title">Conteúdo indisponível no embed</strong>
-<span id="yt-overlay-text">O YouTube não permite reproduzir este conteúdo dentro do Portal.</span>
-<small id="yt-overlay-tip" style="max-width:520px;color:#64748b;line-height:1.4;">O item continua salvo; se este conteúdo for bloqueado, escolha outra opção do Portal.</small>
-</div>
-</div>
-<div aria-live="polite" class="yt-status ready" id="yt-status">Player em espera — ative quando quiser usar o YouTube.</div>
-<details class="yt-diagnostics" hidden>
-<summary>🔎 Diagnóstico técnico</summary>
-<div class="diag-grid">
-<span>ID atual</span><strong id="yt-diag-id">—</strong>
-<span>API</span><strong id="yt-diag-api">aguardando</strong>
-<span>Estado</span><strong id="yt-diag-state">—</strong>
-<span>Último erro</span><strong id="yt-diag-error">—</strong>
-<span>Origem</span><strong id="yt-diag-origin">—</strong>
-</div>
-</details>
 </div>
 
 <div class="section" data-section="custom" id="section-custom">
@@ -1090,9 +960,12 @@ html.lite-mode .media-item { background: var(--surface-2); }
 
 <div class="section" data-section="treino" id="section-treino">
 <h2 class="section-title"><div class="left-group"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5h11v11h-11z"/><path d="M4 12h2M18 12h2M12 4v2M12 18v2"/></svg></span><span class="title-text">Academia &amp; Treino</span></div></h2>
-<p style="margin:0 4px 12px;font-size:.85rem;color:var(--muted);line-height:1.45;">Rádios de alta energia para malhar com a <strong>tela bloqueada</strong> (áudio em segundo plano no celular moderno).</p>
+<div class="focus-treino-bar">
+  <span style="font-size:.82rem;color:var(--muted);">Modo foco: só treino + timer</span>
+  <button type="button" id="btn-focus-treino" onclick="toggleFocusTreino()">Ativar foco</button>
+</div>
 <div class="card-grid">
-<div class="media-item" data-nome="workout academia gym fitness treino malhação">
+<div class="media-item" data-nome="workout academia gym fitness treino malhação" data-genre="treino">
 <button class="radio-btn" onclick="playChannel('workout', this)">
 <span class="icon"><span class="emoji">🏋️</span></span>
 <span class="label"><span class="name">Workout Radio</span><small>BPM alto · Academia</small><span class="status" id="status-workout"></span></span>
@@ -1102,7 +975,7 @@ html.lite-mode .media-item { background: var(--surface-2); }
 <button class="fav-btn" onclick="toggleFav(this, 'workout')" aria-label="Favoritar">☆</button>
 </div>
 </div>
-<div class="media-item" data-nome="hardstyle gym festival energy">
+<div class="media-item" data-nome="hardstyle gym festival energy" data-genre="treino">
 <button class="radio-btn" onclick="playChannel('hardstyle', this)">
 <span class="icon"><span class="emoji">💥</span></span>
 <span class="label"><span class="name">Hardstyle Gym</span><small>Impacto &amp; energia</small><span class="status" id="status-hardstyle"></span></span>
@@ -1303,6 +1176,298 @@ html.lite-mode .media-item { background: var(--surface-2); }
 </div>
 </div>
 
+
+<div class="section" data-section="adsfree" id="section-adsfree">
+<h2 class="section-title"><div class="left-group"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></span><span class="title-text">Sem propaganda</span></div></h2>
+<p style="margin:0 4px 12px;font-size:.82rem;color:var(--muted);line-height:1.4;">Streams contínuos sem comerciais (SomaFM &amp; Radio Paradise).</p>
+<div class="card-grid">
+<div class="media-item" data-nome="groove salad ambient chill" data-genre="adsfree">
+<button class="radio-btn" onclick="playChannel('mpb', this)">
+<span class="icon"><span class="emoji">🥗</span></span>
+<span class="label"><span class="name">Groove Salad</span><small>Ambient / downtempo</small>
+<span class="badge-row"><span class="badge badge-ads">Sem ads</span></span>
+<span class="status" id="status-mpb-ads"></span></span>
+</button>
+<div class="card-actions">
+<button class="action-play" onclick="event.stopPropagation();playChannel('mpb')"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"/></svg>Tocar</button>
+<button class="fav-btn" onclick="toggleFav(this, 'mpb')" aria-label="Favoritar">☆</button>
+</div>
+</div>
+<div class="media-item" data-nome="drone zone ambient" data-genre="adsfree">
+<button class="radio-btn" onclick="playChannel('soundscapes', this)">
+<span class="icon"><span class="emoji">🌌</span></span>
+<span class="label"><span class="name">Drone Zone</span><small>Ambient profundo</small>
+<span class="badge-row"><span class="badge badge-ads">Sem ads</span></span>
+<span class="status" id="status-soundscapes-ads"></span></span>
+</button>
+<div class="card-actions">
+<button class="action-play" onclick="event.stopPropagation();playChannel('soundscapes')"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"/></svg>Tocar</button>
+<button class="fav-btn" onclick="toggleFav(this, 'soundscapes')" aria-label="Favoritar">☆</button>
+</div>
+</div>
+<div class="media-item" data-nome="space station soma" data-genre="adsfree">
+<button class="radio-btn" onclick="playChannel('spacestation', this)">
+<span class="icon"><span class="emoji">🚀</span></span>
+<span class="label"><span class="name">Space Station</span><small>Space / electronica</small>
+<span class="badge-row"><span class="badge badge-ads">Sem ads</span></span>
+<span class="status" id="status-spacestation"></span></span>
+</button>
+<div class="card-actions">
+<button class="action-play" onclick="event.stopPropagation();playChannel('spacestation')"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"/></svg>Tocar</button>
+<button class="fav-btn" onclick="toggleFav(this, 'spacestation')" aria-label="Favoritar">☆</button>
+</div>
+</div>
+<div class="media-item" data-nome="the trip electronic" data-genre="adsfree">
+<button class="radio-btn" onclick="playChannel('thetrip', this)">
+<span class="icon"><span class="emoji">🎧</span></span>
+<span class="label"><span class="name">The Trip</span><small>Progressive house</small>
+<span class="badge-row"><span class="badge badge-ads">Sem ads</span></span>
+<span class="status" id="status-thetrip"></span></span>
+</button>
+<div class="card-actions">
+<button class="action-play" onclick="event.stopPropagation();playChannel('thetrip')"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"/></svg>Tocar</button>
+<button class="fav-btn" onclick="toggleFav(this, 'thetrip')" aria-label="Favoritar">☆</button>
+</div>
+</div>
+<div class="media-item" data-nome="deep space one ambient" data-genre="adsfree">
+<button class="radio-btn" onclick="playChannel('deepspace', this)">
+<span class="icon"><span class="emoji">🌑</span></span>
+<span class="label"><span class="name">Deep Space One</span><small>Space ambient</small>
+<span class="badge-row"><span class="badge badge-ads">Sem ads</span></span>
+<span class="status" id="status-deepspace"></span></span>
+</button>
+<div class="card-actions">
+<button class="action-play" onclick="event.stopPropagation();playChannel('deepspace')"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"/></svg>Tocar</button>
+<button class="fav-btn" onclick="toggleFav(this, 'deepspace')" aria-label="Favoritar">☆</button>
+</div>
+</div>
+<div class="media-item" data-nome="indie pop rocks" data-genre="adsfree">
+<button class="radio-btn" onclick="playChannel('indiepop', this)">
+<span class="icon"><span class="emoji">🎸</span></span>
+<span class="label"><span class="name">Indie Pop Rocks</span><small>Indie pop</small>
+<span class="badge-row"><span class="badge badge-ads">Sem ads</span></span>
+<span class="status" id="status-indiepop"></span></span>
+</button>
+<div class="card-actions">
+<button class="action-play" onclick="event.stopPropagation();playChannel('indiepop')"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"/></svg>Tocar</button>
+<button class="fav-btn" onclick="toggleFav(this, 'indiepop')" aria-label="Favoritar">☆</button>
+</div>
+</div>
+<div class="media-item" data-nome="underground 80s" data-genre="adsfree">
+<button class="radio-btn" onclick="playChannel('u80s', this)">
+<span class="icon"><span class="emoji">📼</span></span>
+<span class="label"><span class="name">Underground 80s</span><small>80s alternative</small>
+<span class="badge-row"><span class="badge badge-ads">Sem ads</span></span>
+<span class="status" id="status-u80s"></span></span>
+</button>
+<div class="card-actions">
+<button class="action-play" onclick="event.stopPropagation();playChannel('u80s')"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"/></svg>Tocar</button>
+<button class="fav-btn" onclick="toggleFav(this, 'u80s')" aria-label="Favoritar">☆</button>
+</div>
+</div>
+<div class="media-item" data-nome="radio paradise" data-genre="adsfree">
+<button class="radio-btn" onclick="playChannel('paradise', this)">
+<span class="icon"><span class="emoji">🌈</span></span>
+<span class="label"><span class="name">Radio Paradise</span><small>Eclética curada</small>
+<span class="badge-row"><span class="badge badge-ads">Sem ads</span></span>
+<span class="status" id="status-paradise-ads"></span></span>
+</button>
+<div class="card-actions">
+<button class="action-play" onclick="event.stopPropagation();playChannel('paradise')"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"/></svg>Tocar</button>
+<button class="fav-btn" onclick="toggleFav(this, 'paradise')" aria-label="Favoritar">☆</button>
+</div>
+</div>
+<div class="media-item" data-nome="beat blender" data-genre="adsfree">
+<button class="radio-btn" onclick="playChannel('beatblender', this)">
+<span class="icon"><span class="emoji">🌀</span></span>
+<span class="label"><span class="name">Beat Blender</span><small>Downtempo beats</small>
+<span class="badge-row"><span class="badge badge-ads">Sem ads</span></span>
+<span class="status" id="status-beatblender-ads"></span></span>
+</button>
+<div class="card-actions">
+<button class="action-play" onclick="event.stopPropagation();playChannel('beatblender')"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"/></svg>Tocar</button>
+<button class="fav-btn" onclick="toggleFav(this, 'beatblender')" aria-label="Favoritar">☆</button>
+</div>
+</div>
+</div>
+</div>
+
+<div class="section" data-section="youtube" id="section-youtube">
+<h2 class="section-title"><div class="left-group"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><polygon points="10 9 15 12 10 15 10 9" fill="currentColor"/></svg></span><span class="title-text">YouTube Dinâmico</span></div></h2>
+<button aria-label="Enviar mídia para Chromecast" class="cast-action" id="cast-btn" onclick="castCurrentMedia()" type="button">📺 Enviar para Chromecast</button>
+<div class="cast-note" id="cast-note">Rádios: use este botão. YouTube: o Portal preserva o player oficial; quando o Cast não aparecer no iframe, use o Cast do app YouTube ou Transmitir guia/tela do navegador.</div>
+<div aria-label="Atalhos do YouTube" class="yt-presets">
+<div class="media-item card-wide" data-nome="miri soul">
+<button class="radio-btn" onclick="loadYouTubePlaylist('PLXL_qJWqUmyI','cbVjs8U2rdw', this, true)">
+<span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><polygon points="10 9 15 12 10 15 10 9" fill="currentColor"/></svg></span>
+<span class="label"><span class="name">💜 Miri Soul</span><small>Playlist</small><span class="status"></span></span>
+</button>
+</div>
+<!-- Treino — 2 Horas (v6.8.1) -->
+<div class="media-item card-wide" data-nome="treino 2 horas energy motivation academia">
+<button class="radio-btn" onclick="loadYouTubeId('xBer-B3Y3DA', this, true)">
+<span class="icon">🏋️</span>
+<span class="label"><span class="name">🏋️ Treino — Energy &amp; Motivation</span><small>~2h • Academia / cardio</small><span class="status"></span></span>
+</button>
+</div>
+<div class="media-item card-wide" data-nome="treino edm workout warrior 2 horas">
+<button class="radio-btn" onclick="loadYouTubeId('a1PAQFEQcl4', this, true)">
+<span class="icon">⚡</span>
+<span class="label"><span class="name">⚡ Treino — Workout Warrior EDM</span><small>2h+ • EDM / energia</small><span class="status"></span></span>
+</button>
+</div>
+<div class="media-item card-wide" data-nome="treino tunnel bass boosted edm 2 horas">
+<button class="radio-btn" onclick="loadYouTubeId('2Jhvun1qRPg', this, true)">
+<span class="icon">🔊</span>
+<span class="label"><span class="name">🔊 Treino — Tunnel Bass EDM</span><small>~2h • Bass / academia</small><span class="status"></span></span>
+</button>
+</div>
+<div class="media-item card-wide" data-nome="treino bass boosted edm 2 horas">
+<button class="radio-btn" onclick="loadYouTubeId('36OZNo7qN_M', this, true)">
+<span class="icon">🔥</span>
+<span class="label"><span class="name">🔥 Treino — Bass Boosted EDM</span><small>~2h • EDM / treino intenso</small><span class="status"></span></span>
+</button>
+</div>
+<div class="media-item card-wide" data-nome="treino turbo bass boosted 2 horas">
+<button class="radio-btn" onclick="loadYouTubeId('wyill7oxkaA', this, true)">
+<span class="icon">🚀</span>
+<span class="label"><span class="name">🚀 Treino — Turbo Bass</span><small>~2h • Bass / alta energia</small><span class="status"></span></span>
+</button>
+</div>
+<div class="media-item card-wide" data-nome="break troy">
+<button class="radio-btn" onclick="loadYouTubeId('PqVzpAz4U1c', this, true)">
+<span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><polygon points="10 9 15 12 10 15 10 9" fill="currentColor"/></svg></span>
+<span class="label"><span class="name">🎧 Break Troy</span><small>Vídeo</small><span class="status"></span></span>
+</button>
+</div>
+<div class="media-item card-wide" data-nome="eurodance 1 hora">
+<button class="radio-btn" onclick="loadYouTubeId('odouCACH9-w', this, true)">
+<span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><polygon points="10 9 15 12 10 15 10 9" fill="currentColor"/></svg></span>
+<span class="label"><span class="name">🪩 Eurodance — 1 hora</span><small>Nostalgia</small><span class="status"></span></span>
+</button>
+</div>
+<div class="media-item card-wide" data-nome="anos 80 1h">
+<button class="radio-btn" onclick="loadYouTubeId('S3QDHD635KE', this, true)">
+<span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><polygon points="10 9 15 12 10 15 10 9" fill="currentColor"/></svg></span>
+<span class="label"><span class="name">🎵 Anos 80 — 1h+</span><small>Retro / synthwave</small><span class="status"></span></span>
+</button>
+</div>
+<div class="media-item card-wide" data-nome="80 90 2000 1 hora">
+<button class="radio-btn" onclick="loadYouTubeId('XExeWpVldDo', this, true)">
+<span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><polygon points="10 9 15 12 10 15 10 9" fill="currentColor"/></svg></span>
+<span class="label"><span class="name">🔥 80/90/2000 — 1 hora</span><small>Dance e remixes</small><span class="status"></span></span>
+</button>
+</div>
+<div class="media-item card-wide" data-nome="best 80s love songs">
+<button class="radio-btn" onclick="loadYouTubeId('WF1ypdkbmv8', this, true)">
+<span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><polygon points="10 9 15 12 10 15 10 9" fill="currentColor"/></svg></span>
+<span class="label"><span class="name">✨ Best 80s Love Songs</span><small>Românticas</small><span class="status"></span></span>
+</button>
+</div>
+<div class="media-item card-wide" data-nome="reiki relaxamento 2 horas">
+<button class="radio-btn" onclick="loadYouTubeId('FN7hdDqJftQ', this, true)">
+<span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><polygon points="10 9 15 12 10 15 10 9" fill="currentColor"/></svg></span>
+<span class="label"><span class="name">🧘 Reiki &amp; Relaxamento — 2 horas</span><small>Meditação</small><span class="status"></span></span>
+</button>
+</div>
+<div class="media-item card-wide" data-nome="ambiente 80s 1 hora">
+<button class="radio-btn" onclick="loadYouTubeId('Gx-QTJ9cAko', this, true)">
+<span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><polygon points="10 9 15 12 10 15 10 9" fill="currentColor"/></svg></span>
+<span class="label"><span class="name">🌌 Ambiente 80s — 1 hora</span><small>Synthwave / foco</small><span class="status"></span></span>
+</button>
+</div>
+<div class="media-item card-wide" data-nome="reiki meditacao">
+<button class="radio-btn" onclick="loadYouTubeId('Leob7Fv1ibM', this, true)">
+<span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><polygon points="10 9 15 12 10 15 10 9" fill="currentColor"/></svg></span>
+<span class="label"><span class="name">✨ Reiki — Meditação</span><small>Relaxamento</small><span class="status"></span></span>
+</button>
+</div>
+<div class="media-item card-wide" data-nome="reiki 432hz 111hz">
+<button class="radio-btn" onclick="loadYouTubeId('4AGrxBGEo7o', this, true)">
+<span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><polygon points="10 9 15 12 10 15 10 9" fill="currentColor"/></svg></span>
+<span class="label"><span class="name">🌿 Reiki — 432Hz / 111Hz</span><small>Meditação profunda</small><span class="status"></span></span>
+</button>
+</div>
+<div class="media-item card-wide" data-nome="reiki natureza">
+<button class="radio-btn" onclick="loadYouTubeId('x7e2Dm5WdNg', this, true)">
+<span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><polygon points="10 9 15 12 10 15 10 9" fill="currentColor"/></svg></span>
+<span class="label"><span class="name">🌊 Reiki + Natureza</span><small>Sons da natureza</small><span class="status"></span></span>
+</button>
+</div>
+<div class="media-item card-wide" data-nome="reiki sono relaxamento">
+<button class="radio-btn" onclick="loadYouTubeId('nTnW0copqhI', this, true)">
+<span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><polygon points="10 9 15 12 10 15 10 9" fill="currentColor"/></svg></span>
+<span class="label"><span class="name">😴 Reiki — Sono &amp; Relaxamento</span><small>Dormir</small><span class="status"></span></span>
+</button>
+</div>
+<div class="media-item card-wide" data-nome="piano instrumental 1 hora">
+<button class="radio-btn" onclick="loadYouTubeId('2kegDq_YB7o', this, true)">
+<span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><polygon points="10 9 15 12 10 15 10 9" fill="currentColor"/></svg></span>
+<span class="label"><span class="name">🎹 Piano Instrumental — 1 hora</span><small>Meditação</small><span class="status"></span></span>
+</button>
+</div>
+<div class="media-item card-wide" data-nome="instrumental calmante 1 hora">
+<button class="radio-btn" onclick="loadYouTubeId('dOOJW-F7Sx0', this, true)">
+<span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><polygon points="10 9 15 12 10 15 10 9" fill="currentColor"/></svg></span>
+<span class="label"><span class="name">🎼 Instrumental Calmante — 1 hora</span><small>Acalmar</small><span class="status"></span></span>
+</button>
+</div>
+<div class="media-item card-wide" data-nome="piano healing 1 hora">
+<button class="radio-btn" onclick="loadYouTubeId('F0opURoKM6w', this, true)">
+<span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><polygon points="10 9 15 12 10 15 10 9" fill="currentColor"/></svg></span>
+<span class="label"><span class="name">🌙 Piano Healing — 1 hora</span><small>Relaxar</small><span class="status"></span></span>
+</button>
+</div>
+</div>
+<details class="yt-add-panel">
+<summary>＋ Adicionar vídeo do YouTube</summary>
+<div class="custom-url-wrap" style="flex-direction: column; gap: 8px; margin-bottom: 15px; margin-top: 10px;">
+<div style="display: flex; gap: 8px; flex-wrap: wrap;">
+<input aria-label="Nome do conteúdo YouTube" class="custom-url-input" id="yt-nome" placeholder="Nome do conteúdo" style="flex: 0.6; min-width: 150px;" type="text"/>
+<select aria-label="Categoria do conteúdo YouTube" class="custom-url-input" id="yt-categoria" style="flex: 0.45; min-width: 150px;">
+<option value="dance80-2000">🪩 Dance 80/90/2000</option>
+<option value="ambiente">🌌 Ambiente</option>
+<option value="meditacao">🧘 Meditação</option>
+<option value="reiki">✨ Reiki / Relaxamento</option>
+<option value="instrumental">🎹 Instrumental / Acalmar</option>
+<option value="lofi">☕ Lofi / Foco</option>
+<option value="outros">⭐ Outros</option>
+</select>
+<input aria-label="Link ou ID do YouTube" autocomplete="off" class="custom-url-input" id="yt-input" placeholder="Cole o link do YouTube ou ID de 11 caracteres..." type="text"/>
+</div>
+<div style="display:flex; gap:8px; flex-wrap:wrap;">
+<button class="custom-url-btn" onclick="adicionarYouTubeSalvo()" style="flex:1; min-width:180px;" type="button">💾 Salvar &amp; Testar</button>
+</div>
+</div>
+</details>
+<div id="yt-salvos-title" style="display:none; margin:4px 0 8px; color:#cbd5e1; font-size:.82em; font-weight:700;">⭐ Meus YouTube salvos</div>
+<div class="card-grid" id="yt-salvos-grid" style="margin-bottom: 15px; display: none;"></div>
+<div class="yt-activate-wrap" id="yt-activate-wrap">
+<p>O player do YouTube só carrega quando você quiser — mais leve em aparelhos antigos e redes lentas.</p>
+<button class="yt-activate-btn" type="button" onclick="ativarYouTubePlayer()">▶ Ativar player do YouTube</button>
+</div>
+<div class="video-container" id="yt-video-container" hidden>
+<div aria-label="Player do YouTube" id="yt-player"></div>
+<div class="yt-overlay" hidden id="yt-overlay">
+<div class="yt-overlay-icon">▶</div>
+<strong id="yt-overlay-title">Conteúdo indisponível no embed</strong>
+<span id="yt-overlay-text">O YouTube não permite reproduzir este conteúdo dentro do Portal.</span>
+<small id="yt-overlay-tip" style="max-width:520px;color:#64748b;line-height:1.4;">O item continua salvo; se este conteúdo for bloqueado, escolha outra opção do Portal.</small>
+</div>
+</div>
+<div aria-live="polite" class="yt-status ready" id="yt-status">Player em espera — ative quando quiser usar o YouTube.</div>
+<details class="yt-diagnostics" hidden>
+<summary>🔎 Diagnóstico técnico</summary>
+<div class="diag-grid">
+<span>ID atual</span><strong id="yt-diag-id">—</strong>
+<span>API</span><strong id="yt-diag-api">aguardando</strong>
+<span>Estado</span><strong id="yt-diag-state">—</strong>
+<span>Último erro</span><strong id="yt-diag-error">—</strong>
+<span>Origem</span><strong id="yt-diag-origin">—</strong>
+</div>
+</details>
+</div>
+
 <div class="section" data-section="timer" id="section-timer">
 <h2 class="section-title"><div class="left-group"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span><span class="title-text">Sleep Timer</span></div></h2>
 <div class="timer-wrap">
@@ -1370,6 +1535,9 @@ html.lite-mode .media-item { background: var(--surface-2); }
 <div class="stat-pill"><b id="stat-tracks">0</b><span>faixas salvas</span></div>
 </div>
 <ul class="changelog" style="margin-top:14px;">
+<li><strong>v6.13.0</strong> — Visual: badges, card ativo, modo foco treino; catálogo: seção Sem propaganda (SomaFM + Paradise).</li>
+<li><strong>v6.12.0</strong> — Proxy laut.fm em todas as rádios problemáticas (iPad); YouTube movido para baixo das rádios; textos extras removidos.</li>
+<li><strong>v6.11.1</strong> — iPad: Hits 80 / Dance 90 / Club Hits via proxy same-origin (/api/stream/80er|eurodance|clubhits); Safari 9 usa audio.src direto.</li>
 <li><strong>v6.11.0</strong> — Seção Academia &amp; Treino (8 rádios gym); Media Session reforçada; áudio de rádio continua com tela bloqueada no celular moderno. YouTube embed ainda depende do SO (limitação do navegador).</li>
 <li><strong>v6.10.1</strong> — iPad: URLs laut.fm diretas (sem 302); Paradise MP3; tema claro com cores reais; YouTube legado com capa + Abrir (Safari 9 não embute player moderno).</li>
 <li><strong>v6.10.0</strong> — Revisão completa: rádio iPad (sem corrida unlock/stream, proxy /api/stream/totalhits, &lt;source type&gt;); YouTube legado mais claro; overflow mobile; título “Painel Mídia”; temas de cor no modo claro; densidade no painel Aparência.</li>
@@ -1387,7 +1555,7 @@ html.lite-mode .media-item { background: var(--surface-2); }
 <li><strong>v6.7.1</strong> — recenttracks.js removido; exposição global no lugar certo.</li>
 <li><strong>v6.7</strong> — Visual dashboard; 7 presets YouTube restaurados; metadata Total Hits em 3 camadas.</li>
 </ul>
-<p class="lib-mode-note" style="margin-top:12px;">Criado por Break Troy · tudo funciona dentro desta página · sem redirecionar para fora.</p>
+
 </div>
 
 <footer>Painel Mídia • Criado por Break Troy</footer>
@@ -1443,7 +1611,7 @@ html.lite-mode .media-item { background: var(--surface-2); }
     p=document.createElement('div');
     p.id='legacy-diag';
     p.style.cssText='position:fixed;left:6px;right:6px;bottom:6px;z-index:2147483647;background:#111;color:#fff;padding:8px 10px;border-radius:8px;font:12px/1.35 Arial,sans-serif;max-height:34%;overflow:auto;box-shadow:0 2px 12px rgba(0,0,0,.45)';
-    p.innerHTML='<b>iPad Legacy v6.10.1</b> — <span id="legacy-stage">BOOT OK</span> <button type="button" id="legacy-hide" style="float:right;font-size:12px">fechar</button><div id="legacy-error" style="margin-top:4px;color:#ffd27a"></div>';
+    p.innerHTML='<b>iPad Legacy v6.13.0</b> — <span id="legacy-stage">BOOT OK</span> <button type="button" id="legacy-hide" style="float:right;font-size:12px">fechar</button><div id="legacy-error" style="margin-top:4px;color:#ffd27a"></div>';
     (document.body||document.documentElement).appendChild(p);
     var b=document.getElementById('legacy-hide');
     if(b)b.onclick=function(){p.style.display='none';};
@@ -1579,33 +1747,85 @@ var RADIO_CHANNELS = {
     'https://eu8.fastcast4u.com/proxy/breaktroy?mp=/stream',
     'https://eu8.fastcast4u.com/proxy/breaktroy/;stream.mp3'
   ] },
-  /* laut.fm: host direto (sem 302) — Safari 9 falha em redirects no <audio> */
-  progressive: { label:'Progressive House', urls:['https://house.stream.laut.fm/house','https://stream.laut.fm/house'] },
-  trance: { label:'Trance', urls:['https://main.stream.laut.fm/main','https://stream.laut.fm/main'] },
-  techno: { label:'Techno', urls:['https://techno.stream.laut.fm/techno','https://stream.laut.fm/techno'] },
-  /* --- Academia / Treino (prioridade: tela bloqueada) --- */
-  workout: { label:'Workout Radio', urls:['https://workout.stream.laut.fm/workout','https://stream.laut.fm/workout'] },
-  hardstyle: { label:'Hardstyle Gym', urls:['https://hardstyle.stream.laut.fm/hardstyle','https://stream.laut.fm/hardstyle'] },
-  edm_gym: { label:'EDM Sessions', urls:['https://edm.stream.laut.fm/edm','https://stream.laut.fm/edm'] },
-  dance_gym: { label:'Dance Energy', urls:['https://dance.stream.laut.fm/dance','https://stream.laut.fm/dance'] },
+  /* laut.fm: proxy same-origin primeiro (Safari 9) + host direto */
+  progressive: { label:'Progressive House', urls:['/api/stream/house','https://house.stream.laut.fm/house','https://stream.laut.fm/house'] },
+  trance: { label:'Trance', urls:['/api/stream/main','https://main.stream.laut.fm/main','https://stream.laut.fm/main'] },
+  techno: { label:'Techno', urls:['/api/stream/techno','https://techno.stream.laut.fm/techno','https://stream.laut.fm/techno'] },
+  /* --- Academia / Treino --- */
+  workout: { label:'Workout Radio', urls:['/api/stream/workout','https://workout.stream.laut.fm/workout','https://stream.laut.fm/workout'] },
+  hardstyle: { label:'Hardstyle Gym', urls:['/api/stream/hardstyle','https://hardstyle.stream.laut.fm/hardstyle','https://stream.laut.fm/hardstyle'] },
+  edm_gym: { label:'EDM Sessions', urls:['/api/stream/edm','https://edm.stream.laut.fm/edm','https://stream.laut.fm/edm'] },
+  dance_gym: { label:'Dance Energy', urls:['/api/stream/dance','https://dance.stream.laut.fm/dance','https://stream.laut.fm/dance'] },
   beatblender: { label:'Beat Blender', urls:['https://ice5.somafm.com/beatblender-128-mp3','https://ice1.somafm.com/beatblender-128-mp3'] },
   dubstep: { label:'Dubstep', urls:['https://ice5.somafm.com/dubstep-128-mp3','https://ice1.somafm.com/dubstep-128-mp3'] },
   bob_workout: { label:'Radio BOB Workout', urls:['https://streams.radiobob.de/bob-workout/mp3-192/mediaplayer'] },
   bob_party: { label:'Radio BOB Party', urls:['https://streams.radiobob.de/bob-party/mp3-192/mediaplayer'] },
   reiki: { label:'Reiki & Meditação', urls:['https://streaming.positivity.radio/pr/reiki/icecast.audio','https://ice5.somafm.com/dronezone-128-mp3'] },
-  anos80: { label:'Hits Anos 80', urls:['https://80er.stream.laut.fm/80er','https://stream.laut.fm/80er'] },
-  dance90: { label:"Dance 90's", urls:['https://eurodance.stream.laut.fm/eurodance','https://stream.laut.fm/eurodance'] },
-  dance2000: { label:'Dance / Club Hits', urls:['https://clubhits.stream.laut.fm/clubhits','https://stream.laut.fm/clubhits'] },
-  rock: { label:'Classic Rock', urls:['https://classicrock.stream.laut.fm/classicrock','https://stream.laut.fm/classicrock'] },
-  pop: { label:'Pop Hits', urls:['https://pop.stream.laut.fm/pop','https://stream.laut.fm/pop'] },
-  lofi: { label:'Lofi Beats', urls:['https://lofi.stream.laut.fm/lofi','https://stream.laut.fm/lofi'] },
-  classical: { label:'Clássica / Foco', urls:['https://klassik.stream.laut.fm/klassik','https://stream.laut.fm/klassik'] },
+  anos80: { label:'Hits Anos 80', urls:[
+    '/api/stream/80er',
+    'https://80er.stream.laut.fm/80er',
+    'https://stream.laut.fm/80er'
+  ] },
+  dance90: { label:"Dance 90's", urls:[
+    '/api/stream/eurodance',
+    'https://eurodance.stream.laut.fm/eurodance',
+    'https://stream.laut.fm/eurodance'
+  ] },
+  dance2000: { label:'Dance / Club Hits', urls:[
+    '/api/stream/clubhits',
+    'https://clubhits.stream.laut.fm/clubhits',
+    'https://stream.laut.fm/clubhits'
+  ] },
+  rock: { label:'Classic Rock', urls:['/api/stream/classicrock','https://classicrock.stream.laut.fm/classicrock','https://stream.laut.fm/classicrock'] },
+  pop: { label:'Pop Hits', urls:['/api/stream/pop','https://pop.stream.laut.fm/pop','https://stream.laut.fm/pop'] },
+  lofi: { label:'Lofi Beats', urls:['/api/stream/lofi','https://lofi.stream.laut.fm/lofi','https://stream.laut.fm/lofi'] },
+  classical: { label:'Clássica / Foco', urls:['/api/stream/klassik','https://klassik.stream.laut.fm/klassik','https://stream.laut.fm/klassik'] },
   mpb: { label:'Chill / Groove', urls:['https://ice5.somafm.com/groovesalad-128-mp3'] },
   soundscapes: { label:'Soundscapes Ambient', urls:['https://ice5.somafm.com/dronezone-128-mp3'] },
-  paradise: { label:'Radio Paradise', urls:['https://stream.radioparadise.com/mp3-128','https://stream.radioparadise.com/aac-128'] }
+  paradise: { label:'Radio Paradise', urls:['https://stream.radioparadise.com/mp3-128','https://stream.radioparadise.com/aac-128'] },
+  spacestation: { label:'Space Station', urls:['https://ice5.somafm.com/spacestation-128-mp3','https://ice1.somafm.com/spacestation-128-mp3'] },
+  deepspace: { label:'Deep Space One', urls:['https://ice5.somafm.com/deepspaceone-128-mp3','https://ice1.somafm.com/deepspaceone-128-mp3'] },
+  thetrip: { label:'The Trip', urls:['https://ice5.somafm.com/thetrip-128-mp3','https://ice1.somafm.com/thetrip-128-mp3'] },
+  indiepop: { label:'Indie Pop Rocks', urls:['https://ice5.somafm.com/indiepop-128-mp3','https://ice1.somafm.com/indiepop-128-mp3'] },
+  u80s: { label:'Underground 80s', urls:['https://ice5.somafm.com/u80s-128-mp3','https://ice1.somafm.com/u80s-128-mp3'] }
 };
 
 // ---------- ESTADO GLOBAL ----------
+
+function toggleFocusTreino(){
+  try{
+    var on=document.documentElement.classList.toggle('focus-treino');
+    var b=document.getElementById('btn-focus-treino');
+    if(b)b.textContent=on?'Sair do foco':'Ativar foco';
+    try{ localStorage.setItem('pm_focus_treino', on?'1':'0'); }catch(_){}
+  }catch(_){}
+}
+function restoreFocusTreino(){
+  try{
+    if(localStorage.getItem('pm_focus_treino')==='1'){
+      document.documentElement.classList.add('focus-treino');
+      var b=document.getElementById('btn-focus-treino');
+      if(b)b.textContent='Sair do foco';
+    }
+  }catch(_){}
+}
+function markPlayingCard(channelId){
+  try{
+    var items=document.querySelectorAll('.media-item.is-playing');
+    for(var i=0;i<items.length;i++)items[i].classList.remove('is-playing');
+    if(!channelId)return;
+    var all=document.querySelectorAll('.radio-btn');
+    var needle="playChannel('"+channelId+"'";
+    for(var j=0;j<all.length;j++){
+      var oc=all[j].getAttribute('onclick')||'';
+      if(oc.indexOf(needle)>=0){
+        var item=all[j].closest('.media-item');
+        if(item)item.classList.add('is-playing');
+      }
+    }
+  }catch(_){}
+}
+
 var SILENT_WAV='data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==';
 /**
  * Cria o elemento de áudio do portal.
@@ -2267,7 +2487,8 @@ function guessAudioMime(url){
 }
 /**
  * Atribui stream e dá play no mesmo gesto (Safari 9 / Android antigo).
- * v6.10: <source type> em progressive; sem corrida com unlock silencioso.
+ * iPad legado: prefere audio.src= (mais confiável que <source>).
+ * Moderno: <source type> em progressive.
  */
 function assignAndPlay(audio,url,onBlocked){
   try{
@@ -2283,7 +2504,8 @@ function assignAndPlay(audio,url,onBlocked){
       while(audio.firstChild)audio.removeChild(audio.firstChild);
       audio.removeAttribute('src');
     }catch(_){}
-    if(!urlNeedsHls(url)){
+    var legacy=isLegacyIOSWebKit();
+    if(!urlNeedsHls(url)&&!legacy){
       try{
         var srcEl=document.createElement('source');
         srcEl.src=url;
@@ -2293,6 +2515,7 @@ function assignAndPlay(audio,url,onBlocked){
         audio.src=url;
       }
     } else {
+      // Safari 9 / HLS: src direto no elemento
       audio.src=url;
     }
     try{ audio.load(); }catch(_){}
@@ -2433,6 +2656,7 @@ function playChannel(channelId,btnEl,statusIdOverride,isAutoRetry){
     setStatus(statusId,'✅ Tocando');
     updateMiniPlayer(channel.label,false);
     setStatusBar('live','AO VIVO',channel.label+(trackInfo.title?' • '+trackInfo.title:''));
+    try{ markPlayingCard(channelId); }catch(_){}
     try{ requestWakeLock(); }catch(_){}
     try{ bumpPlayStat(); }catch(_){}
     try{ startViz(); }catch(_){}
@@ -2594,7 +2818,7 @@ function togglePlayPause(){
     setStatusBar('idle','PAUSADO',currentChannelLabel);
   }
 }
-function stopRadio(){
+function stopRadio(){ try{ markPlayingCard(null); }catch(_){} 
   stopLibrary(false);
   radioController.token++; radioController.state='RADIO_STOPPING';
   cleanupRadio();
@@ -3302,7 +3526,7 @@ function atualizarTimerStatus(){
   s.classList.add('active');
 }
 
-function stopAllMedia(){
+function stopAllMedia(){ try{ markPlayingCard(null); }catch(_){} 
   stopNowPlayingPolling();
   resetBackoff();
   radioController.token++;
