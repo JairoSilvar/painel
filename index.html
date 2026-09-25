@@ -715,7 +715,7 @@ html.lite-mode .media-item.is-playing { animation:none; }
 </div>
 <div class="brand-copy" role="button" tabindex="0" title="Voltar ao início" onclick="goHome()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goHome();}">
 <h1>Painel Mídia</h1>
-<span class="version-tag">v6.13.1</span>
+<span class="version-tag">v6.13.2</span>
 </div>
 <div class="header-actions">
 <button class="header-action" id="theme-menu-btn" type="button" onclick="toggleAppearancePanel()" aria-expanded="false" aria-controls="appearance-panel" title="Aparência">
@@ -809,6 +809,8 @@ html.lite-mode .media-item.is-playing { animation:none; }
 
 <div class="section" data-section="hub" id="section-hub">
 <h2 class="section-title"><div class="left-group"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 7.4H22l-6 4.5 2.3 7.1L12 16.6 5.7 21l2.3-7.1-6-4.5h7.6z"/></svg></span><span class="title-text">Para você</span></div></h2>
+<button aria-label="Enviar mídia para Chromecast" class="cast-action" id="cast-btn" onclick="castCurrentMedia()" type="button">📺 Enviar rádio para Chromecast</button>
+<div class="cast-note" id="cast-note">Envia a rádio que estiver tocando para a TV. No YouTube embutido o Cast costuma não aparecer — use Transmitir do navegador ou o app YouTube.</div>
 <div class="hub-grid">
 <div>
 <div class="hub-label">Continuar ouvindo</div>
@@ -1301,50 +1303,29 @@ html.lite-mode .media-item.is-playing { animation:none; }
 
 <div class="section" data-section="youtube" id="section-youtube">
 <h2 class="section-title"><div class="left-group"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><polygon points="10 9 15 12 10 15 10 9" fill="currentColor"/></svg></span><span class="title-text">YouTube Dinâmico</span></div></h2>
-<button aria-label="Enviar mídia para Chromecast" class="cast-action" id="cast-btn" onclick="castCurrentMedia()" type="button">📺 Enviar para Chromecast</button>
-<div class="cast-note" id="cast-note">Rádios: use este botão. YouTube: o Portal preserva o player oficial; quando o Cast não aparecer no iframe, use o Cast do app YouTube ou Transmitir guia/tela do navegador.</div>
 <div aria-label="Atalhos do YouTube" class="yt-presets">
 <div class="media-item card-wide" data-nome="miri soul">
 <button class="radio-btn" onclick="loadYouTubePlaylist('PLXL_qJWqUmyI','cbVjs8U2rdw', this, true)">
-<span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><polygon points="10 9 15 12 10 15 10 9" fill="currentColor"/></svg></span>
-<span class="label"><span class="name">💜 Miri Soul</span><small>Playlist</small><span class="status"></span></span>
+<span class="icon">💜</span>
+<span class="label"><span class="name">Miri Soul — Playlist</span><small>Seleção do canal</small><span class="status"></span></span>
 </button>
 </div>
-<!-- Treino — 2 Horas (v6.8.1) -->
-<div class="media-item card-wide" data-nome="treino 2 horas energy motivation academia">
-<button class="radio-btn" onclick="loadYouTubeId('xBer-B3Y3DA', this, true)">
-<span class="icon">🏋️</span>
-<span class="label"><span class="name">🏋️ Treino — Energy &amp; Motivation</span><small>~2h • Academia / cardio</small><span class="status"></span></span>
-</button>
-</div>
-<div class="media-item card-wide" data-nome="treino edm workout warrior 2 horas">
-<button class="radio-btn" onclick="loadYouTubeId('a1PAQFEQcl4', this, true)">
-<span class="icon">⚡</span>
-<span class="label"><span class="name">⚡ Treino — Workout Warrior EDM</span><small>2h+ • EDM / energia</small><span class="status"></span></span>
-</button>
-</div>
-<div class="media-item card-wide" data-nome="treino tunnel bass boosted edm 2 horas">
-<button class="radio-btn" onclick="loadYouTubeId('2Jhvun1qRPg', this, true)">
-<span class="icon">🔊</span>
-<span class="label"><span class="name">🔊 Treino — Tunnel Bass EDM</span><small>~2h • Bass / academia</small><span class="status"></span></span>
-</button>
-</div>
-<div class="media-item card-wide" data-nome="treino bass boosted edm 2 horas">
-<button class="radio-btn" onclick="loadYouTubeId('36OZNo7qN_M', this, true)">
-<span class="icon">🔥</span>
-<span class="label"><span class="name">🔥 Treino — Bass Boosted EDM</span><small>~2h • EDM / treino intenso</small><span class="status"></span></span>
-</button>
-</div>
-<div class="media-item card-wide" data-nome="treino turbo bass boosted 2 horas">
-<button class="radio-btn" onclick="loadYouTubeId('wyill7oxkaA', this, true)">
-<span class="icon">🚀</span>
-<span class="label"><span class="name">🚀 Treino — Turbo Bass</span><small>~2h • Bass / alta energia</small><span class="status"></span></span>
+<div class="media-item card-wide" data-nome="miri soul canal">
+<button class="radio-btn" onclick="loadYouTubePlaylist('UUYO6je0jc2OjaVK06RALw2w','cbVjs8U2rdw', this, true)">
+<span class="icon">📺</span>
+<span class="label"><span class="name">Miri Soul — Canal</span><small>Últimos vídeos do canal</small><span class="status"></span></span>
 </button>
 </div>
 <div class="media-item card-wide" data-nome="break troy">
 <button class="radio-btn" onclick="loadYouTubeId('PqVzpAz4U1c', this, true)">
-<span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><polygon points="10 9 15 12 10 15 10 9" fill="currentColor"/></svg></span>
-<span class="label"><span class="name">🎧 Break Troy</span><small>Vídeo</small><span class="status"></span></span>
+<span class="icon">🎧</span>
+<span class="label"><span class="name">Break Troy — Vídeo</span><small>I Feel The Night</small><span class="status"></span></span>
+</button>
+</div>
+<div class="media-item card-wide" data-nome="break troy canal">
+<button class="radio-btn" onclick="loadYouTubePlaylist('UUPKRKyAnxUcyHQD1wDXnFWA','PqVzpAz4U1c', this, true)">
+<span class="icon">📺</span>
+<span class="label"><span class="name">Break Troy — Canal</span><small>Últimos vídeos do canal</small><span class="status"></span></span>
 </button>
 </div>
 <div class="media-item card-wide" data-nome="eurodance 1 hora">
@@ -1542,6 +1523,7 @@ html.lite-mode .media-item.is-playing { animation:none; }
 <div class="stat-pill"><b id="stat-tracks">0</b><span>faixas salvas</span></div>
 </div>
 <ul class="changelog" style="margin-top:14px;">
+<li><strong>v6.13.2</strong> — iPad: load() restaurado no play; remove YouTube academia; canais Miri/Break Troy (últimos vídeos); Chromecast no topo (rádios).</li>
 <li><strong>v6.13.1</strong> — iPad c4: src sem type forçado + proxy SomaFM/Continental; modo foco exportado; anti-trava no stalled; mini-player sem pulo.</li>
 <li><strong>v6.13.0</strong> — Visual: badges, card ativo, modo foco treino; catálogo: seção Sem propaganda (SomaFM + Paradise).</li>
 <li><strong>v6.12.0</strong> — Proxy laut.fm em todas as rádios problemáticas (iPad); YouTube movido para baixo das rádios; textos extras removidos.</li>
@@ -1619,7 +1601,7 @@ html.lite-mode .media-item.is-playing { animation:none; }
     p=document.createElement('div');
     p.id='legacy-diag';
     p.style.cssText='position:fixed;left:6px;right:6px;bottom:6px;z-index:2147483647;background:#111;color:#fff;padding:8px 10px;border-radius:8px;font:12px/1.35 Arial,sans-serif;max-height:34%;overflow:auto;box-shadow:0 2px 12px rgba(0,0,0,.45)';
-    p.innerHTML='<b>iPad Legacy v6.13.1</b> — <span id="legacy-stage">BOOT OK</span> <button type="button" id="legacy-hide" style="float:right;font-size:12px">fechar</button><div id="legacy-error" style="margin-top:4px;color:#ffd27a"></div>';
+    p.innerHTML='<b>iPad Legacy v6.13.2</b> — <span id="legacy-stage">BOOT OK</span> <button type="button" id="legacy-hide" style="float:right;font-size:12px">fechar</button><div id="legacy-error" style="margin-top:4px;color:#ffd27a"></div>';
     (document.body||document.documentElement).appendChild(p);
     var b=document.getElementById('legacy-hide');
     if(b)b.onclick=function(){p.style.display='none';};
@@ -2521,11 +2503,9 @@ function assignAndPlay(audio,url,onBlocked){
       while(audio.firstChild)audio.removeChild(audio.firstChild);
       audio.removeAttribute('src');
     }catch(_){}
-    /* src direto — type forçado em <source> gerava c4 (formato) em vários Icecast/Safari */
+    /* v6.13.2: sempre src= + load() (sem type forçado — evita c4; load de volta no iPad) */
     audio.src=url;
-    try{
-      if(!isLegacyIOSWebKit())audio.load();
-    }catch(_){}
+    try{ audio.load(); }catch(_){}
     var p=audio.play();
     if(p&&typeof p.then==='function'){
       p.then(function(){},function(){ if(typeof onBlocked==='function')onBlocked(); });
