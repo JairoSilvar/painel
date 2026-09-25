@@ -3,111 +3,52 @@
     {
       "source": "/sw.js",
       "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=0, must-revalidate"
-        },
-        {
-          "key": "Service-Worker-Allowed",
-          "value": "/"
-        }
+        { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" },
+        { "key": "Service-Worker-Allowed", "value": "/" }
       ]
     },
     {
       "source": "/manifest.webmanifest",
       "headers": [
-        {
-          "key": "Content-Type",
-          "value": "application/manifest+json"
-        },
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=3600"
-        }
+        { "key": "Content-Type", "value": "application/manifest+json" },
+        { "key": "Cache-Control", "value": "public, max-age=3600" }
       ]
     },
     {
       "source": "/(.*)",
       "headers": [
-        {
-          "key": "Referrer-Policy",
-          "value": "strict-origin-when-cross-origin"
-        }
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
       ]
     }
   ],
   "rewrites": [
-    {
-      "source": "/api/totalhits-streaminfo.json",
-      "destination": "https://eu8.fastcast4u.com/external/rpc.php?m=streaminfo.get&username=breaktroy&rid=breaktroy&charset=&mountpoint="
-    },
-    {
-      "source": "/api/totalhits-status.xsl",
-      "destination": "https://eu8.fastcast4u.com/status-json.xsl"
-    },
-    {
-      "source": "/api/stream/totalhits",
-      "destination": "https://eu8.fastcast4u.com/proxy/breaktroy?mp=/stream"
-    },
-    {
-      "source": "/api/stream/80er",
-      "destination": "https://80er.stream.laut.fm/80er"
-    },
-    {
-      "source": "/api/stream/eurodance",
-      "destination": "https://eurodance.stream.laut.fm/eurodance"
-    },
-    {
-      "source": "/api/stream/clubhits",
-      "destination": "https://clubhits.stream.laut.fm/clubhits"
-    },
-    {
-      "source": "/api/stream/house",
-      "destination": "https://house.stream.laut.fm/house"
-    },
-    {
-      "source": "/api/stream/main",
-      "destination": "https://main.stream.laut.fm/main"
-    },
-    {
-      "source": "/api/stream/techno",
-      "destination": "https://techno.stream.laut.fm/techno"
-    },
-    {
-      "source": "/api/stream/workout",
-      "destination": "https://workout.stream.laut.fm/workout"
-    },
-    {
-      "source": "/api/stream/hardstyle",
-      "destination": "https://hardstyle.stream.laut.fm/hardstyle"
-    },
-    {
-      "source": "/api/stream/edm",
-      "destination": "https://edm.stream.laut.fm/edm"
-    },
-    {
-      "source": "/api/stream/dance",
-      "destination": "https://dance.stream.laut.fm/dance"
-    },
-    {
-      "source": "/api/stream/classicrock",
-      "destination": "https://classicrock.stream.laut.fm/classicrock"
-    },
-    {
-      "source": "/api/stream/pop",
-      "destination": "https://pop.stream.laut.fm/pop"
-    },
-    {
-      "source": "/api/stream/lofi",
-      "destination": "https://lofi.stream.laut.fm/lofi"
-    },
-    {
-      "source": "/api/stream/klassik",
-      "destination": "https://klassik.stream.laut.fm/klassik"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
-    }
+    { "source": "/api/totalhits-streaminfo.json", "destination": "https://eu8.fastcast4u.com/external/rpc.php?m=streaminfo.get&username=breaktroy&rid=breaktroy&charset=&mountpoint=" },
+    { "source": "/api/totalhits-status.xsl", "destination": "https://eu8.fastcast4u.com/status-json.xsl" },
+    { "source": "/api/stream/totalhits", "destination": "https://eu8.fastcast4u.com/proxy/breaktroy?mp=/stream" },
+    { "source": "/api/stream/80er", "destination": "https://80er.stream.laut.fm/80er" },
+    { "source": "/api/stream/eurodance", "destination": "https://eurodance.stream.laut.fm/eurodance" },
+    { "source": "/api/stream/clubhits", "destination": "https://clubhits.stream.laut.fm/clubhits" },
+    { "source": "/api/stream/house", "destination": "https://house.stream.laut.fm/house" },
+    { "source": "/api/stream/main", "destination": "https://main.stream.laut.fm/main" },
+    { "source": "/api/stream/techno", "destination": "https://techno.stream.laut.fm/techno" },
+    { "source": "/api/stream/workout", "destination": "https://workout.stream.laut.fm/workout" },
+    { "source": "/api/stream/hardstyle", "destination": "https://hardstyle.stream.laut.fm/hardstyle" },
+    { "source": "/api/stream/edm", "destination": "https://edm.stream.laut.fm/edm" },
+    { "source": "/api/stream/dance", "destination": "https://dance.stream.laut.fm/dance" },
+    { "source": "/api/stream/classicrock", "destination": "https://classicrock.stream.laut.fm/classicrock" },
+    { "source": "/api/stream/pop", "destination": "https://pop.stream.laut.fm/pop" },
+    { "source": "/api/stream/lofi", "destination": "https://lofi.stream.laut.fm/lofi" },
+    { "source": "/api/stream/klassik", "destination": "https://klassik.stream.laut.fm/klassik" },
+    { "source": "/api/stream/continental", "destination": "https://rrdns-continental.webnow.com.br/imprensafm64k.mp3" },
+    { "source": "/api/stream/spacestation", "destination": "https://ice5.somafm.com/spacestation-128-mp3" },
+    { "source": "/api/stream/deepspace", "destination": "https://ice5.somafm.com/deepspaceone-128-mp3" },
+    { "source": "/api/stream/thetrip", "destination": "https://ice5.somafm.com/thetrip-128-mp3" },
+    { "source": "/api/stream/indiepop", "destination": "https://ice5.somafm.com/indiepop-128-mp3" },
+    { "source": "/api/stream/u80s", "destination": "https://ice5.somafm.com/u80s-128-mp3" },
+    { "source": "/api/stream/groovesalad", "destination": "https://ice5.somafm.com/groovesalad-128-mp3" },
+    { "source": "/api/stream/dronezone", "destination": "https://ice5.somafm.com/dronezone-128-mp3" },
+    { "source": "/api/stream/beatblender", "destination": "https://ice5.somafm.com/beatblender-128-mp3" },
+    { "source": "/api/stream/dubstep", "destination": "https://ice5.somafm.com/dubstep-128-mp3" },
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }

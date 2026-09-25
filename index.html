@@ -435,7 +435,7 @@ display: none;
 transform: translate3d(0,0,0);
 -webkit-backface-visibility: hidden;
 backface-visibility: hidden;
-will-change: transform, bottom;
+will-change: auto;
 }
 @supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
   .mini-player { backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
@@ -683,9 +683,16 @@ html.lite-mode .media-item { background: var(--surface-2); }
   border:1px solid rgba(251,113,133,.4); background:rgba(251,113,133,.18);
   color:var(--text); border-radius:999px; padding:6px 12px; font-size:.78rem; font-weight:700; cursor:pointer;
 }
-html.focus-treino .section:not([data-section="treino"]):not([data-section="hub"]):not([data-section="timer"]) { display:none !important; }
-html.focus-treino .nav-chips a:not([href="#section-treino"]):not([href="#section-timer"]) { opacity:.35; }
-html.focus-treino #section-treino { order:-1; }
+html.focus-treino .section:not([data-section="treino"]):not([data-section="hub"]):not([data-section="timer"]),
+body.focus-treino .section:not([data-section="treino"]):not([data-section="hub"]):not([data-section="timer"]) {
+  display:none !important;
+}
+html.focus-treino .nav-chips a:not([href="#section-treino"]):not([href="#section-timer"]),
+body.focus-treino .nav-chips a:not([href="#section-treino"]):not([href="#section-timer"]) { opacity:.35; pointer-events:none; }
+html.focus-treino #section-treino, body.focus-treino #section-treino { display:block !important; }
+html.focus-treino .focus-treino-bar button, body.focus-treino .focus-treino-bar button {
+  background:rgba(74,222,128,.25); border-color:rgba(74,222,128,.5);
+}
 .section-title .title-text { letter-spacing:.01em; }
 @keyframes card-pulse {
   0%,100% { box-shadow:0 0 0 2px var(--accent); }
@@ -708,7 +715,7 @@ html.lite-mode .media-item.is-playing { animation:none; }
 </div>
 <div class="brand-copy" role="button" tabindex="0" title="Voltar ao início" onclick="goHome()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goHome();}">
 <h1>Painel Mídia</h1>
-<span class="version-tag">v6.13.0</span>
+<span class="version-tag">v6.13.1</span>
 </div>
 <div class="header-actions">
 <button class="header-action" id="theme-menu-btn" type="button" onclick="toggleAppearancePanel()" aria-expanded="false" aria-controls="appearance-panel" title="Aparência">
@@ -1535,6 +1542,7 @@ html.lite-mode .media-item.is-playing { animation:none; }
 <div class="stat-pill"><b id="stat-tracks">0</b><span>faixas salvas</span></div>
 </div>
 <ul class="changelog" style="margin-top:14px;">
+<li><strong>v6.13.1</strong> — iPad c4: src sem type forçado + proxy SomaFM/Continental; modo foco exportado; anti-trava no stalled; mini-player sem pulo.</li>
 <li><strong>v6.13.0</strong> — Visual: badges, card ativo, modo foco treino; catálogo: seção Sem propaganda (SomaFM + Paradise).</li>
 <li><strong>v6.12.0</strong> — Proxy laut.fm em todas as rádios problemáticas (iPad); YouTube movido para baixo das rádios; textos extras removidos.</li>
 <li><strong>v6.11.1</strong> — iPad: Hits 80 / Dance 90 / Club Hits via proxy same-origin (/api/stream/80er|eurodance|clubhits); Safari 9 usa audio.src direto.</li>
@@ -1611,7 +1619,7 @@ html.lite-mode .media-item.is-playing { animation:none; }
     p=document.createElement('div');
     p.id='legacy-diag';
     p.style.cssText='position:fixed;left:6px;right:6px;bottom:6px;z-index:2147483647;background:#111;color:#fff;padding:8px 10px;border-radius:8px;font:12px/1.35 Arial,sans-serif;max-height:34%;overflow:auto;box-shadow:0 2px 12px rgba(0,0,0,.45)';
-    p.innerHTML='<b>iPad Legacy v6.13.0</b> — <span id="legacy-stage">BOOT OK</span> <button type="button" id="legacy-hide" style="float:right;font-size:12px">fechar</button><div id="legacy-error" style="margin-top:4px;color:#ffd27a"></div>';
+    p.innerHTML='<b>iPad Legacy v6.13.1</b> — <span id="legacy-stage">BOOT OK</span> <button type="button" id="legacy-hide" style="float:right;font-size:12px">fechar</button><div id="legacy-error" style="margin-top:4px;color:#ffd27a"></div>';
     (document.body||document.documentElement).appendChild(p);
     var b=document.getElementById('legacy-hide');
     if(b)b.onclick=function(){p.style.display='none';};
@@ -1733,12 +1741,14 @@ var RADIO_CHANNELS = {
   '1023_poa': { label:'Rádio 102.3 FM', urls:['https://1192747t.ha.azioncdn.net/primary/ita_poa.sdp/playlist.m3u8','https://liverd102fm.rbsdirect.com.br/primary/ita_poa.sdp/playlist.m3u8'] },
   antena1_poa: { label:'Antena 1', urls:['https://antenaone.crossradio.com.br/stream/1'] },
   continental_poa: { label:'Continental FM 98.3', urls:[
+    '/api/stream/continental',
     'https://rrdns-continental.webnow.com.br/imprensafm64k.mp3',
     'https://rrdns-continental.webnow.com.br/imprensafm.mp3'
   ] },
   salamanca_quarai: { label:'Salamanca FM 101.3', urls:[
     'https://live.paineldj.com.br/proxy/salamancahd?mp=/stream',
-    'https://live.paineldj.com.br/proxy/salamancahd?mp=/stream/;.mp3'
+    'https://live.paineldj.com.br/proxy/salamancahd?mp=/stream/;stream.mp3',
+    'https://live.paineldj.com.br/proxy/salamancahd?mp=/;stream.mp3'
   ] },
   cbn: { label:'CBN Rio', urls:['https://playerservices.streamtheworld.com/api/livestream-redirect/CBN_RJ_ADP.m3u8','https://playerservices.streamtheworld.com/api/livestream-redirect/CBN_RJ_ADP.mp3','https://playerservices.streamtheworld.com/api/livestream-redirect/CBN_RJ.mp3'] },
   bandnews: { label:'BandNews FM SP', urls:['https://playerservices.streamtheworld.com/api/livestream-redirect/BANDNEWSFM_SPAAC.m3u8','https://playerservices.streamtheworld.com/api/livestream-redirect/BANDNEWSFM_SPAAC.aac','https://playerservices.streamtheworld.com/api/livestream-redirect/BANDNEWSFM_SPAAC.mp3'] },
@@ -1756,8 +1766,8 @@ var RADIO_CHANNELS = {
   hardstyle: { label:'Hardstyle Gym', urls:['/api/stream/hardstyle','https://hardstyle.stream.laut.fm/hardstyle','https://stream.laut.fm/hardstyle'] },
   edm_gym: { label:'EDM Sessions', urls:['/api/stream/edm','https://edm.stream.laut.fm/edm','https://stream.laut.fm/edm'] },
   dance_gym: { label:'Dance Energy', urls:['/api/stream/dance','https://dance.stream.laut.fm/dance','https://stream.laut.fm/dance'] },
-  beatblender: { label:'Beat Blender', urls:['https://ice5.somafm.com/beatblender-128-mp3','https://ice1.somafm.com/beatblender-128-mp3'] },
-  dubstep: { label:'Dubstep', urls:['https://ice5.somafm.com/dubstep-128-mp3','https://ice1.somafm.com/dubstep-128-mp3'] },
+  beatblender: { label:'Beat Blender', urls:['/api/stream/beatblender','https://ice5.somafm.com/beatblender-128-mp3','https://ice1.somafm.com/beatblender-128-mp3'] },
+  dubstep: { label:'Dubstep', urls:['/api/stream/dubstep','https://ice5.somafm.com/dubstep-128-mp3','https://ice1.somafm.com/dubstep-128-mp3'] },
   bob_workout: { label:'Radio BOB Workout', urls:['https://streams.radiobob.de/bob-workout/mp3-192/mediaplayer'] },
   bob_party: { label:'Radio BOB Party', urls:['https://streams.radiobob.de/bob-party/mp3-192/mediaplayer'] },
   reiki: { label:'Reiki & Meditação', urls:['https://streaming.positivity.radio/pr/reiki/icecast.audio','https://ice5.somafm.com/dronezone-128-mp3'] },
@@ -1780,14 +1790,14 @@ var RADIO_CHANNELS = {
   pop: { label:'Pop Hits', urls:['/api/stream/pop','https://pop.stream.laut.fm/pop','https://stream.laut.fm/pop'] },
   lofi: { label:'Lofi Beats', urls:['/api/stream/lofi','https://lofi.stream.laut.fm/lofi','https://stream.laut.fm/lofi'] },
   classical: { label:'Clássica / Foco', urls:['/api/stream/klassik','https://klassik.stream.laut.fm/klassik','https://stream.laut.fm/klassik'] },
-  mpb: { label:'Chill / Groove', urls:['https://ice5.somafm.com/groovesalad-128-mp3'] },
-  soundscapes: { label:'Soundscapes Ambient', urls:['https://ice5.somafm.com/dronezone-128-mp3'] },
+  mpb: { label:'Chill / Groove', urls:['/api/stream/groovesalad','https://ice5.somafm.com/groovesalad-128-mp3','https://ice1.somafm.com/groovesalad-128-mp3'] },
+  soundscapes: { label:'Soundscapes Ambient', urls:['/api/stream/dronezone','https://ice5.somafm.com/dronezone-128-mp3','https://ice1.somafm.com/dronezone-128-mp3'] },
   paradise: { label:'Radio Paradise', urls:['https://stream.radioparadise.com/mp3-128','https://stream.radioparadise.com/aac-128'] },
-  spacestation: { label:'Space Station', urls:['https://ice5.somafm.com/spacestation-128-mp3','https://ice1.somafm.com/spacestation-128-mp3'] },
-  deepspace: { label:'Deep Space One', urls:['https://ice5.somafm.com/deepspaceone-128-mp3','https://ice1.somafm.com/deepspaceone-128-mp3'] },
-  thetrip: { label:'The Trip', urls:['https://ice5.somafm.com/thetrip-128-mp3','https://ice1.somafm.com/thetrip-128-mp3'] },
-  indiepop: { label:'Indie Pop Rocks', urls:['https://ice5.somafm.com/indiepop-128-mp3','https://ice1.somafm.com/indiepop-128-mp3'] },
-  u80s: { label:'Underground 80s', urls:['https://ice5.somafm.com/u80s-128-mp3','https://ice1.somafm.com/u80s-128-mp3'] }
+  spacestation: { label:'Space Station', urls:['/api/stream/spacestation','https://ice5.somafm.com/spacestation-128-mp3','https://ice1.somafm.com/spacestation-128-mp3'] },
+  deepspace: { label:'Deep Space One', urls:['/api/stream/deepspace','https://ice5.somafm.com/deepspaceone-128-mp3','https://ice1.somafm.com/deepspaceone-128-mp3'] },
+  thetrip: { label:'The Trip', urls:['/api/stream/thetrip','https://ice5.somafm.com/thetrip-128-mp3','https://ice1.somafm.com/thetrip-128-mp3'] },
+  indiepop: { label:'Indie Pop Rocks', urls:['/api/stream/indiepop','https://ice5.somafm.com/indiepop-128-mp3','https://ice1.somafm.com/indiepop-128-mp3'] },
+  u80s: { label:'Underground 80s', urls:['/api/stream/u80s','https://ice5.somafm.com/u80s-128-mp3','https://ice1.somafm.com/u80s-128-mp3'] }
 };
 
 // ---------- ESTADO GLOBAL ----------
@@ -1795,10 +1805,17 @@ var RADIO_CHANNELS = {
 function toggleFocusTreino(){
   try{
     var on=document.documentElement.classList.toggle('focus-treino');
+    try{ document.body.classList.toggle('focus-treino',on); }catch(_){}
     var b=document.getElementById('btn-focus-treino');
     if(b)b.textContent=on?'Sair do foco':'Ativar foco';
     try{ localStorage.setItem('pm_focus_treino', on?'1':'0'); }catch(_){}
-  }catch(_){}
+    if(on){
+      try{
+        var t=document.getElementById('section-treino');
+        if(t&&t.scrollIntoView)t.scrollIntoView({behavior:'smooth',block:'start'});
+      }catch(_){}
+    }
+  }catch(e){ try{ console.warn('focus',e); }catch(_){} }
 }
 function restoreFocusTreino(){
   try{
@@ -2504,21 +2521,11 @@ function assignAndPlay(audio,url,onBlocked){
       while(audio.firstChild)audio.removeChild(audio.firstChild);
       audio.removeAttribute('src');
     }catch(_){}
-    var legacy=isLegacyIOSWebKit();
-    if(!urlNeedsHls(url)&&!legacy){
-      try{
-        var srcEl=document.createElement('source');
-        srcEl.src=url;
-        srcEl.type=guessAudioMime(url);
-        audio.appendChild(srcEl);
-      }catch(_){
-        audio.src=url;
-      }
-    } else {
-      // Safari 9 / HLS: src direto no elemento
-      audio.src=url;
-    }
-    try{ audio.load(); }catch(_){}
+    /* src direto — type forçado em <source> gerava c4 (formato) em vários Icecast/Safari */
+    audio.src=url;
+    try{
+      if(!isLegacyIOSWebKit())audio.load();
+    }catch(_){}
     var p=audio.play();
     if(p&&typeof p.then==='function'){
       p.then(function(){},function(){ if(typeof onBlocked==='function')onBlocked(); });
@@ -2701,11 +2708,32 @@ function playChannel(channelId,btnEl,statusIdOverride,isAutoRetry){
       var ns=audio.networkState, rs=audio.readyState;
       var tip={1:'abortado',2:'rede',3:'decode',4:'formato/src'}[code]||'desconhecido';
       if(isLegacyIPad3())legacyMediaNote('Erro c'+code+' ('+tip+') ns='+ns+' rs='+rs);
+      /* Se já estava tocando, não reinicia na hora (evita trava/volta) */
+      if(radioPlaying&&code!=1){
+        scheduleRetry('error-c'+code);
+        return;
+      }
       failAttempt('Erro no stream (c'+code+' '+tip+')');
     });
-    addEventListenerOnce(audio,'stalled',function(){
-      if(stillCurrent(audio)&&radioPlaying)scheduleRetry('stalled');
-    });
+    /* stalled no início do stream é normal — só reconecta se ficar parado de verdade */
+    (function(){
+      var stallTimer=0;
+      addEventListenerOnce(audio,'stalled',function(){
+        if(!stillCurrent(audio)||!radioPlaying)return;
+        if(stallTimer)clearTimeout(stallTimer);
+        stallTimer=setTimeout(function(){
+          stallTimer=0;
+          if(stillCurrent(audio)&&radioPlaying&&audio.paused===false){
+            /* ainda "tocando" mas sem dados — reconectar */
+            try{
+              if(audio.readyState<2)scheduleRetry('stalled-long');
+            }catch(_){}
+          }
+        },8000);
+      });
+      addEventListenerOnce(audio,'playing',function(){ if(stallTimer){clearTimeout(stallTimer);stallTimer=0;} });
+      addEventListenerOnce(audio,'timeupdate',function(){ if(stallTimer){clearTimeout(stallTimer);stallTimer=0;} });
+    })();
 
     if(needsHls){
       if(canUseNativeHls(audio)){
@@ -3777,6 +3805,7 @@ window.goHome = goHome;
 window.compartilharAgora = compartilharAgora;
 window.promptPwaInstall = promptPwaInstall;
 window.dismissInstallBanner = dismissInstallBanner;
+window.toggleFocusTreino = toggleFocusTreino;
 
 if(window.__portalLegacyShow)window.__portalLegacyShow('CONTROLES EXPORTADOS');
 
@@ -3786,21 +3815,8 @@ if(window.__portalLegacyShow)window.__portalLegacyShow('CONTROLES EXPORTADOS');
  * sem isso o player “sobe e desce” com a barra.
  */
 function pinMiniPlayerToVisualViewport(){
-  try{
-    var root=document.documentElement;
-    var vv=window.visualViewport;
-    if(!vv){
-      root.style.setProperty('--vv-bottom','0px');
-      return;
-    }
-    var gap=Math.round(window.innerHeight-vv.height-vv.offsetTop);
-    if(!isFinite(gap)||gap<0)gap=0;
-    // Só compensar quando há diferença real (barra do browser)
-    if(gap>2) root.style.setProperty('--vv-bottom',gap+'px');
-    else root.style.setProperty('--vv-bottom','0px');
-  }catch(_){
-    try{ document.documentElement.style.setProperty('--vv-bottom','0px'); }catch(__){}
-  }
+  /* v6.13.1: barra fixa em bottom:0 — sem compensar visualViewport (evita “pulo” ao rolar) */
+  try{ document.documentElement.style.setProperty('--vv-bottom','0px'); }catch(_){}
 }
 function setupMiniPlayerViewportPin(){
   pinMiniPlayerToVisualViewport();
